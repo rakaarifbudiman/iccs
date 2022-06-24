@@ -1,0 +1,9 @@
+public/asset
+!.gitignore
+.env
+.phpunit.result.cache
+public/storage/
+vendor/
+public/assets_alt
+public/qrcode
+database/seeders/MailSettingSeeder.php
