@@ -10,6 +10,7 @@ Step :
 - Siapkan table old_users, old_flpparents, old_flpfiles, old_flpactions
 - Jika point 3 tidak ada, jangan jalankan seeder
 - Jika point 3 ada, jalankan seeder
+- Setting Mail credentials di table mail_settings atau di route mail/setting/edit
 
 Requirement :
 - PHP 8.1
