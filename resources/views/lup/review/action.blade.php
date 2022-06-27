@@ -53,7 +53,7 @@
                         {{ $lupaction->evidence_filename ? '' : 'hidden'}}><i class=" bi-download"></i>
                       </a>
                       @can('approvedevidence',$lupaction)
-                        <a href="/lup/action/{{ Crypt::encryptString($lupaction->id) }}/approvedevidence" onclick="return confirm('Approved this closing evidence ?');" class="btn btn-sm btn-success text-white" title="Approved Closing Evidence"><i class="bi-file-earmark-check"></i></a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalapprovedevidence{{ $lupaction->id }}" class="btn btn-sm btn-success text-white" title="Approved Closing Evidence"><i class="bi-file-earmark-check"></i></a>
                         <a href="#" data-bs-toggle="modal" data-bs-target="#modalrejectevidence{{ $lupaction->id }}" class="btn btn-sm btn-danger text-white" title="Reject Closing Evidence"><i class="bi-file-earmark-x"></i></a>
                       @endcan        
                       @can('extended',$lupaction)              
@@ -68,8 +68,12 @@
                       @can('rejectextended',$lupaction)
                         <a href="#" data-bs-toggle="modal" data-bs-target="#modalrejectextension{{ $lupaction->id }}" class="btn btn-sm btn-danger text-white" title="Reject Due Date Extension"><i class="bi-calendar-minus"></i></a>              
                       @endcan
-                        <a href="/lup/action/{{ Crypt::encryptString($lupaction->id) }}/requestcancelaction" class="btn btn-sm btn-danger text-white" title="Request Cancel Action"><i class="bi-bookmark-x"></i></a>                                       
-                      <a href="/lup/action/{{ Crypt::encryptString($lupaction->id) }}/approvedcancelaction" class="btn btn-sm btn-success text-white" title="Approved Cancel Action"><i class="bi-bookmark-check"></i></a>                            
+                      @can('requestcancelaction',$lupaction)
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalrequestcancelaction{{ $lupaction->id }}" class="btn btn-sm btn-danger text-white" title="Request Cancel Action"><i class="bi-bookmark-x"></i></a>                                       
+                      @endcan
+                      @can('approvedcancelaction',$lupaction)
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalapprovedcancelaction{{ $lupaction->id }}" class="btn btn-sm btn-success text-white" title="Approved Cancel Action"><i class="bi-bookmark-check"></i></a>                            
+                      @endcan
 
                                                       
                                               

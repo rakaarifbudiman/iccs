@@ -29,6 +29,6 @@ class RequestUserActive extends Mailable implements ShouldQueue
     public function build()
     {
         return $this->subject('ICCS : Request User Activation')
-                    ->view('emails.requestuseractivation');
+                    ->view('emails.auth.requestuseractivation');
     }
 }

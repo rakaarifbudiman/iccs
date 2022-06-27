@@ -136,7 +136,7 @@
                           </div>  
                           <div class="col-md-12 mb-2">
                             <div class="form-floating input-sm">
-                              <textarea style="height: 100px" type="text" class="form-control text-small" min-height ="100"name="lup_type" id="lup_type" placeholder="Change Related to" autocomplete="off" disabled>{{ old('lup_type',$lupparent->lup_type) }}</textarea>
+                              <textarea style="height: 100px" type="text" class="form-control text-small" min-height ="100"name="lup_type" id="lup_type" placeholder="Change Related to" autocomplete="off" disabled>{{ $lupparent->lup_type }}</textarea>
                               <label for="lup_type">Change Related to</label>
                               @error('lup_type')
                                 <div class="text-danger">{{ $message }}</div>

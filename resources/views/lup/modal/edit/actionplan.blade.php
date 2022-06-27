@@ -73,7 +73,19 @@
           <div class="col-sm-8">
               <input class="form-control form-control-sm" list="listusers" type="text" id="pic_action" name="pic_action" placeholder="Select PIC Action..." value="{{ $lupaction->pic_action }}" disabled>                                                               
           </div>                                 
-        </div>                   
+        </div>             
+        <div class="row mb-3">
+          <label for="evidence_uploader" class="col-sm col-form-label col-form-label-sm">Evidence Uploader</label>
+          <div class="col-sm-8">
+              <input class="form-control form-control-sm" list="listusers" type="text" id="evidence_uploader" name="evidence_uploader" placeholder="Uploader" value="{{ $lupaction->evidence_uploader }}" disabled>                                                               
+          </div>                                 
+        </div> 
+        <div class="row mb-3">
+          <label for="dateupload_evidence" class="col-sm col-form-label col-form-label-sm">Date Upload Evidence</label>
+          <div class="col-sm-8">
+              <input class="form-control form-control-sm" list="listusers" type="text" id="dateupload_evidence" name="dateupload_evidence" value="@date($lupaction->dateupload_evidence,'d-M-y')" disabled>                                                               
+          </div>                                 
+        </div>            
         <div class="row mb-3">
           <label for="evidence_filename" class="col-sm col-form-label col-form-label-sm">Upload File</label>
           <div class="col-sm-8">
@@ -93,6 +105,69 @@
                 </a>  
                 @endif                        
         </div>    
+                
+         
+        <input class="form-control form-control-sm" type="text" id="modalhidecodelup" name="modalhidecodelup" value="{{ $lupparent->code }}" hidden>
+        <input class="form-control form-control-sm" type="text" id="modalhidepicaction" name="modalhidepicaction" value="" hidden>
+        <input class="form-control form-control-sm" type="text" id="modalhidestatuslup" name="modalhidestatuslup" value="{{ $lupparent->lupstatus }}" hidden>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+        <button type="submit" class="btn btn-primary" name="saveaction">Save</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div> 
+
+<!-- Modal Approved Evidence Action Plan-->
+<div class="modal fade" id="modalapprovedevidence{{ $lupaction->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Approved Closing Evidence</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" name="upload-file" class="form-horizontal" enctype="multipart/form-data" id="upload-file" action="/lup/action/{{Crypt::encryptString($lupaction->id)}}/approvedevidence">
+        @csrf              
+        @method('put')
+      <div class="modal-body">  
+        <div class="row mb-3">
+          <label for="action" class="col-sm col-form-label col-form-label-sm">Action Plan</label>
+          <div class="col-sm-8">
+              <input class="form-control form-control-sm" type="text" id="action" name="action" placeholder="Type Action Plan..." value="{{ $lupaction->action }}" disabled>                                                 
+          </div>                                 
+        </div>      
+        <div class="row mb-3">
+          <label for="pic_action" class="col-sm col-form-label col-form-label-sm">PIC Action</label>
+          <div class="col-sm-8">
+              <input class="form-control form-control-sm" list="listusers" type="text" id="pic_action" name="pic_action" placeholder="Select PIC Action..." value="{{ $lupaction->pic_action }}" disabled>                                                               
+          </div>                                 
+        </div>      
+        <div class="row mb-3">
+          <label for="evidence_uploader" class="col-sm col-form-label col-form-label-sm">Evidence Uploader</label>
+          <div class="col-sm-8">
+              <input class="form-control form-control-sm" list="listusers" type="text" id="evidence_uploader" name="evidence_uploader" placeholder="Select PIC Action..." value="{{ $lupaction->evidence_uploader }}" disabled>                                                               
+          </div>                                 
+        </div> 
+        <div class="row mb-3">
+          <label for="dateupload_evidence" class="col-sm col-form-label col-form-label-sm">Date Upload Evidence</label>
+          <div class="col-sm-8">
+              <input class="form-control form-control-sm" list="listusers" type="text" id="dateupload_evidence" name="dateupload_evidence" value="@date($lupaction->dateupload_evidence,'d-M-y')" disabled>                                                               
+          </div>                                 
+        </div>                  
+        <div class="row mb-3">
+          <label for="referaction" class="col-sm col-form-label col-form-label-sm">Reference Action</label>
+          <div class="col-sm-8">
+            <input class="form-control form-control-sm" list="listactionclose" type="text" id="referaction" name="referaction" value="{{old('referaction')}}" autocomplete="off">                                                               
+            <datalist id="listactionclose">
+              @foreach ($listactionclose as $actionclose)
+              <option value="{{ $actionclose->action }}">{{ $actionclose->action }} - {{ $actionclose->pic_action }} - {{ $actionclose->actionstatus }}</option>                        
+              @endforeach
+          </datalist>
+          <p class="breadcrumb-item">If the action has a reference, please select the action reference above</p>
+          </div>                                 
+        </div>   
                 
          
         <input class="form-control form-control-sm" type="text" id="modalhidecodelup" name="modalhidecodelup" value="{{ $lupparent->code }}" hidden>
@@ -131,7 +206,19 @@
           <div class="col-sm-8">
               <input class="form-control form-control-sm" list="listusers" type="text" id="pic_action" name="pic_action" placeholder="Select PIC Action..." value="{{ $lupaction->pic_action }}" disabled>                                                               
           </div>                                 
-        </div>                   
+        </div>      
+        <div class="row mb-3">
+          <label for="evidence_uploader" class="col-sm col-form-label col-form-label-sm">Evidence Uploader</label>
+          <div class="col-sm-8">
+              <input class="form-control form-control-sm" list="listusers" type="text" id="evidence_uploader" name="evidence_uploader" placeholder="Select PIC Action..." value="{{ $lupaction->evidence_uploader }}" disabled>                                                               
+          </div>                                 
+        </div> 
+        <div class="row mb-3">
+          <label for="dateupload_evidence" class="col-sm col-form-label col-form-label-sm">Date Upload Evidence</label>
+          <div class="col-sm-8">
+              <input class="form-control form-control-sm" list="listusers" type="text" id="dateupload_evidence" name="dateupload_evidence" value="@date($lupaction->dateupload_evidence,'d-M-y')" disabled>                                                               
+          </div>                                 
+        </div>                  
         <div class="row mb-3">
           <label for="note" class="col-sm col-form-label col-form-label-sm">Notes</label>
           <div class="col-sm-8">
@@ -399,6 +486,107 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
         <button type="submit" class="btn btn-danger" name="saveaction">Reject</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div> 
+
+<!-- Modal Request Cancel Action Plan-->
+<div class="modal fade" id="modalrequestcancelaction{{ $lupaction->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Request Cancel Action</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" name="upload-file" class="form-horizontal" enctype="multipart/form-data" id="upload-file" action="/lup/action/{{Crypt::encryptString($lupaction->id)}}/requestcancelaction">
+        @csrf              
+        @method('put')
+      <div class="modal-body">  
+        <div class="row mb-3">
+          <label for="action" class="col-sm col-form-label col-form-label-sm">Action Plan</label>
+          <div class="col-sm-8">
+              <input class="form-control form-control-sm" type="text" id="action" name="action" placeholder="Type Action Plan..." value="{{ $lupaction->action }}" disabled>                                                 
+          </div>                                 
+        </div>      
+        <div class="row mb-3">
+          <label for="pic_action" class="col-sm col-form-label col-form-label-sm">PIC Action</label>
+          <div class="col-sm-8">
+              <input class="form-control form-control-sm" list="listusers" type="text" id="pic_action" name="pic_action" placeholder="Select PIC Action..." value="{{ $lupaction->pic_action }}" disabled>                                                               
+          </div>                                 
+        </div>                   
+        <div class="row mb-3">
+          <label for="cancel_duedate_notes" class="col-sm col-form-label col-form-label-sm">Notes</label>
+          <div class="col-sm-8">
+              <textarea class="form-control form-control-sm" id="cancel_duedate_notes" name="cancel_duedate_notes" placeholder="Add Comments" required autofocus>{{ old('cancel_duedate_notes') }}</textarea>                                                            
+          </div>                                 
+        </div>                   
+         
+        <input class="form-control form-control-sm" type="text" id="modalhidecodelup" name="modalhidecodelup" value="{{ $lupparent->code }}" hidden>
+        <input class="form-control form-control-sm" type="text" id="modalhidepicaction" name="modalhidepicaction" value="" hidden>
+        <input class="form-control form-control-sm" type="text" id="modalhidestatuslup" name="modalhidestatuslup" value="{{ $lupparent->lupstatus }}" hidden>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+        <button type="submit" class="btn btn-primary" name="saveaction">Save</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div> 
+
+
+<!-- Modal Approved Cancel Action Plan-->
+<div class="modal fade" id="modalapprovedcancelaction{{ $lupaction->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Approved Cancel Action</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" name="upload-file" class="form-horizontal" enctype="multipart/form-data" id="upload-file" action="/lup/action/{{Crypt::encryptString($lupaction->id)}}/approvedcancelaction">
+        @csrf              
+        @method('put')
+      <div class="modal-body">  
+        <div class="row mb-3">
+          <label for="action" class="col-sm col-form-label col-form-label-sm">Action Plan</label>
+          <div class="col-sm-8">
+              <input class="form-control form-control-sm" type="text" id="action" name="action" placeholder="Type Action Plan..." value="{{ $lupaction->action }}" disabled>                                                 
+          </div>                                 
+        </div>      
+        <div class="row mb-3">
+          <label for="pic_action" class="col-sm col-form-label col-form-label-sm">PIC Action</label>
+          <div class="col-sm-8">
+              <input class="form-control form-control-sm" list="listusers" type="text" id="pic_action" name="pic_action" placeholder="Select PIC Action..." value="{{ $lupaction->pic_action }}" disabled>                                                               
+          </div>                                 
+        </div>      
+        <div class="row mb-3">
+          <label for="evidence_uploader" class="col-sm col-form-label col-form-label-sm">Evidence Uploader</label>
+          <div class="col-sm-8">
+              <input class="form-control form-control-sm" list="listusers" type="text" id="evidence_uploader" name="evidence_uploader" placeholder="Select PIC Action..." value="{{ $lupaction->evidence_uploader }}" disabled>                                                               
+          </div>                                 
+        </div> 
+        <div class="row mb-3">
+          <label for="dateupload_evidence" class="col-sm col-form-label col-form-label-sm">Date Upload Evidence</label>
+          <div class="col-sm-8">
+              <input class="form-control form-control-sm" list="listusers" type="text" id="dateupload_evidence" name="dateupload_evidence" value="@date($lupaction->dateupload_evidence,'d-M-y')" disabled>                                                               
+          </div>                                 
+        </div>                  
+        <div class="row mb-3">
+          <label for="cancel_duedate_notes" class="col-sm col-form-label col-form-label-sm">Reason of Cancellation</label>
+          <div class="col-sm-8">
+              <textarea class="form-control form-control-sm" id="cancel_duedate_notes" name="cancel_duedate_notes" placeholder="Add Comments" disabled>{{ old('cancel_duedate_notes',$lupaction->cancel_duedate_notes) }}</textarea>                                                            
+          </div>                                 
+        </div>                     
+         
+        <input class="form-control form-control-sm" type="text" id="modalhidecodelup" name="modalhidecodelup" value="{{ $lupparent->code }}" hidden>
+        <input class="form-control form-control-sm" type="text" id="modalhidepicaction" name="modalhidepicaction" value="" hidden>
+        <input class="form-control form-control-sm" type="text" id="modalhidestatuslup" name="modalhidestatuslup" value="{{ $lupparent->lupstatus }}" hidden>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+        <button type="submit" class="btn btn-primary" name="saveaction">Save</button>
       </div>
     </form>
     </div>

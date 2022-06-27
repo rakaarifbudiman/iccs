@@ -1,7 +1,7 @@
 @extends('emails.mainmail')
 @section('content')
 <h4>Dear Bapak/Ibu {{ $mailData['name'] }},</h4>
-<p>Mohon reviewnya untuk LUP berikut :</p>
+<p>Please review for the following LUP :</p>
 <table id="details">
     <tbody>
     <tr>

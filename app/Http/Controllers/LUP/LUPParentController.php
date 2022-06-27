@@ -92,6 +92,7 @@ class LUPParentController extends Controller
         $luptypes = explode(';',$lupparent->lup_type);
         $listtypes = DB::table('lup_types')->get('luptype');       
         $listusers = User::where([['active',1]])->get();
+        $listactionclose = LUPAction::where('code',$lupparent->code)->where('actionstatus','CLOSED')->get();
         $listapprovers = $listusers->where('level',3);
         $listleaders = $listusers->where('department',$lupparent->inisiators->department)->where('grade_level','>',1);        
         $listregulatory_reviewers = DB::table('approvals')->where('type','Reviewer Regulatory')->where('active',1)->get();
@@ -100,7 +101,8 @@ class LUPParentController extends Controller
         ->orderBy('type','asc')->orderBy('username','asc')->get();        
         return view('lup.reviewlup',[
             'id'=>$id,
-            'lupparent'=>$lupparent,     
+            'lupparent'=>$lupparent,   
+            'listactionclose'=>$listactionclose,  
             'listtypes'=>$listtypes,     
             'luptypes'=>$luptypes,                                  
             'listusers'=>$listusers,

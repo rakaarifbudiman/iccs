@@ -90,6 +90,22 @@ class LUPActionPolicy
                 ? Response::allow()
                     : Response::deny('Failed....'. ($lupaction->extension_count>1 ? 'This action had been extended for second times':($lupaction->dateapproved_evidence ? 'This action has been closed':($lupaction->lupparent->lupstatus=="OPEN" ?  : 'LUP status is '.$lupaction->lupparent->lupstatus))));         
     }
+
+    public function requestcancelaction(User $user, LUPAction $lupaction)
+    {               
+        return ($lupaction->lupparent->lupstatus=="OPEN")             
+            && ($lupaction->signdate_action) && ($user->level==2 || $lupaction->pic_action) && ($lupaction->actionstatus=="OPEN")
+                ? Response::allow()
+                    : Response::deny('Failed....You are not authorized');         
+    }
+
+    public function approvedcancelaction(User $user, LUPAction $lupaction)
+    {               
+        return ($lupaction->lupparent->lupstatus=="OPEN")             
+            && ($lupaction->signdate_action) && ($user->level==2) && ($lupaction->actionstatus=="ON CANCEL") && ($lupaction->cancel_duedate_notes)
+                ? Response::allow()
+                    : Response::deny('Failed....You are not authorized');         
+    }
         
      
    

@@ -29,6 +29,6 @@ class NotifyUserActive extends Mailable implements ShouldQueue
     public function build()
     {
         return $this->subject('ICCS : Notification for User Activation')
-                    ->view('emails.notifyuseractive');
+                    ->view('emails.auth.notifyuseractive');
     }
 }

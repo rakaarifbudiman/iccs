@@ -1,10 +1,8 @@
 @extends('emails.mainmail')
 @section('content')
 <h4>Dear Bapak/Ibu ,</h4>
-<p>The following LUP actions have been extended: {{$mailData['action']}}</p>
-<p>Reason for Extension : {{$mailData['note']}}</p>
-<p>Old Due Date: @date($mailData['old_duedate'],'d-M-y')</p>
-<p>New Due Date: @date($mailData['duedate'],'d-M-y')</p>
+<p>The following LUP action has been request for cancellation: {{$mailData['action']}}</p>
+<p>Reason : {{$mailData['note']}}</p>
 <p>By : {{$mailData['pic']}}</p>
 <p>Please review and approval</p>
 <p>{!!$mailData['urllup']!!}</p>

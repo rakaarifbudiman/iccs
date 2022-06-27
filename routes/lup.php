@@ -85,6 +85,7 @@ use App\Http\Controllers\LUP\RelatedDepartmentController;
     Route::POST('/lup/action/{id}/uploadevidence', [LUPActionController::class, 'uploadevidence']);
     Route::get('/lup/action/{id}/downloadevidence', [LUPActionController::class, 'downloadevidence']);
     Route::put('/lup/action/{id}/storeextension', [LUPActionController::class, 'storeextension']);    
+    Route::put('/lup/action/{id}/requestcancelaction', [LUPActionController::class, 'requestcancelaction']);    
 
     /* LUP Dashboard route */
     Route::get('/querylupmyonprocess', [LUPDashboardController::class, 'querylup_myonprocess']);
@@ -117,9 +118,10 @@ Route::group(['middleware' => 'reviewer'], function() {
     Route::get('/lup/{id}/cancellup', [LUPParentController::class, 'cancellup']);  
     Route::get('/lup/{id}/reactivation', [LUPParentController::class, 'reactivation']); 
     Route::put('/lup/{id}/updateapprover', [LUPParentController::class, 'updateapprover']); 
-    Route::get('/lup/action/{id}/approvedevidence', [lupActionController::class, 'approvedevidence']);
+    Route::put('/lup/action/{id}/approvedevidence', [lupActionController::class, 'approvedevidence']);
     Route::put('/lup/action/{id}/rejectevidence', [lupActionController::class, 'rejectevidence']);
     Route::put('/lup/action/{id}/reviewextension', [LUPActionController::class, 'reviewextension']);    
+    Route::put('/lup/action/{id}/approvedcancelaction', [lupActionController::class, 'approvedcancelaction']);
        
 
 });
