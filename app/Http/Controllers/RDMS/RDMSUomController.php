@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\RDMS;
 
 use App\Models\RDMS\RDMSUom;
 use App\Http\Requests\StoreRDMSUomRequest;

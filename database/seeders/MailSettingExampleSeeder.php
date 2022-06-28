@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-class MailSettingSeeder extends Seeder
+class MailSettingExampleSeeder extends Seeder
 {
     /**
      * Run the database seeds.

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\RDMS;
 
 use App\Models\RDMS\RDMSBatch;
 use App\Http\Requests\StoreRDMSBatchRequest;
