@@ -55,4 +55,9 @@ class LUPAction extends Model
         $encrypt = Crypt::encryptString($this->id);
         return $encrypt;
     }
+
+    public function scopeClosed($query)
+    {
+        $query->where('actionstatus','CLOSED');
+    }
 }

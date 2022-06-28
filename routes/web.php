@@ -30,10 +30,7 @@ require __DIR__.'/lup.php';
 require __DIR__.'/rdms.php';
 
  /* route group that only auth user can access,  inactive user can access*/
- Route::group(['middleware' => 'auth'], function() {      
-    
-    //Route::view('/', view: 'dashboard');
-    //Route::view('/dashboard', view: 'dashboard');   
+ Route::group(['middleware' => 'auth'], function() {         
     Route::get('/', [DashboardController::class, 'index']); 
     Route::get('/dashboard', [DashboardController::class, 'index']); 
     Route::get('/users-profile/{id}/edit/{tab}', [UserController::class, 'editpassword']);    

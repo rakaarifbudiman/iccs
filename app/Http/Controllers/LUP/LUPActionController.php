@@ -201,7 +201,7 @@ class LUPActionController extends Controller
 
             //Send Notif to PIC Action & Uploader
              
-        $urllup = '<a href="'.env('APP_URL').'/lup/'.$id.'/edit"'.' style="
+        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lupactions->lupparent->id).'/edit"'.' style="
         background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
         inline-block;text-decoration: none;"'.'>Go to LUP</a>';                  
         $mailData = [            
@@ -244,7 +244,7 @@ class LUPActionController extends Controller
 
             //Send Notif to Reviewer
              
-        $urllup = '<a href="'.env('APP_URL').'/lup/'.$id.'/edit"'.' style="
+        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lupactions->lupparent->id).'/edit"'.' style="
         background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
         inline-block;text-decoration: none;"'.'>Go to LUP</a>';                  
         $mailData = [            
@@ -286,7 +286,7 @@ class LUPActionController extends Controller
 
             //Send Notif to Approver
              
-        $urllup = '<a href="'.env('APP_URL').'/lup/'.$id.'/edit"'.' style="
+        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lupactions->lupparent->id).'/edit"'.' style="
         background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
         inline-block;text-decoration: none;"'.'>Go to LUP</a>';                  
         $mailData = [            
@@ -355,7 +355,7 @@ class LUPActionController extends Controller
             
             //Send Notif to PIC Action & PIC Extension
              
-        $urllup = '<a href="'.env('APP_URL').'/lup/'.$id.'/edit"'.' style="
+        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lupactions->lupparent->id).'/edit"'.' style="
         background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
         inline-block;text-decoration: none;"'.'>Go to LUP</a>';                  
         $mailData = [            
@@ -388,7 +388,7 @@ class LUPActionController extends Controller
             
             //Send Notif to Reviewer
              
-        $urllup = '<a href="'.env('APP_URL').'/lup/'.$id.'/edit"'.' style="
+        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lupactions->lupparent->id).'/edit"'.' style="
         background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
         inline-block;text-decoration: none;"'.'>Go to LUP</a>';                  
         $mailData = [            

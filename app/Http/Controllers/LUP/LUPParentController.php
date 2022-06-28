@@ -48,12 +48,14 @@ class LUPParentController extends Controller
                 ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')                     
                 ->orderBy('lup_parents.id','desc')
                 ->get();         
-            });               
+            });  
 
+
+            
         $statusaction=lupallstatusactions( $lupparents);        
         
 	    return view('lup.masterlistlup', ['lupparents' => $lupparents,
-        'statusaction'=>$statusaction,        
+        'statusaction'=>$statusaction,  
         ]);
     }
 
@@ -87,8 +89,8 @@ class LUPParentController extends Controller
     //show from LUP
     public function edit($id)
     {
-        $decrypted = Crypt::decryptString($id);           
-        $lupparent=LUPParent::find($decrypted);                      
+        $decrypted = Crypt::decryptString($id);         
+        $lupparent=LUPParent::find($decrypted);                          
         $luptypes = explode(';',$lupparent->lup_type);
         $listtypes = DB::table('lup_types')->get('luptype');       
         $listusers = User::where([['active',1]])->get();

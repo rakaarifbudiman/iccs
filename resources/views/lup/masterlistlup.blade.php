@@ -3,6 +3,7 @@
 @section('title', 'List LUP ICCS')
 
 @section('content')
+
 <div class="pagetitle">
   <h1>List LUP ICCS</h1>
   <nav>
@@ -64,8 +65,7 @@
                         <td class="bg-primary text-white">{{ $statusaction[$index] }}</td>
                       @else
                         <td >{{ $statusaction[$index] }}</td>
-                      @endif
-                    
+                      @endif                 
                     <td class="setwidth"><textarea  readonly>{{ $lupparent->documentname }}</textarea></td>
                     <td class="setwidth"><textarea  readonly>{{ $lupparent->lup_current }}</textarea></td>
                     <td class="setwidth"><textarea  readonly>{{ $lupparent->lup_proposed }}</textarea></td>
