@@ -12,9 +12,11 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\LUP\LUPAction;
 use App\Models\LUP\LUPParent;
+use App\Mail\LUP\LUPHasCancel;
 use App\Mail\LUP\LUPNotifToQC;
 use App\Models\ICCS\ICCSApproval;
 use App\Mail\LUP\LUPNotifToLeader;
+use App\Mail\LUP\LUPRequestCancel;
 use Illuminate\Support\Facades\DB;
 use App\Models\ICCS\RelatedUtility;
 use App\Http\Controllers\Controller;
@@ -49,8 +51,6 @@ class LUPParentController extends Controller
                 ->orderBy('lup_parents.id','desc')
                 ->get();         
             });  
-
-
             
         $statusaction=lupallstatusactions( $lupparents);        
         
@@ -280,6 +280,7 @@ class LUPParentController extends Controller
         ->select('approvals.*','A.email as emailreviewer')         
         ->where('type','Reviewer LUP')
         ->where('approvals.active',1)->get('emailreviewer');
+        $emailto = $emailreviewer->implode('emailreviewers',',');
         $urllup = '<a href="'.env('APP_URL').'/lup/'.$id.'/edit"'.' style="
         background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
         inline-block;text-decoration: none;"'.'>Go to LUP</a>';    
@@ -297,7 +298,7 @@ class LUPParentController extends Controller
             'name'=>$name,
         ];         
     
-    $emailto = $emailreviewer->implode('emailreviewers',',');
+    
     Mail::to(env('MAIL_TO_TESTING'))        
         ->send(new LUPNotifToQC($mailData,$lup));     
         return back()->with('success','Sign Leader success...');
@@ -925,4 +926,195 @@ class LUPParentController extends Controller
             return back()->with('info','Nothing Changed!');            
         }        
     }    
+
+    //download Regulatory Cheat Sheet
+    public function downloadregcheatsheet()
+    {                
+        $paths = DB::table('iccsfilepaths')
+        ->where('description','Regulatory Cheat Sheet')
+        ->first()->filepath;          
+        $url = public_path().'/'.$paths;           
+     return Response()->download($url);
+     
+    }
+
+    //download Panduan
+    public function downloadpanduan()
+    {                
+        $paths = DB::table('iccsfilepaths')
+        ->where('description','Tutorial ICCS')
+        ->first()->filepath;          
+        $url = public_path().'/'.$paths;           
+     return Response()->download($url);     
+    }
+
+    //Request Cancel LUP
+    public function requestcancellup(Request $request,$id)
+    {      
+        $decrypted = Crypt::decryptString($id);
+        //get data lup
+        $lup = LUPParent::find($decrypted); 
+        $this->authorize('requestcancel', $lup);   
+        $lup->cancel_notes = $request->cancel_notes;
+        $lup->cancel_requester = Auth::user()->username;
+        $lup->datecancel_request = now();         
+        $lup->lupstatus = 'ON CANCEL';                 
+        $lup->save();          
+            
+             //Send Notif to Reviewer
+                $urllup = '<a href="'.env('APP_URL').'/lup/'.$id.'/edit"'.' style="
+                background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
+                inline-block;text-decoration: none;"'.'>Go to LUP</a>';    
+                $duedate = date('d-M-Y',strtotime($lup->duedate_start));            
+                $mailData = [
+                    'code' => $lup->code,
+                    'documentname' => $lup->documentname,
+                    'lup_current' => $lup->lup_current,
+                    'lup_proposed' => $lup->lup_proposed,
+                    'lup_reason' => $lup->lup_reason,   
+                    'categorization' => $lup->categorization,                     
+                    'risk_assestment' => $lup->risk_assestment,  
+                    'urllup'=>$urllup,
+                    'duedate'=>$duedate,
+                    'name'=>Auth::user()->username,
+                    'note'=>$request->cancel_notes,
+                ];        
+            
+            if(!$lup->reviewer){
+                $emailreviewer = DB::table('approvals')
+                ->leftjoin('users as A', 'A.username','=','approvals.username')
+                ->select('approvals.*','A.email as emailreviewer')         
+                ->where('type','Reviewer LUP')
+                ->where('approvals.active',1)->get('emailreviewer');
+            $emailto = $emailreviewer->implode('emailreviewers',',');
+            }else{
+                $emailto = $lup->reviewers->email; 
+            }        
+            
+            Mail::to(env('MAIL_TO_TESTING'))           
+                ->send(new LUPRequestCancel($mailData,$lup));               
+
+            return back()->with('success','Success...Request Cancellation has been submitted');           
+        
+    }
+
+    //Review Cancel LUP
+    public function reviewcancellup(Request $request,$id)
+    {      
+        $decrypted = Crypt::decryptString($id);
+        //get data lup
+        $lup = LUPParent::find($decrypted); 
+        $this->authorize('reviewcancel', $lup);        
+        $lup->cancel_reviewer = Auth::user()->username;
+        $lup->cancel_approver = $request->approver;
+        $lup->datecancel_reviewed = now();         
+        $lup->lupstatus = 'ON CANCEL APPROVAL';                
+        $lup->save();          
+            
+             //Send Notif to Approver
+                $urllup = '<a href="'.env('APP_URL').'/lup/'.$id.'/edit"'.' style="
+                background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
+                inline-block;text-decoration: none;"'.'>Go to LUP</a>';    
+                $duedate = date('d-M-Y',strtotime($lup->duedate_start));            
+                $mailData = [
+                    'code' => $lup->code,
+                    'documentname' => $lup->documentname,
+                    'lup_current' => $lup->lup_current,
+                    'lup_proposed' => $lup->lup_proposed,
+                    'lup_reason' => $lup->lup_reason,   
+                    'categorization' => $lup->categorization,                     
+                    'risk_assestment' => $lup->risk_assestment,  
+                    'urllup'=>$urllup,
+                    'duedate'=>$duedate,
+                    'name'=>Auth::user()->username,
+                    'note'=>$lup->cancel_notes,
+                ];        
+            $emailto = $lup->cancel_approvers->email;         
+            Mail::to(env('MAIL_TO_TESTING'))           
+                ->send(new LUPRequestCancel($mailData,$lup)); 
+            return back()->with('success','Success...Cancellation has been submitted');       
+        
+    }
+
+    //Approved Cancel LUP
+    public function approvedcancellup(Request $request,$id)
+    {      
+        $decrypted = Crypt::decryptString($id);
+        //get data lup
+        $lup = LUPParent::find($decrypted); 
+        $this->authorize('approvedcancel', $lup);          
+        $lup->cancel_approver = Auth::user()->username;
+        $lup->datecancel_approved = now();         
+        $lup->lupstatus = 'CANCEL';      
+        $lup->approvercancel_notes = $request->approvercancel_notes;          
+        $lup->save();  
+
+        //update all status action to CANCEL
+        $actionupdates = DB::table('lup_actions')->where('code',$lup->code)
+        ->update(['actionstatus'=> "CANCEL"]);       
+             //Send Notif to Inisiator
+                $urllup = '<a href="'.env('APP_URL').'/lup/'.$id.'/edit"'.' style="
+                background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
+                inline-block;text-decoration: none;"'.'>Go to LUP</a>';    
+                $duedate = date('d-M-Y',strtotime($lup->duedate_start));            
+                $mailData = [
+                    'code' => $lup->code,
+                    'documentname' => $lup->documentname,
+                    'lup_current' => $lup->lup_current,
+                    'lup_proposed' => $lup->lup_proposed,
+                    'lup_reason' => $lup->lup_reason,   
+                    'categorization' => $lup->categorization,                     
+                    'risk_assestment' => $lup->risk_assestment,  
+                    'urllup'=>$urllup,
+                    'duedate'=>$duedate,
+                    'review'=>$lup->cancel_reviewer,
+                    'approver'=>$lup->cancel_approver,
+                    'note'=>$request->approvercancel_notes,
+                ];        
+            $emailto = $lup->inisiators->email;         
+            Mail::to(env('MAIL_TO_TESTING'))           
+                ->send(new LUPHasCancel($mailData,$lup)); 
+            return back()->with('success','Success...LUP has been Cancel');        
+    }
+    //Request Closing LUP
+    public function requestclosinglup(Request $request,$id)
+    {      
+        $decrypted = Crypt::decryptString($id);
+        //get data lup
+        $lup = LUPParent::find($decrypted); 
+        //$this->authorize('signinisiator', $lup);          
+        $lup->reviewer_closing = Auth::user()->username;
+        $lup->approver_closing = $request->approver; 
+        $lup->verified_a = $request->verified_a;    
+        $lup->verified_b = $request->verified_b;  
+        $lup->verified_c = $request->verified_c;   
+        $lup->closing_notes = $request->closing_notes;    
+        $lup->dateclosing_reviewer = now();         
+        $lup->lupstatus = 'ON CLOSING';                
+        $lup->save();          
+            
+             //Send Notif to Approver
+                $urllup = '<a href="'.env('APP_URL').'/lup/'.$id.'/edit"'.' style="
+                background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
+                inline-block;text-decoration: none;"'.'>Go to LUP</a>';    
+                $duedate = date('d-M-Y',strtotime($lup->duedate_start));            
+                $mailData = [
+                    'code' => $lup->code,
+                    'documentname' => $lup->documentname,
+                    'lup_current' => $lup->lup_current,
+                    'lup_proposed' => $lup->lup_proposed,
+                    'lup_reason' => $lup->lup_reason,   
+                    'categorization' => $lup->categorization,                     
+                    'risk_assestment' => $lup->risk_assestment,  
+                    'urllup'=>$urllup,
+                    'duedate'=>$duedate,
+                    'name'=>Auth::user()->username,
+                    'note'=>$request->closing_notes,
+                ];        
+            $emailto = $lup->closing_approvers->email;         
+            Mail::to(env('MAIL_TO_TESTING'))           
+                ->send(new LUPRequestCancel($mailData,$lup)); 
+            return back()->with('success','Success...Cancellation has been submitted');       
+        
+    }
 }

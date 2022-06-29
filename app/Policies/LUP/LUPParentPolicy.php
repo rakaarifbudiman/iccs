@@ -159,5 +159,30 @@ class LUPParentPolicy
                     : Response::deny('Failed... '.($lup->dateconfirmed ? 'LUP has been confirmed' :($lup->lupstatus==="APPROVED" ? 'You are not authorized ' :  'LUP status is '.$lup->lupstatus)));                  
     }
 
+    public function requestcancel(User $user, LUPParent $lup)
+    {                  
+        return ($lup->lupstatus != "CANCEL" AND $lup->lupstatus != "ON CANCEL" AND $lup->lupstatus != "ON CANCEL APPROVAL") 
+            && ($user->level >1 || $user->username==$lup->inisiator)
+                ? Response::allow()
+                    : Response::deny('Failed... You are not authorized');     
+       
+    }
+    public function reviewcancel(User $user, LUPParent $lup)
+    {                  
+        return ($lup->lupstatus == "ON CANCEL") 
+            && ($user->level==2)
+                ? Response::allow()
+                    : Response::deny('Failed... You are not authorized');     
+       
+    }
+    public function approvedcancel(User $user, LUPParent $lup)
+    {                  
+        return ($lup->lupstatus == "ON CANCEL APPROVAL") 
+            && ($user->level==3)
+                ? Response::allow()
+                    : Response::deny('Failed... You are not authorized'); 
+       
+    }
+
 
 }

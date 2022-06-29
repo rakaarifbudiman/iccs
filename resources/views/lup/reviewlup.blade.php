@@ -24,7 +24,42 @@
               <span class="badge bg-info badge-number">Categorization Adjustments ?</span>
             </a>          
           </li>          
-        @endcan        
+        @endcan  
+        @can('requestcancel',$lupparent)
+          <li class="breadcrumb-item active">
+            <a title="Request Cancel LUP" class="breadcrumb-item" href="#" data-bs-toggle="modal" data-bs-target="#modalrequestcancellup{{$lupparent->id}}"><i class="ri-close-circle-line"></i>         
+            </a>          
+          </li>  
+        @endcan 
+        @can('reviewcancel',$lupparent)
+          <li class="breadcrumb-item active">
+            <a title="Review Cancel LUP" class="breadcrumb-item" href="#" data-bs-toggle="modal" data-bs-target="#modalreviewcancellup{{$lupparent->id}}"><i class="bx bx-message-alt-x"></i>         
+            </a>          
+          </li>    
+        @endcan
+        @can('approvedcancel',$lupparent)
+          <li class="breadcrumb-item active">
+            <a title="Approved Cancel LUP" class="breadcrumb-item" href="#" data-bs-toggle="modal" data-bs-target="#modalapprovedcancellup{{$lupparent->id}}"><i class="bx bx-meteor"></i>         
+            </a>          
+          </li>  
+        @endcan 
+        <li class="breadcrumb-item active">
+          <a title="Request Closing LUP" class="breadcrumb-item" href="#" data-bs-toggle="modal" data-bs-target="#modalrequestclosinglup{{$lupparent->id}}"><i class="bx bx-meteor"></i>         
+          </a>          
+        </li>  
+        <li class="breadcrumb-item active">
+          <a title="Approved Closing LUP" class="breadcrumb-item" href="#" data-bs-toggle="modal" data-bs-target="#modalapprovedclosinglup{{$lupparent->id}}"><i class="bx bx-meteor"></i>         
+          </a>          
+        </li>  
+        
+        <li class="breadcrumb-item active">
+          <a href="#" title="Download Regulatory Cheat Sheet" onclick="window.open('/lup/downloadregcheatsheet','_blank').focus"><i class="ri-article-line"></i>            
+          </a>          
+        </li>    
+        <li class="breadcrumb-item active">
+          <a href="#" title="Download Tutorial" onclick="window.open('/lup/downloadpanduan','_blank').focus"><i class="ri-book-mark-line"></i>            
+          </a>          
+        </li>   
       </ol>
       <ol class="breadcrumb mt-0">
         <li class="breadcrumb-item ">Code : {{ $lupparent->code }}</li>
@@ -40,11 +75,8 @@
                   ON APPROVAL : LUP being review by QCJM <br>
                   APPROVED    : LUP has been approved , received No LUP, and fill action plan <br>
                   OPEN        : LUP has been confirmed by QCJM and waiting PIC action to close their action                  
-                </li>                   
-                
-              </ul><!-- End Messages Dropdown Items -->
-        
-          
+                </li>                
+              </ul><!-- End Messages Dropdown Items -->         
         </li>
         <li class="breadcrumb-item active">No. LUP : {{ $lupparent->nolup }}</li>
         <li class="breadcrumb-item active">Rev : {{ $lupparent->revision }}</li>

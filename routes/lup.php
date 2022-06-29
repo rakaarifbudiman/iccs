@@ -28,6 +28,9 @@ use App\Http\Controllers\LUP\RelatedDepartmentController;
     Route::put('/lup/{id}/updatecategorization', [LUPParentController::class, 'updatecategorization']);
     Route::put('/lup/{id}/updatenotif', [LUPParentController::class, 'updatenotif']);
     Route::put('/lup/{id}/deletenotif', [LUPParentController::class, 'deletenotif']);
+    Route::get('/lup/downloadregcheatsheet', [LUPParentController::class, 'downloadregcheatsheet']);
+    Route::get('/lup/downloadpanduan', [LUPParentController::class, 'downloadpanduan']);
+    Route::put('/lup/{id}/requestcancellup', [LUPParentController::class, 'requestcancellup']);
     
     /* lup related department */ 
     Route::get('/lup/{id}/signinisiator', [LUPParentController::class, 'signinisiator']);  
@@ -122,7 +125,8 @@ Route::group(['middleware' => 'reviewer'], function() {
     Route::put('/lup/action/{id}/rejectevidence', [lupActionController::class, 'rejectevidence']);
     Route::put('/lup/action/{id}/reviewextension', [LUPActionController::class, 'reviewextension']);    
     Route::put('/lup/action/{id}/approvedcancelaction', [lupActionController::class, 'approvedcancelaction']);
-       
+    Route::put('/lup/{id}/reviewcancellup', [LUPParentController::class, 'reviewcancellup']);   
+    Route::put('/lup/{id}/requestclosinglup', [LUPParentController::class, 'requestclosinglup']);   
 
 });
 
@@ -133,4 +137,6 @@ Route::group(['middleware' => 'approver'], function() {
     Route::put('/lup/{id}/signreviewerqcjm', [LUPParentController::class, 'signreviewerqcjm']);  
     Route::put('/lup/action/{id}/approvedextension', [LUPActionController::class, 'approvedextension']); 
     Route::put('/lup/action/{id}/rejectextension', [lupActionController::class, 'rejectextension']);
+    Route::put('/lup/{id}/approvedcancellup', [LUPParentController::class, 'approvedcancellup']);
+    Route::put('/lup/{id}/closinglup', [LUPParentController::class, 'closinglup']);  
 });

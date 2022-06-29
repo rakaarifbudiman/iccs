@@ -33,6 +33,22 @@ class ICCSPathSeeder extends Seeder
         ]);
         DB::table('iccsfilepaths')->insert([
                 
+            'seq' => 1,
+            'filepath' => 'public/panduan/List-Pembagian-Produk-RPV.xls',
+            'description' => 'Regulatory Cheat Sheet',
+            'notes' => 'file path for Regulatory Cheat Sheet',           
+
+        ]);
+        DB::table('iccsfilepaths')->insert([
+                
+            'seq' => 1,
+            'filepath' => 'public/panduan/Tutorial-Penggunaan-ICCS.pdf',
+            'description' => 'Tutorial ICCS',
+            'notes' => 'Tutorial ICCS',           
+
+        ]);
+        DB::table('iccsfilepaths')->insert([
+                
             'seq' => 2,
             'filepath' => 'public/2-File/2-LUPD/1-Lampiran LUPD',
             'description' => 'Lampiran LUPD',

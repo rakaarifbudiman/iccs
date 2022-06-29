@@ -99,6 +99,10 @@ class LUPParent extends Model
     {
         return $this->hasOne(User::class,'username','cancel_approver');
     }
+    public function closing_approvers()
+    {
+        return $this->hasOne(User::class,'username','approver_closing');
+    }
     public function GetNewCodeAttribute()
     {
         $lastid = $this->where('year',date('y'))->max('code');

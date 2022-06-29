@@ -46,14 +46,25 @@
 	</style>
 </head>
 <body>
-	<header>
-		<img style="float: right; height: 50px; margin-top: 15px;" src="assets/img/logo-sgh.PNG" />
-		<img style="height: 80px; margin-top: 15px;" src="{{$qrcodepath}}" />  
-		<h3 style="text-align: center; float:right;padding-top: 0px; font-size: 16;background-color: #233ea1;color:#f1f1f1"> 
-		    <strong>Change Control # {{ $lup->code }}<br>No : {{ $lup->nolup }}</strong>
-        </h3>	
+	<header>	
+		<table style="height: 127px; width: 100.553%; vertical-align: top;">
+			<tbody>
+				<tr style="height: 18px; border-style: none;">
+					<td style="width: 25%; height: 18px; border-style: none; vertical-align: top;" >
+						<img style="height: 90px; margin-top: 15px;" src="assets/img/logo-sgh.PNG" />	
+					</td>
+					<td style="width: 20%; height: 18px; border-style: none; vertical-align: bottom;">
+						<h3 style="text-align: center; padding-top: 0px; font-size: 16;background-color: #004890;color:#ffffff"> 
+							<strong>Change Control # {{ $lup->code }}<br>No : {{ $lup->nolup }}</strong>
+						</h3>
+					</td>
+					<td style="width: 25%; height: 18px; border-style: none; vertical-align: top;">
+						<img style="height: 80px;float: right; margin-top: 15px;" src="{{$qrcodepath}}" />  
+					</td>					
+				</tr>
+			</tbody>
+		</table>
 	</header>
-<p style="clear:both"></p>
 <div name="details">
 	<table style="height: 127px; width: 100.553%; border-collapse: collapse; vertical-align: top;">
 	<tbody>
@@ -67,8 +78,8 @@
 			<td style="width: 47.2314%; height: 18px; border-style: none; vertical-align: top;text-align:right"><small>{{ $lup->inisiator ? $lup->inisiators->department :'' }}</small></td>
 		</tr>
 	<tr style="height: 18px; border-style: none;">
-		<td style="width: 32.4514%; height: 18px; border-bottom: double;background-color: #233ea1;  color:#dfe6ff"><strong>I. Change Initiation</strong></td>
-		<td style="width: 32.4514%; height: 18px; border-bottom: double; background-color: #233ea1;  color:#dfe6ff; text-align:right" colspan="6"><small>Date Created : @date($lup->date_input,'d-M-y') | Date Approved : @date($lup->dateapproved,'d-M-y') | Rev : {{ $lup->revision }} | Status : {{ $lup->lupstatus }}</td>
+		<td style="width: 32.4514%; height: 18px; border-bottom: double;background-color: #004890;  color:#ffffff"><strong>I. Change Initiation</strong></td>
+		<td style="width: 32.4514%; height: 18px; border-bottom: double; background-color: #004890;  color:#ffffff; text-align:right" colspan="6"><small>Date Created : @date($lup->date_input,'d-M-y') | Date Approved : @date($lup->dateapproved,'d-M-y') | Rev : {{ $lup->revision }} | Status : {{ $lup->lupstatus }}</td>
 	</tr>
     <tr style="height: 18px; border-style: none;">
 		<td style="width: 32%; height: 18px; border-style: none; vertical-align: top;" ><strong><small>Title/Short Description</small></strong></td>
@@ -101,8 +112,7 @@
                 @date($lup->duedate_start,'d-M-y') until @date($lup->duedate_finish,'d-M-y')
             @else
                 @date($lup->duedate_start,'d-M-y')
-            @endif
-            
+            @endif            
         </small>
         </td>
 	</tr>
@@ -121,10 +131,10 @@
 		<td style="width: 3.1746%; height: 36px; border-style: none; vertical-align: top;" ><small>:</small></td>
 		<td style="width: 25.1484%; height: 36px; border-style: none; vertical-align: top; text-align:justify;" colspan="5"><small>{!! $lup->lup_reason !!}</small></td>
 	</tr>
-    <tr style="height: 36px; border-style: none;">
-		<td style="width: 32%; height: 36px; border-style: none; vertical-align: top;"><strong><small>Other Product / Material Impacted </small></strong></td>
-		<td style="width: 3.1746%; height: 36px; border-style: none; vertical-align: top;" ><small>:</small></td>
-		<td style="width: 25.1484%; height: 36px; border-style: none; vertical-align: top; text-align:justify;" colspan="5"><small>{{ $lup->relatedmaterial->count() > 0 ? 'Yes' : 'No'  }}</small></td>
+    <tr style="height: 18px; border-style: none;">
+		<td style="width: 32%; height: 18px; border-style: none; vertical-align: top;"><strong><small>Other Product Impacted </small></strong></td>
+		<td style="width: 3.1746%; height: 18px; border-style: none; vertical-align: top;" ><small>:</small></td>
+		<td style="width: 25.1484%; height: 18px; border-style: none; vertical-align: top; text-align:justify;" colspan="5"><small>{{ $lup->relatedmaterial->count() > 0 ? 'Yes' : 'No'  }}</small></td>
 	</tr>
     @if($lup->relatedmaterial->count() > 0 )
         <tr style="height: 36px; border-style: none;">
@@ -132,7 +142,7 @@
                 <div name="relatedmaterial">
                     <table style="width: 100%; border-collapse: collapse; " border="1">
                         <tbody>
-                        <tr style="background-color: #6082ff;  color:#dfe6ff">
+                        <tr style="background-color: #0072e5;  color:#ffffff">
                             <th style="width: 4.39716%;">No</th>
                             <th style="width: 10%;">Part Number</th>
                             <th style="width: 35.6028%;">Description</th>
@@ -166,7 +176,7 @@
                 <div name="relatedutility">
                     <table style="width: 100%; border-collapse: collapse; " border="1">
                         <tbody>
-                        <tr style="background-color: #6082ff;  color:#dfe6ff">
+                        <tr style="background-color: #0072e5;  color:#ffffff">
                             <th style="width: 4.39716%;">No</th>
                             <th style="width: 10%;">Area / ID Number</th>
                             <th style="width: 35.6028%;">Description</th>                                  
@@ -185,10 +195,10 @@
             </td>
         </tr>
     @endif
-    <tr style="height: 36px; border-style: none;">
-		<td style="width: 32%; height: 36px; border-style: none; vertical-align: top;"><strong><small>Revise Document Needed</small></strong></td>
-		<td style="width: 3.1746%; height: 36px; border-style: none; vertical-align: top;" ><small>:</small></td>
-		<td style="width: 25.1484%; height: 36px; border-style: none; vertical-align: top; text-align:justify;" colspan="5"><small>{{ $lup->relateddocument->count() > 0 ? 'Yes' : 'No'  }}</small></td>
+    <tr style="height: 18px; border-style: none;">
+		<td style="width: 32%; height: 18px; border-style: none; vertical-align: top;"><strong><small>Revise Document Needed</small></strong></td>
+		<td style="width: 3.1746%; height: 18px; border-style: none; vertical-align: top;" ><small>:</small></td>
+		<td style="width: 25.1484%; height: 18px; border-style: none; vertical-align: top; text-align:justify;" colspan="5"><small>{{ $lup->relateddocument->count() > 0 ? 'Yes' : 'No'  }}</small></td>
 	</tr>
     @if($lup->relateddocument->count() > 0)
         <tr style="height: 36px; border-style: none;">
@@ -196,7 +206,7 @@
                 <div name="relateddocument">
                     <table style="width: 100%; border-collapse: collapse; " border="1">
                         <tbody>
-                        <tr style="background-color: #6082ff;  color:#dfe6ff">
+                        <tr style="background-color: #0072e5;  color:#ffffff">
                             <th style="width: 4.39716%;">No</th>
                             <th style="width: 10%;">Type</th>
                             <th style="width: 35.6028%;">Document Number</th>     
@@ -217,10 +227,10 @@
             </td>
         </tr>
     @endif
-    <tr style="height: 36px; border-style: none;">
-		<td style="width: 32%; height: 36px; border-style: none; vertical-align: top;"><strong><small>Supportive Attachments</small></strong></td>
-		<td style="width: 3.1746%; height: 36px; border-style: none; vertical-align: top;" ><small>:</small></td>
-		<td style="width: 25.1484%; height: 36px; border-style: none; vertical-align: top; text-align:justify;" colspan="5"><small>{{ $lup->lupfile->count() > 0 ? 'Yes' : 'No'  }}</small></td>
+    <tr style="height: 18px; border-style: none;">
+		<td style="width: 32%; height: 18px; border-style: none; vertical-align: top;"><strong><small>Supportive Attachments</small></strong></td>
+		<td style="width: 3.1746%; height: 18px; border-style: none; vertical-align: top;" ><small>:</small></td>
+		<td style="width: 25.1484%; height: 18px; border-style: none; vertical-align: top; text-align:justify;" colspan="5"><small>{{ $lup->lupfile->count() > 0 ? 'Yes' : 'No'  }}</small></td>
 	</tr>
     @if($lup->lupfile->count() > 0)
         <tr style="height: 36px; border-style: none;">
@@ -228,7 +238,7 @@
                 <div name="attachment">
                     <table style="width: 100%; border-collapse: collapse; " border="1">
                         <tbody>
-                        <tr style="background-color: #6082ff;  color:#dfe6ff">
+                        <tr style="background-color: #0072e5;  color:#ffffff">
                             <th style="width: 4.39716%;">No</th>
                             <th style="width: 10%;">Attachment Title</th>
                             <th style="width: 35.6028%;">Date</th>     
@@ -257,8 +267,8 @@
 	<table style="height: 127px; width: 100.553%; border-collapse: collapse; vertical-align: top; margin-top:10px">
 	<tbody>
 	<tr style="height: 18px; border-style: none;">
-		<td style="height: 18px; border-bottom: double;background-color: #233ea1;  color:#dfe6ff" colspan="2"><strong>II. Categorization</strong></td>
-		<td style="height: 18px; border-bottom: double; text-align:right;background-color: #233ea1;  color:#dfe6ff" colspan="5"><small># {{ $lup->code}} | No : {{ $lup->nolup}} | Rev : {{ $lup->revision }} | Status : {{ $lup->lupstatus }}</td>
+		<td style="height: 18px; border-bottom: double;background-color: #004890;  color:#ffffff" colspan="2"><strong>II. Categorization</strong></td>
+		<td style="height: 18px; border-bottom: double; text-align:right;background-color: #004890;  color:#ffffff" colspan="5"><small># {{ $lup->code}} | No : {{ $lup->nolup}} | Rev : {{ $lup->revision }} | Status : {{ $lup->lupstatus }}</td>
 	</tr>    
     <tr style="height: 18px; border-style: none;">
 		<td style="width: 80%; height: 18px; border-style: none; vertical-align: top;" ><strong><small>Product/Material Quality Impact</small></strong></td>
@@ -350,8 +360,8 @@
 	<table style="height: 127px; width: 100.553%; border-collapse: collapse; vertical-align: top; margin-top:10px">
 	<tbody>
 	<tr style="height: 18px; border-style: none;">
-		<td style="height: 18px; border-bottom: double;background-color: #233ea1;  color:#dfe6ff" colspan="2"><strong>III. Review & Comments</strong></td>	
-        <td style="height: 18px; border-bottom: double; text-align:right;background-color: #233ea1;  color:#dfe6ff" colspan="5"><small># {{ $lup->code}} | No : {{ $lup->nolup}} | Rev : {{ $lup->revision }} | Status : {{ $lup->lupstatus }}</td>	
+		<td style="height: 18px; border-bottom: double;background-color: #004890;  color:#ffffff" colspan="2"><strong>III. Review & Comments</strong></td>	
+        <td style="height: 18px; border-bottom: double; text-align:right;background-color: #004890;  color:#ffffff" colspan="5"><small># {{ $lup->code}} | No : {{ $lup->nolup}} | Rev : {{ $lup->revision }} | Status : {{ $lup->lupstatus }}</td>	
 	</tr>   
     <tr style="height: 18px; border-style: none;">
 		<td style="width: 32%; height: 18px; border-style: none; vertical-align: top;" colspan="2"><strong><small>a. External Parties</small></strong></td>
@@ -432,8 +442,8 @@
 	<table style="height: 127px; width: 100.553%; border-collapse: collapse; vertical-align: top; margin-top:10px">
 		<tbody>
 		<tr style="height: 18px; border-style: none;">
-			<td style="height: 18px; border-bottom: double;background-color: #233ea1;  color:#dfe6ff" colspan="2"><strong>III. Review & Comments</strong></td>	
-			<td style="height: 18px; border-bottom: double; text-align:right;background-color: #233ea1;  color:#dfe6ff" colspan="5"><small># {{ $lup->code}} | No : {{ $lup->nolup}} | Rev : {{ $lup->revision }} | Status : {{ $lup->lupstatus }}</td>	
+			<td style="height: 18px; border-bottom: double;background-color: #004890;  color:#ffffff" colspan="2"><strong>III. Review & Comments</strong></td>	
+			<td style="height: 18px; border-bottom: double; text-align:right;background-color: #004890;  color:#ffffff" colspan="5"><small># {{ $lup->code}} | No : {{ $lup->nolup}} | Rev : {{ $lup->revision }} | Status : {{ $lup->lupstatus }}</td>	
 		</tr>  
 	<tr style="height: 18px; border-style: none;">
 		<td style="width: 32%; height: 18px; border-style: none; vertical-align: top;" colspan="2"><strong><small>d. Related Department  </small></strong></td>
@@ -536,8 +546,8 @@
 	<table style="height: 127px; width: 100.553%; border-collapse: collapse; vertical-align: top; margin-top:10px">
 	<tbody>
 	<tr style="height: 18px; border-style: none;">
-		<td style="height: 18px; border-bottom: double;background-color: #233ea1;  color:#dfe6ff" colspan="2"><strong>IV. Action Plan</strong></td>	
-        <td style="height: 18px; border-bottom: double; text-align:right;background-color: #233ea1;  color:#dfe6ff" colspan="5"><small># {{ $lup->code}} | No : {{ $lup->nolup}} | Rev : {{ $lup->revision }} | Status : {{ $lup->lupstatus }}</td>	
+		<td style="height: 18px; border-bottom: double;background-color: #004890;  color:#ffffff" colspan="2"><strong>IV. Action Plan</strong></td>	
+        <td style="height: 18px; border-bottom: double; text-align:right;background-color: #004890;  color:#ffffff" colspan="5"><small># {{ $lup->code}} | No : {{ $lup->nolup}} | Rev : {{ $lup->revision }} | Status : {{ $lup->lupstatus }}</td>	
 	</tr>   
 	<tr style="height: 18px; border-style: none;">
 		<td style="width: 32%; height: 18px; border-style: none; vertical-align: top;" colspan="2"><strong><small>Action(s) Required : {{$lup->lupaction->count()>0 ? 'Yes':'No'}}</small></strong></td>
@@ -553,7 +563,7 @@
                 <div name="action">
                     <table style="width: 100%; border-collapse: collapse; " border="1">
                         <tbody>
-							<tr style="background-color: #6082ff;  color:#dfe6ff">
+							<tr style="background-color: #0072e5;  color:#ffffff">
 								<th style="width: 4.39716%;">No</th>
 								<th style="width: 35.6028%;">Description</th>
 								<th style="width: 20%;">Department</th>                            
@@ -625,8 +635,8 @@
 	<table style="height: 127px; width: 100.553%; border-collapse: collapse; vertical-align: top; margin-top:10px">
 		<tbody>
 			<tr style="height: 18px; border-style: none;">
-				<td style="height: 18px; border-bottom: double;background-color: #233ea1;  color:#dfe6ff" colspan="3"><strong>V. Closing Change Control Verification and Approval </strong></td>	
-				<td style="height: 18px; border-bottom: double; text-align:right;background-color: #233ea1;  color:#dfe6ff" colspan="4"><small># {{ $lup->code}} | No : {{ $lup->nolup}} | Rev : {{ $lup->revision }} | Status : {{ $lup->lupstatus }}</td>	
+				<td style="height: 18px; border-bottom: double;background-color: #004890;  color:#ffffff" colspan="3"><strong>V. Closing Change Control Verification and Approval </strong></td>	
+				<td style="height: 18px; border-bottom: double; text-align:right;background-color: #004890;  color:#ffffff" colspan="4"><small># {{ $lup->code}} | No : {{ $lup->nolup}} | Rev : {{ $lup->revision }} | Status : {{ $lup->lupstatus }}</td>	
 			</tr>   
 			<tr style="height: 18px; border-style: none;">
 				<td style="width: 32%; height: 18px; border-style: none; vertical-align: top;" colspan="2"><strong><small>Verification</small></strong></td>
@@ -698,8 +708,8 @@
 	<table style="height: 127px; width: 100.553%; border-collapse: collapse; vertical-align: top; margin-top:10px">
 		<tbody>
 			<tr style="height: 18px; border-style: none;">
-				<td style="height: 18px; border-bottom: double;background-color: #233ea1;  color:#dfe6ff" colspan="3"><strong>VI. Cancelation Request</strong></td>	
-				<td style="height: 18px; border-bottom: double; text-align:right;background-color: #233ea1;  color:#dfe6ff" colspan="4"><small># {{ $lup->code}} | No : {{ $lup->nolup}} | Rev : {{ $lup->revision }} | Status : {{ $lup->lupstatus }}</td>	
+				<td style="height: 18px; border-bottom: double;background-color: #004890;  color:#ffffff" colspan="3"><strong>VI. Cancelation Request</strong></td>	
+				<td style="height: 18px; border-bottom: double; text-align:right;background-color: #004890;  color:#ffffff" colspan="4"><small># {{ $lup->code}} | No : {{ $lup->nolup}} | Rev : {{ $lup->revision }} | Status : {{ $lup->lupstatus }}</td>	
 			</tr>   
 			<tr style="height: 18px; border-style: none;">
 				<td style="width: 32%; height: 18px; border-style: none; vertical-align: top;" colspan="2"><strong><small>Requested by</small></strong></td>
