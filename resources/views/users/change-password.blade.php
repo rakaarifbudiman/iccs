@@ -39,7 +39,7 @@
                 
               <div class="tab-pane fade show active pt-3" id="profile-change-password">
                 <!-- Change Password Form -->
-                <form action="/users-profile/{{$user->id}}/changepassword" method="post" id="myForm">                
+                <form action="/users-profile/{{$users->id}}/changepassword" method="post" id="myForm">                
                   @csrf
                   @method('put')
                   

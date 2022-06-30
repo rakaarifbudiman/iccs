@@ -27,4 +27,10 @@ class UserPolicy
                 ? Response::allow()
                     : Response::deny('Failed... You are not authorized ');                  
     }
+    public function changepassword(User $user, User $users)
+    {                             
+        return ($user->username==$users->username)
+                ? Response::allow()
+                    : Response::deny('Failed... You are not authorized ');                  
+    }
 }

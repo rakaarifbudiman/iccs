@@ -23,11 +23,11 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\DatabaseRule;
 use Illuminate\Validation\ValidationException;
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class UserController extends Controller
 {
-   
+    use AuthorizesRequests;     
     /**
      * Display a listing of the resource.
      *
@@ -36,30 +36,7 @@ class UserController extends Controller
     public function index()
     {
         $users = user::all();
-	    return view('users.listusers', ['user' => $users]);
-        
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\User  $users
-     * @return \Illuminate\Http\Response
-     */
-    public function show(User $users)
-    {
-        //
+	    return view('users.listusers', ['user' => $users]);        
     }
 
     /**
@@ -71,76 +48,23 @@ class UserController extends Controller
     public function edit($id)
     {
         $decrypted = Crypt::decryptString($id);        
-        $users = user::find($decrypted);
-        $userslogin = Auth::user()->id;
-        $levellogin = Auth::user()->level;
-        
-        //hidden field at Profile Edit Form         
-        if ($userslogin==$decrypted or $levellogin>1){
-            $hidden1 = '';
-            $hidden2 = '';
-        }else{
-            $hidden1 = 'disabled';
-            $hidden2 = 'disabled';
-        }
-        //hidden button activate user or deactivate user
-        if ($levellogin>1){
-            if ($users->active==0){
-                $hidebutton = '';
-                $buttoncaption = 'Activate User ?';
-                $buttoncolor = 'btn btn-success';
-                $buttonlink = '/users-profile/activate/'.$id;
-
-            }else{
-                $hidebutton = '';
-                $buttoncaption = 'Deactivate User ?';
-                $buttoncolor = 'btn btn-danger';
-                $buttonlink = '/users-profile/deactivate/'.$id;
-            }
-            
-        }else{
-            $hidebutton = 'hidden';
-            $buttoncaption = '';
-            $buttoncolor = '';
-            $buttonlink = '';
-        }
-        // disable Nav Tab if user level = 'user'
-        if ($users->level<2){
-            $disabled = 'disabled';
-        }else{
-            $disabled = '';
-        }
-
+        $users = user::find($decrypted);     
+        $this->authorize('update',$users);      
         $listgrades = Grade::all();
-        
-
-        $listusers = User::where([['active',1]])         
-        ->get();
+        $listusers = User::where([['active',1]])->get();
         $listapprovers = $listusers->where('level',3);        
         $listleaders = User::where([['active',1],['grade','Supervisor'],['department',$users->department]])
-        ->orWhere([['active',1],['grade','Manager'],['department',$users->department]])
-        ->orWhere([['active',1],['grade','Director'],['department',$users->department]])         
-        ->get();
-        
-        $listdepartments = Department::all();
-        
-        
-    
+            ->orWhere([['active',1],['grade','Manager'],['department',$users->department]])
+            ->orWhere([['active',1],['grade','Director'],['department',$users->department]])         
+            ->get();        
+        $listdepartments = Department::all();    
 	    return view('users.users-profile', [
-        'user' => $users,        
-        'disabled'=>$disabled,        
-        'hidden1'=>$hidden1,
-        'hidden2'=>$hidden2,
-        'hidebutton'=>$hidebutton,
-        'buttoncaption'=>$buttoncaption,
-        'buttoncolor'=>$buttoncolor,
-        'buttonlink'=>$buttonlink,
+        'id'=>$id,
+        'users' => $users,              
         'listleaders'=>$listleaders,
         'listdepartments'=>$listdepartments,
         'listgrades'=>$listgrades        
-        ]);
-    
-        
+        ]);        
     }
 
     /**
@@ -150,11 +74,11 @@ class UserController extends Controller
      * @param  \App\Models\User  $users
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id,User $users)
     {      
-        $users = User::find($id);  
-        if ($users->email == $request->email){
-            
+        $users = User::find($id);
+        $this->authorize('update',$users);  
+        if ($users->email == $request->email){            
             $request->validate([            
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255', 'regex:/^[AZa-z\.]*@(sohoglobalhealth)[.](com)$/'],                      
@@ -226,12 +150,13 @@ class UserController extends Controller
      * @param  \App\Models\User  $users
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id,User $users)
     {
         $userslogin = Auth::user()->id;
         $levellogin = Auth::user()->level;   
         $decrypted = Crypt::decryptString($id);
-        $users = user::find($decrypted);        
+        $users = user::find($decrypted);
+        $this->authorize('update',$users);          
         if ($levellogin>1){
             $users->delete();            
                 return back()->with('success','User has been deleted!'); 
@@ -240,39 +165,35 @@ class UserController extends Controller
         }
     }
 
-    public function deactivate(Request $request, $id)
+    public function deactivate(Request $request, $id,User $users)
     {
        
         $decrypted = Crypt::decryptString($id);
-        $users = User::find($decrypted);                             
+        $users = User::find($decrypted);       
+        $this->authorize('update',$users);                        
         $users->active = 0;                        
         $users->save();
+                                  
+            auditusers($users,Auth::user()->username,'Deactivate User',$users->username,
+            'users','active','1','0' );
+       
         return back()->with('success','User has been deactivated!');           
     }  
         
-    public function activate(Request $request, $id)
+    public function activate(Request $request, $id,User $users)
     {
         $decrypted = Crypt::decryptString($id);
         $users = User::find($decrypted);
+        $this->authorize('update',$users);  
         if(!$users->name || !$users->email || !$users->grade || !$users->department || !$users->leader){            
             return back()->with('error','Please fill all data');
         }else{
             $oldactive = $users->active;                   
             $users->active = 1;                               
-            $users->save();
-            if ($users->waschanged('active')==True){
-                DB::table('auditusers')->insert([
+            $users->save();                                 
+                auditusers($users,Auth::user()->username,'User Activation',$users->username,
+                'users','active','0','1' );            
             
-                    'change_by' => Auth::user()->username,        
-                    'activity' => 'User Activation',
-                    'recordid' => $users->username,
-                    'sourcetable' => 'users',
-                    'sourcefield' => 'active',
-                    'beforevalue' => 0,
-                    'aftervalue' => 1,
-                    "created_at" =>  \Carbon\Carbon::now(), # new \Datetime()
-                ]);
-            }
             $urllogin = '<a href="'.env('APP_URL').'" style="
             background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
             inline-block;text-decoration: none;"'.'>Login ICCS</a>'; 
@@ -297,7 +218,7 @@ class UserController extends Controller
         }
     }           
 
-    public function changepassword(Request $request, $id)
+    public function changepassword(Request $request, $id,User $users)
     {        
         $request->validate([            
             'password' => ['required', 'confirmed', Password::min(8)
@@ -310,97 +231,31 @@ class UserController extends Controller
         ]);
 
         $users = User::find($id); 
+        $this->authorize('changepassword',$users);  
         $users->password = Hash::make($request->password);                                     
         $users->save();  
-                                      
-        return back()->with('success','Password has been changed!');           
-
+        if($users->wasChanged('password')){                            
+            auditusers($users,Auth::user()->username,'Change Password',$users->username,
+            'users','Password','','' );
+        }                              
+        return back()->with('success','Password has been changed!');
     }
 
-    public function editpassword($id,$tab)
+    public function editpassword($id,$tab,User $users)
     {
         $decrypted = Crypt::decryptString($id);        
         $users = user::find($decrypted);
-              
-        if ($users->active==0){
-            $active = 'No';
-        }else{
-            $active = 'Yes';
-        }
-
-        if ($users->level==1){
-            $level = 'User';
-        }elseif($users->level==2){
-            $level = 'Reviewer';
-        }elseif($users->level==3){
-            $level = 'Approver';
-        }elseif($users->level==4){
-            $level = 'Super User';
-        }
-
-        $userslogin = Auth::user()->id;
-        $levellogin = Auth::user()->level;
-        //hidden field at Profile Edit Form  
-        if($tab=="changepassword"){
-            if ($userslogin==$decrypted or $levellogin>1){
-                $hidden1 = 'disabled';
-                $hidden2 = '';
-            }else{
-                $hidden1 = 'disabled';
-                $hidden2 = 'disabled';
-            }
-        }else{
-            $hidden1 = 'disabled';
-            $hidden2 = 'disabled';
-        }
-           
-        //hidden button activate user or deactivate user
-        if ($levellogin>1){
-            if ($users->active==0){
-                $hidebutton = '';
-                $buttoncaption = 'Activate User ?';
-                $buttoncolor = 'btn btn-success';
-                $buttonlink = '/users-profile/activate/'.$id;
-
-            }else{
-                $hidebutton = '';
-                $buttoncaption = 'Deactivate User ?';
-                $buttoncolor = 'btn btn-danger';
-                $buttonlink = '/users-profile/deactivate/'.$id;
-            }
-            
-        }else{
-            $hidebutton = 'hidden';
-            $buttoncaption = '';
-            $buttoncolor = '';
-            $buttonlink = '';
-        }
-        // disable Nav Tab if user level = 'user'
-        if ($users->level<2){
-            $disabled = 'disabled';
-        }else{
-            $disabled = '';
-        }
-
+        $this->authorize('changepassword',$users);
         $listgrades = Grade::all();
-
         $listleaders = User::where([['active',1],['grade','Supervisor']])
         ->orWhere([['active',1],['grade','Manager']])
         ->orWhere([['active',1],['grade','Director']])         
         ->get();
         
-        $listdepartments = Department::all();        
+        $listdepartments = Department::all();   
             
-                return view('users.change-password', ['user' => $users,
-                'active' =>$active,
-                'disabled'=>$disabled,
-                'level'=>$level,
-                'hidden1'=>$hidden1,
-                'hidden2'=>$hidden2,
-                'hidebutton'=>$hidebutton,
-                'buttoncaption'=>$buttoncaption,
-                'buttoncolor'=>$buttoncolor,
-                'buttonlink'=>$buttonlink,
+                return view('users.change-password', [
+                'users' => $users,                
                 'listleaders'=>$listleaders,
                 'listdepartments'=>$listdepartments,
                 'listgrades'=>$listgrades        
