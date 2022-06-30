@@ -10,7 +10,7 @@
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="assets/img/logoiccstext.png" rel="icon">
+  <link href="assets/img/logoiccsnew.svg" rel="icon">
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
@@ -59,7 +59,7 @@
                 <div class="pt-4 pb-2">
                   <div class="d-flex justify-content-center py-1">
                   <a href="/" class="logo d-flex align-items-center w-auto">
-                    <img src="assets/img/logoiccstext.png" alt="">
+                    <img src="assets/img/logoiccsnew.svg" alt="">
                     <span class="d-none d-lg-block">ICCS</span>
                   </a>
                 </div><!-- End Logo -->

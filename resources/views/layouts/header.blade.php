@@ -2,7 +2,7 @@
   
   <div class="d-flex align-items-center justify-content-between text-indigo">
     <a href="/" class="logo d-flex align-items-center">
-      <img src="/assets/img/logoiccstext.png" alt="">
+      <img src="/assets/img/logoiccsnew.svg" alt="">
       <span class="d-none d-lg-block text-indigo">ICCS</span>
     </a>
     <i class="bi bi-list toggle-sidebar-btn"></i>
