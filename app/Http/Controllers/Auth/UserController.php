@@ -17,6 +17,7 @@ use App\Mail\Auth\NotifyUserActive;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -34,8 +35,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = user::all();
-	    return view('users.listusers', ['user' => $user]);
+        $users = user::all();
+	    return view('users.listusers', ['user' => $users]);
         
     }
 
@@ -53,10 +54,10 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\User  $user
+     * @param  \App\Models\User  $users
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show(User $users)
     {
         //
     }
@@ -64,34 +65,18 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\User  $user
+     * @param  \App\Models\User  $users
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
         $decrypted = Crypt::decryptString($id);        
-        $user = user::find($decrypted);
-
-        if ($user->active==0){
-            $active = 'No';
-        }else{
-            $active = 'Yes';
-        }
-
-        if ($user->level==1){
-            $level = 'User';
-        }elseif($user->level==2){
-            $level = 'Reviewer';
-        }elseif($user->level==3){
-            $level = 'Approver';
-        }elseif($user->level==4){
-            $level = 'Super User';
-        }
-
-        $userlogin = Auth::user()->id;
+        $users = user::find($decrypted);
+        $userslogin = Auth::user()->id;
         $levellogin = Auth::user()->level;
+        
         //hidden field at Profile Edit Form         
-        if ($userlogin==$decrypted or $levellogin>1){
+        if ($userslogin==$decrypted or $levellogin>1){
             $hidden1 = '';
             $hidden2 = '';
         }else{
@@ -100,7 +85,7 @@ class UserController extends Controller
         }
         //hidden button activate user or deactivate user
         if ($levellogin>1){
-            if ($user->active==0){
+            if ($users->active==0){
                 $hidebutton = '';
                 $buttoncaption = 'Activate User ?';
                 $buttoncolor = 'btn btn-success';
@@ -120,7 +105,7 @@ class UserController extends Controller
             $buttonlink = '';
         }
         // disable Nav Tab if user level = 'user'
-        if ($user->level<2){
+        if ($users->level<2){
             $disabled = 'disabled';
         }else{
             $disabled = '';
@@ -132,19 +117,18 @@ class UserController extends Controller
         $listusers = User::where([['active',1]])         
         ->get();
         $listapprovers = $listusers->where('level',3);        
-        $listleaders = User::where([['active',1],['grade','Supervisor'],['department',$user->department]])
-        ->orWhere([['active',1],['grade','Manager'],['department',$user->department]])
-        ->orWhere([['active',1],['grade','Director'],['department',$user->department]])         
+        $listleaders = User::where([['active',1],['grade','Supervisor'],['department',$users->department]])
+        ->orWhere([['active',1],['grade','Manager'],['department',$users->department]])
+        ->orWhere([['active',1],['grade','Director'],['department',$users->department]])         
         ->get();
         
         $listdepartments = Department::all();
         
         
-    if ($userlogin==$decrypted or $levellogin>1){
-	    return view('users.users-profile', ['user' => $user,
-        'active' =>$active,
-        'disabled'=>$disabled,
-        'level'=>$level,
+    
+	    return view('users.users-profile', [
+        'user' => $users,        
+        'disabled'=>$disabled,        
         'hidden1'=>$hidden1,
         'hidden2'=>$hidden2,
         'hidebutton'=>$hidebutton,
@@ -155,9 +139,7 @@ class UserController extends Controller
         'listdepartments'=>$listdepartments,
         'listgrades'=>$listgrades        
         ]);
-    }else{
-        return back()->with('warning','You do not have authorization to edit this data...');
-    }
+    
         
     }
 
@@ -165,20 +147,20 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
+     * @param  \App\Models\User  $users
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {      
-        $user = User::find($id);  
-        if ($user->email == $request->email){
+        $users = User::find($id);  
+        if ($users->email == $request->email){
             
             $request->validate([            
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255', 'regex:/^[AZa-z\.]*@(sohoglobalhealth)[.](com)$/'],                      
                 'department' => ['required','exists:departments'],            
                 'grade' => ['required','exists:grades'],
-                'leader' => ['required','exists:users,username,active,1,department,'.$user->department]   
+                'leader' => ['required','exists:users,username,active,1']   
             ]);
         }else{            
             $request->validate([            
@@ -186,200 +168,104 @@ class UserController extends Controller
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users','regex:/^[AZa-z\.]*@(sohoglobalhealth)[.](com)$/'],                      
                 'department' => ['required','exists:departments'],            
                 'grade' => ['required','exists:grades'],
-                'leader' => ['required','exists:users,username,active,1,department,'.$user->department]   
+                'leader' => ['required','exists:users,username,active,1']   
             ]);
         }      
-        
-            
-            
-            
-
-
-               
-            //get old value     
-            $oldname = $user ->name;
-            $oldemail =$user->email;
-            $oldgrade =$user->grade;
-            $olddepartment =$user->department;
-            $oldleader =$user->leader;
-            $oldactive =$user->active;
-            $oldnotes =$user->notes;
-
+        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('users'),['updated_at']);        
+           
+        //get old value 
+        foreach($fields as $field){
+            $old[$field]= $users->$field;
+        }   
             //save process
-            $user->name = $request->name;           
-            
-            $user->email = $request->email;
-                 
-            $user->grade = $request->grade;
-            $user->department = $request->department;
-            $user->leader = $request->leader; 
+            $users->name = $request->name;           
+            $users->email = $request->email;                
+            $users->grade = $request->grade;
+            $users->department = $request->department;
+            $users->leader = $request->leader; 
             if($request->active=='Yes'){
-                $user->active = 1;
+                $users->active = 1;
             }elseif($request->active=='No'){
-                $user->active = 0;
-            }            
-            $user->notes = $request->notes;
-            $user->save();      
-            
-
-            $check = $user->wasChanged(); 
-            if ($check==True){
-                //add to AuditUsers Table
-                if ($user->waschanged('name')==True){
-                    DB::table('auditusers')->insert([
-                   
-                        'change_by' => Auth::user()->username,        
-                        'activity' => 'Audit Change',
-                        'recordid' => $user->username,
-                        'sourcetable' => 'users',
-                        'sourcefield' => 'name',
-                        'beforevalue' => $oldname,
-                        'aftervalue' => $request->name,
-                        "created_at" =>  \Carbon\Carbon::now(), # new \Datetime()
-                    ]);
-                }
-                if ($user->waschanged('email')==True){
-                    DB::table('auditusers')->insert([
-                   
-                        'change_by' => Auth::user()->username,        
-                        'activity' => 'Audit Change',
-                        'recordid' => $user->username,
-                        'sourcetable' => 'users',
-                        'sourcefield' => 'email',
-                        'beforevalue' => $oldemail,
-                        'aftervalue' => $request->email,
-                        "created_at" =>  \Carbon\Carbon::now(), # new \Datetime()
-                    ]);
-                }
-                if ($user->waschanged('grade')==True){
-                    DB::table('auditusers')->insert([
-                   
-                        'change_by' => Auth::user()->username,        
-                        'activity' => 'Audit Change',
-                        'recordid' => $user->username,
-                        'sourcetable' => 'users',
-                        'sourcefield' => 'grade',
-                        'beforevalue' => $oldgrade,
-                        'aftervalue' => $request->grade,
-                        "created_at" =>  \Carbon\Carbon::now(), # new \Datetime()
-                    ]);
-                }
-                if ($user->waschanged('department')==True){
-                    DB::table('auditusers')->insert([
-                   
-                        'change_by' => Auth::user()->username,        
-                        'activity' => 'Audit Change',
-                        'recordid' => $user->username,
-                        'sourcetable' => 'users',
-                        'sourcefield' => 'department',
-                        'beforevalue' => $olddepartment,
-                        'aftervalue' => $request->department,
-                        "created_at" =>  \Carbon\Carbon::now(), # new \Datetime()
-                    ]);
-                }
-                if ($user->waschanged('leader')==True){
-                    DB::table('auditusers')->insert([
-                   
-                        'change_by' => Auth::user()->username,        
-                        'activity' => 'Audit Change',
-                        'recordid' => $user->username,
-                        'sourcetable' => 'users',
-                        'sourcefield' => 'leader',
-                        'beforevalue' => $oldleader,
-                        'aftervalue' => $request->leader,
-                        "created_at" =>  \Carbon\Carbon::now(), # new \Datetime()
-                    ]);
-                }
-                if ($user->waschanged('active')==True){
-                    DB::table('auditusers')->insert([
-                   
-                        'change_by' => Auth::user()->username,        
-                        'activity' => 'Audit Change',
-                        'recordid' => $user->username,
-                        'sourcetable' => 'users',
-                        'sourcefield' => 'active',
-                        'beforevalue' => $oldactive,
-                        'aftervalue' => $request->active,
-                        "created_at" =>  \Carbon\Carbon::now(), # new \Datetime()
-                    ]);
-                }
-                if ($user->waschanged('notes')==True){
-                    DB::table('auditusers')->insert([
-                   
-                        'change_by' => Auth::user()->username,        
-                        'activity' => 'Audit Change',
-                        'recordid' => $user->username,
-                        'sourcetable' => 'users',
-                        'sourcefield' => 'notes',
-                        'beforevalue' => $oldnotes,
-                        'aftervalue' => $request->notes,
-                        "created_at" =>  \Carbon\Carbon::now(), # new \Datetime()
-                    ]);
-                }
-                 
-                return back()->with('success','Data edited successfully!');
-            }            
-            else{
-                return back()->with('info','Nothing Changed');
+                $users->active = 0;
             }
-        /*     foreach ($errors->all() as $message) {
-                return back()->with('error',$message);
-            } */
-                       
+            if(Auth::user()->level==3){
+                if($request->level=='User'){                    
+                    $users->level = 1;
+                }elseif($request->level=='Reviewer'){                    
+                    $users->level = 2;
+                }elseif($request->level=='Approver'){                    
+                    $users->level = 3;
+                }                
+            }            
+            $users->notes = $request->notes;
+            $users->save();          
+
+            if($users->wasChanged()==TRUE){
+                foreach($fields as $field){
+                    if($users->wasChanged($field)){
+                        if($users->wasChanged('password')){                            
+                            auditusers($users,Auth::user()->username,'Audit Change',$users->username,
+                            'users','Password','','' );
+                        }else{
+                            if($old[$field]!=$users->$field ){                        
+                                auditusers($users,Auth::user()->username,'Audit Change',$users->username,
+                                'users',$field,$old[$field],$users->$field );
+                            }
+                        }                    
+                    }
+                }            
+                return back()->with('success','Data was Saved !');
+            }else{
+                return back()->with('info','Nothing Changed!');            
+            }             
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\User  $user
+     * @param  \App\Models\User  $users
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $userlogin = Auth::user()->id;
+        $userslogin = Auth::user()->id;
         $levellogin = Auth::user()->level;   
         $decrypted = Crypt::decryptString($id);
-        $user = user::find($decrypted);
-        
+        $users = user::find($decrypted);        
         if ($levellogin>1){
-            $user->delete();
-            
+            $users->delete();            
                 return back()->with('success','User has been deleted!'); 
         }else{
             return back()->with('warning','You do not have authorization to delete this data...');
         }
-
     }
 
     public function deactivate(Request $request, $id)
     {
        
         $decrypted = Crypt::decryptString($id);
-        $user = User::find($decrypted);                             
-        $user->active = 0;                        
-        $user->save();
+        $users = User::find($decrypted);                             
+        $users->active = 0;                        
+        $users->save();
         return back()->with('success','User has been deactivated!');           
     }  
-                  
-        
-
         
     public function activate(Request $request, $id)
     {
         $decrypted = Crypt::decryptString($id);
-        $user = User::find($decrypted);
-        if(!$user->name || !$user->email || !$user->grade || !$user->department || !$user->leader){            
+        $users = User::find($decrypted);
+        if(!$users->name || !$users->email || !$users->grade || !$users->department || !$users->leader){            
             return back()->with('error','Please fill all data');
         }else{
-            $oldactive = $user->active;                   
-            $user->active = 1;                               
-            $user->save();
-            if ($user->waschanged('active')==True){
+            $oldactive = $users->active;                   
+            $users->active = 1;                               
+            $users->save();
+            if ($users->waschanged('active')==True){
                 DB::table('auditusers')->insert([
             
                     'change_by' => Auth::user()->username,        
                     'activity' => 'User Activation',
-                    'recordid' => $user->username,
+                    'recordid' => $users->username,
                     'sourcetable' => 'users',
                     'sourcefield' => 'active',
                     'beforevalue' => 0,
@@ -391,10 +277,10 @@ class UserController extends Controller
             background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
             inline-block;text-decoration: none;"'.'>Login ICCS</a>'; 
             $mailData = [
-                'user' => $user->username,
-                'grade'=> $user->grade,
-                'department'=> $user->department,
-                'leader'=> $user->leader,
+                'user' => $users->username,
+                'grade'=> $users->grade,
+                'department'=> $users->department,
+                'leader'=> $users->leader,
                 'urllogin'=>$urllogin
             ]; 
 
@@ -403,27 +289,17 @@ class UserController extends Controller
             ->where('active',1)->get('email');  
             $emailto = $emailreviewers->implode('email',',');
             Mail::to(env('MAIL_TO_TESTING'))
-            ->cc($user->email)   
+            ->cc($users->email)   
             ->send(new NotifyUserActive($mailData));
 
         return back()->with('success','User has been activated!');   
             
         }
-    }
-        
-          
-                    
-            
-            
-            
-              
-                    
+    }           
 
     public function changepassword(Request $request, $id)
-    {
-        
-        $request->validate([
-            
+    {        
+        $request->validate([            
             'password' => ['required', 'confirmed', Password::min(8)
                             ->letters()
                             ->mixedcase()
@@ -433,9 +309,9 @@ class UserController extends Controller
                             ],
         ]);
 
-        $user = User::find($id); 
-        $user->password = Hash::make($request->password);                                     
-        $user->save();  
+        $users = User::find($id); 
+        $users->password = Hash::make($request->password);                                     
+        $users->save();  
                                       
         return back()->with('success','Password has been changed!');           
 
@@ -444,30 +320,29 @@ class UserController extends Controller
     public function editpassword($id,$tab)
     {
         $decrypted = Crypt::decryptString($id);        
-        $user = user::find($decrypted);
-
+        $users = user::find($decrypted);
               
-        if ($user->active==0){
+        if ($users->active==0){
             $active = 'No';
         }else{
             $active = 'Yes';
         }
 
-        if ($user->level==1){
+        if ($users->level==1){
             $level = 'User';
-        }elseif($user->level==2){
+        }elseif($users->level==2){
             $level = 'Reviewer';
-        }elseif($user->level==3){
+        }elseif($users->level==3){
             $level = 'Approver';
-        }elseif($user->level==4){
+        }elseif($users->level==4){
             $level = 'Super User';
         }
 
-        $userlogin = Auth::user()->id;
+        $userslogin = Auth::user()->id;
         $levellogin = Auth::user()->level;
         //hidden field at Profile Edit Form  
         if($tab=="changepassword"){
-            if ($userlogin==$decrypted or $levellogin>1){
+            if ($userslogin==$decrypted or $levellogin>1){
                 $hidden1 = 'disabled';
                 $hidden2 = '';
             }else{
@@ -481,7 +356,7 @@ class UserController extends Controller
            
         //hidden button activate user or deactivate user
         if ($levellogin>1){
-            if ($user->active==0){
+            if ($users->active==0){
                 $hidebutton = '';
                 $buttoncaption = 'Activate User ?';
                 $buttoncolor = 'btn btn-success';
@@ -501,7 +376,7 @@ class UserController extends Controller
             $buttonlink = '';
         }
         // disable Nav Tab if user level = 'user'
-        if ($user->level<2){
+        if ($users->level<2){
             $disabled = 'disabled';
         }else{
             $disabled = '';
@@ -514,11 +389,9 @@ class UserController extends Controller
         ->orWhere([['active',1],['grade','Director']])         
         ->get();
         
-        $listdepartments = Department::all();
-        
-        
-            if ($userlogin==$decrypted or $levellogin>1){
-                return view('users.change-password', ['user' => $user,
+        $listdepartments = Department::all();        
+            
+                return view('users.change-password', ['user' => $users,
                 'active' =>$active,
                 'disabled'=>$disabled,
                 'level'=>$level,
@@ -532,10 +405,7 @@ class UserController extends Controller
                 'listdepartments'=>$listdepartments,
                 'listgrades'=>$listgrades        
                 ]);
-            }else{
-                return back()->with('warning','You do not have authorization to edit this data...');
-            }
-        
+                 
     }
      
     

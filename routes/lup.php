@@ -92,9 +92,11 @@ use App\Http\Controllers\LUP\RelatedDepartmentController;
 
     /* LUP Dashboard route */
     Route::get('/querylupmyonprocess', [LUPDashboardController::class, 'querylup_myonprocess']);
+    Route::get('/querylupmyoncancel', [LUPDashboardController::class, 'querylup_myoncancel']);
     Route::get('/querylupsignaction', [LUPDashboardController::class, 'querylup_signaction']);
     Route::get('/querylupleader', [LUPDashboardController::class, 'querylup_leader']);
     Route::get('/querylupmyactionopen', [LUPDashboardController::class, 'querylup_myactionopen']);
+    Route::get('/querylupmyactioncancel', [LUPDashboardController::class, 'querylup_myactioncancel']);
     Route::get('/querylupmyactionoverdue', [LUPDashboardController::class, 'querylup_myactionoverdue']);
     Route::get('/querylupmydeptactionopen', [LUPDashboardController::class, 'querylup_mydeptactionopen']);
     Route::get('/querylupmydeptactionoverdue', [LUPDashboardController::class, 'querylup_mydeptactionoverdue']);
@@ -103,8 +105,14 @@ use App\Http\Controllers\LUP\RelatedDepartmentController;
     Route::get('/queryluponreview', [LUPDashboardController::class, 'querylup_onreview']); 
     Route::get('/queryluponapproval', [LUPDashboardController::class, 'querylup_onapproval']); 
     Route::get('/queryluponapproved', [LUPDashboardController::class, 'querylup_onapproved']); 
+    Route::get('/queryluponcancel', [LUPDashboardController::class, 'querylup_oncancel']);
+    Route::get('/queryluponclosing', [LUPDashboardController::class, 'querylup_onclosing']);
+    Route::get('/queryluponcancelapproval', [LUPDashboardController::class, 'querylup_oncancelapproval']);
+    Route::get('/queryluponclosingapproval', [LUPDashboardController::class, 'querylup_onclosingapproval']);
     Route::get('/querylupactionoverdue', [LUPDashboardController::class, 'querylup_actionoverdue']);
     Route::get('/querylupactionextension', [LUPDashboardController::class, 'querylup_actionextension']);
+    Route::get('/querylupactionclosing', [LUPDashboardController::class, 'querylup_actionclosing']);
+    Route::get('/querylupactioncancel', [LUPDashboardController::class, 'querylup_actioncancel']);
     Route::get('/querylupactionextensionapproval', [LUPDashboardController::class, 'querylup_actionextensionapproval']);
     Route::get('/queryluprelateddepartments', [LUPDashboardController::class, 'querylup_relateddepartments']);
     Route::get('/querylupregulatoryreview', [LUPDashboardController::class, 'querylup_regulatoryreview']);

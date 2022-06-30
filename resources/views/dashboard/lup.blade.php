@@ -21,6 +21,17 @@
           <nav class="header-nav ">
             <ul class="d-flex align-items-center">
               <li class="nav-item dropdown">
+                <a class="nav-link card-icon rounded-circle d-flex align-items-center justify-content-center" href="/querylupmyoncancel" 
+                  data-bs-toggle="tooltip" data-bs-placement="left" title="My LUP On Cancel">
+                  <i class="bi bi-file-earmark-play"></i>
+                  <span class="badge bg-success badge-number">{{ $myluponcancel }}</span>
+                </a><!-- End Notification Icon -->
+              </li>
+            </ul>
+          </nav>
+          <nav class="header-nav ">
+            <ul class="d-flex align-items-center">
+              <li class="nav-item dropdown">
                 <a class="nav-link card-icon rounded-circle d-flex align-items-center justify-content-center" href="/querylupsignaction" 
                   data-bs-toggle="tooltip" data-bs-placement="left" title="Sign for Action LUP">
                   <i class="bi bi-cursor-fill"></i>
@@ -66,10 +77,10 @@
         <nav class="header-nav ">
           <ul class="d-flex align-items-center">
             <li class="nav-item dropdown">
-              <a class="nav-link card-icon rounded-circle d-flex align-items-center justify-content-center" href="/querylupmydeptactionopen" 
-                data-bs-toggle="tooltip" data-bs-placement="left" title="My Dept Action LUP - OPEN">
+              <a class="nav-link card-icon rounded-circle d-flex align-items-center justify-content-center" href="/querylupmyactioncancel" 
+                data-bs-toggle="tooltip" data-bs-placement="left" title="My Action LUP - ON CANCEL">
                 <i class="bi bi-diagram-2-fill"></i>
-                <span class="badge bg-success badge-number">{{ $mydeptlupactionopen }}</span>
+                <span class="badge bg-success badge-number">{{ $mylupactioncancel }}</span>
               </a><!-- End Notification Icon -->
             </li>
           </ul>
@@ -149,7 +160,7 @@
 
   </div>
 </div><!-- End User -->
-
+@if (Auth::user()->level==2)
 <!-- LUP Dashboard for Reviewer -->
 <div class="col-xxl-4 col-md-6">
   <div class="card info-card sales-card">      
@@ -179,18 +190,40 @@
                 </a><!-- End Notification Icon -->
               </li>
             </ul>
-          </nav>          
-        <nav class="header-nav ">
-          <ul class="d-flex align-items-center">
-            <li class="nav-item dropdown">
-              <a class="nav-link card-icon rounded-circle d-flex align-items-center justify-content-center" href="/querylupactionoverdue" 
-                data-bs-toggle="tooltip" data-bs-placement="left" title="Action LUP - OVERDUE">
-                <i class="bi bi-exclamation-diamond-fill"></i>
-                <span class="badge {{ $lupactionoverdue==0 ? 'bg-success' : 'bg-danger' }}  badge-number">{{ $lupactionoverdue }}</span>
-              </a><!-- End Notification Icon -->
-            </li>
-          </ul>
-        </nav>  
+          </nav>   
+          <nav class="header-nav ">
+            <ul class="d-flex align-items-center">
+              <li class="nav-item dropdown">
+                <a class="nav-link card-icon rounded-circle d-flex align-items-center justify-content-center" href="/queryluponclosing" 
+                  data-bs-toggle="tooltip" data-bs-placement="left" title="LUP ON CLOSING">
+                  <i class="bi bi-door-open-fill"></i>
+                  <span class="badge {{ $luponclosing==0 ? 'bg-success' : 'bg-danger' }}  badge-number">{{ $luponclosing}}</span>
+                </a><!-- End Notification Icon -->
+              </li>
+            </ul>
+          </nav>  
+          <nav class="header-nav ">
+            <ul class="d-flex align-items-center">
+              <li class="nav-item dropdown">
+                <a class="nav-link card-icon rounded-circle d-flex align-items-center justify-content-center" href="/queryluponcancel" 
+                  data-bs-toggle="tooltip" data-bs-placement="left" title="LUP ON CANCEL">
+                  <i class="bi bi-door-open-fill"></i>
+                  <span class="badge {{ $luponcancel==0 ? 'bg-success' : 'bg-danger' }}  badge-number">{{ $luponcancel}}</span>
+                </a><!-- End Notification Icon -->
+              </li>
+            </ul>
+          </nav>         
+          <nav class="header-nav ">
+            <ul class="d-flex align-items-center">
+              <li class="nav-item dropdown">
+                <a class="nav-link card-icon rounded-circle d-flex align-items-center justify-content-center" href="/querylupactionclosing" 
+                  data-bs-toggle="tooltip" data-bs-placement="left" title="Action LUP - ON CLOSING">
+                  <i class="bi bi-distribute-vertical"></i>
+                  <span class="badge {{ $lupactionclosing==0 ? 'bg-success' : 'bg-danger' }}  badge-number">{{ $lupactionclosing }}</span>
+                </a><!-- End Notification Icon -->
+              </li>
+            </ul>
+          </nav>               
         <nav class="header-nav ">
           <ul class="d-flex align-items-center">
             <li class="nav-item dropdown">
@@ -201,24 +234,36 @@
               </a><!-- End Notification Icon -->
             </li>
           </ul>
-        </nav>           
+        </nav>      
         <nav class="header-nav ">
           <ul class="d-flex align-items-center">
             <li class="nav-item dropdown">
-              <a class="nav-link card-icon rounded-circle d-flex align-items-center justify-content-center" href="/querylupmydeptactionoverdue" 
-                data-bs-toggle="tooltip" data-bs-placement="left" title="My Dept Action LUP - OVERDUE">
-                <i class="bi bi-diagram-3-fill"></i>
-                <span class="badge bg-danger badge-number">{{ $mydeptlupactionoverdue }}</span>
+              <a class="nav-link card-icon rounded-circle d-flex align-items-center justify-content-center" href="/querylupactioncancel" 
+                data-bs-toggle="tooltip" data-bs-placement="left" title="Action LUP - ON CANCEL">
+                <i class="bi bi-distribute-vertical"></i>
+                <span class="badge {{ $lupactioncancel==0 ? 'bg-success' : 'bg-danger' }}  badge-number">{{ $lupactioncancel }}</span>
               </a><!-- End Notification Icon -->
             </li>
           </ul>
-        </nav>        
+        </nav>          
+        <nav class="header-nav ">
+          <ul class="d-flex align-items-center">
+            <li class="nav-item dropdown">
+              <a class="nav-link card-icon rounded-circle d-flex align-items-center justify-content-center" href="/querylupactionoverdue" 
+                data-bs-toggle="tooltip" data-bs-placement="left" title="Action LUP - OVERDUE">
+                <i class="bi bi-exclamation-diamond-fill"></i>
+                <span class="badge {{ $lupactionoverdue==0 ? 'bg-success' : 'bg-danger' }}  badge-number">{{ $lupactionoverdue }}</span>
+              </a><!-- End Notification Icon -->
+            </li>
+          </ul>
+        </nav>            
       </div><!-- End First Row  --> 
     </div>
 
   </div>
 </div><!-- End Reviewer Card -->
-
+@endif
+@if (Auth::user()->level==3)
 <!-- LUP Dashboard for Approver -->
 <div class="col-xxl-4 col-md-6">
   <div class="card info-card sales-card">      
@@ -259,7 +304,29 @@
                 </a><!-- End Notification Icon -->
               </li>
             </ul>
-          </nav>        
+          </nav>    
+          <nav class="header-nav ">
+            <ul class="d-flex align-items-center">
+              <li class="nav-item dropdown">
+                <a class="nav-link card-icon rounded-circle d-flex align-items-center justify-content-center" href="/queryluponclosingapproval" 
+                  data-bs-toggle="tooltip" data-bs-placement="left" title="LUP ON CLOSING APPROVAL">
+                  <i class="bi bi-door-open-fill"></i>
+                  <span class="badge {{ $luponclosingapproval==0 ? 'bg-success' : 'bg-danger' }}  badge-number">{{ $luponclosingapproval}}</span>
+                </a><!-- End Notification Icon -->
+              </li>
+            </ul>
+          </nav>  
+          <nav class="header-nav ">
+            <ul class="d-flex align-items-center">
+              <li class="nav-item dropdown">
+                <a class="nav-link card-icon rounded-circle d-flex align-items-center justify-content-center" href="/queryluponcancelapproval" 
+                  data-bs-toggle="tooltip" data-bs-placement="left" title="LUP ON CANCEL APPROVAL">
+                  <i class="bi bi-door-open-fill"></i>
+                  <span class="badge {{ $luponcancelapproval==0 ? 'bg-success' : 'bg-danger' }}  badge-number">{{ $luponcancelapproval}}</span>
+                </a><!-- End Notification Icon -->
+              </li>
+            </ul>
+          </nav>         
         <nav class="header-nav ">
           <ul class="d-flex align-items-center">
             <li class="nav-item dropdown">
@@ -273,9 +340,9 @@
         </nav>           
       </div><!-- End First Row  --> 
     </div>
-
   </div>
 </div><!-- End Approver Card -->
+@endif
         
         
         

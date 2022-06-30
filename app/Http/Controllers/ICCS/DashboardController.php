@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\FLP\FLPParent;
+use App\Models\LUP\LUPAction;
 use App\Models\LUP\LUPParent;
 use App\Models\RDMS\MasterPart;
 use illuminate\Validation\Rule;
@@ -32,28 +33,34 @@ class DashboardController extends Controller
         $luponprocess = LUPParent::OnStatus('ON PROCESS')->count();
         $luponreview = LUPParent::OnStatus('ON REVIEW')->count();
         $luponapproval = LUPParent::OnStatus('ON APPROVAL')->count();
+        $luponcancel = LUPParent::OnStatus('ON CANCEL')->count();
+        $luponclosing = LUPParent::OnStatus('ON CLOSING')->count();
+        $luponcancelapproval = LUPParent::OnStatus('ON CANCEL APPROVAL')->count();
+        $luponclosingapproval = LUPParent::OnStatus('ON CLOSING APPROVAL')->count();
         $luponapproved = LUPParent::OnStatus('APPROVED')->count();        
         $lupactionoverdue = DB::table('lup_parents')
             ->join('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
             ->select('lup_parents.*', 'lup_actions.*')            
-            ->whereNotNull('nolup')
-            ->where('lupstatus','OPEN')
+            ->whereNotNull('nolup')            
             ->where('actionstatus','OPEN')
             ->where('evidence_filename',null)         
             ->whereDate('duedate_action','<',now()->addDays(8))
             ->count();  
+        $lupactionclosing = LUPAction::status('ON CLOSING')->count(); 
+        $lupactioncancel = LUPAction::status('ON CANCEL')->count();   
+        $mylupactioncancel = LUPAction::status('ON CANCEL')
+            ->where('pic_action',Auth::user()->username)      
+            ->count();   
         $lupactionextension = DB::table('lup_parents')
             ->join('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
             ->select('lup_parents.*', 'lup_actions.*')            
-            ->whereNotNull('nolup')
-            ->where('lupstatus','OPEN')
+            ->whereNotNull('nolup')            
             ->where('actionstatus','ON EXTENSION')         
             ->count();        
         $lupactionextensionapproval = DB::table('lup_parents')
             ->join('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
             ->select('lup_parents.*', 'lup_actions.*')            
-            ->whereNotNull('nolup')
-            ->where('lupstatus','OPEN')
+            ->whereNotNull('nolup')            
             ->where('actionstatus','ON EXTENSION APPROVAL')         
             ->count();          
         $mylupdisposisi = DB::table('lup_parents')
@@ -76,6 +83,7 @@ class DashboardController extends Controller
             ->count();       
         $mylupsubordinate = LUPParent::onleader()->count();
         $myluponprocess =LUPParent::myonprocess()->count();
+        $myluponcancel =LUPParent::myoncancel()->count();
         $mylupactionreview = DB::table('lup_parents')
             ->join('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
             ->select('lup_parents.*', 'lup_actions.*')
@@ -87,8 +95,7 @@ class DashboardController extends Controller
             ->join('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
             ->select('lup_parents.*', 'lup_actions.*')
             ->where('pic_action',Auth::user()->username)
-            ->whereNotNull('nolup')
-            ->where('lupstatus','OPEN')
+            ->whereNotNull('nolup')            
             ->where('actionstatus','OPEN')
             ->where('evidence_filename',null)           
             ->whereDate('duedate_action','>=',now()->addDays(8))
@@ -98,8 +105,7 @@ class DashboardController extends Controller
             ->join('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
             ->select('lup_parents.*', 'lup_actions.*')
             ->where('pic_action',Auth::user()->username)
-            ->whereNotNull('nolup')
-            ->where('lupstatus','OPEN')
+            ->whereNotNull('nolup')            
             ->where('actionstatus','OPEN')
             ->where('evidence_filename',null)         
             ->whereDate('duedate_action','<',now()->addDays(8))
@@ -109,9 +115,8 @@ class DashboardController extends Controller
             ->join('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
             ->select('lup_parents.*', 'lup_actions.*')
             ->where('pic_action',Auth::user()->username)
-            ->whereNotNull('nolup')
-            ->where('lupstatus','OPEN')
-            ->where('actionstatus','ON EXTENSION')         
+            ->whereNotNull('nolup')            
+            ->where('actionstatus','LIKE','ON EXTENSION%')         
             ->count();        
                       
         $mydeptlupactionopen = DB::table('lup_parents')
@@ -119,8 +124,7 @@ class DashboardController extends Controller
             ->leftjoin('users', 'users.username', '=', 'lup_actions.pic_action')
             ->select('lup_parents.*', 'lup_actions.*','users.*','users.department as pic_dept')
             ->where('users.department',Auth::user()->department)
-            ->whereNotNull('nolup')
-            ->where('lupstatus','OPEN')
+            ->whereNotNull('nolup')            
             ->where('duedate_status',1)
             ->where('deletion_flag',0)
             ->whereNull('dateapproved_evidence')
@@ -131,8 +135,7 @@ class DashboardController extends Controller
             ->leftjoin('users', 'users.username', '=', 'lup_actions.pic_action')
             ->select('lup_parents.*', 'lup_actions.*','users.*','users.department as pic_dept',)
             ->where('users.department',Auth::user()->department)
-            ->whereNotNull('nolup')
-            ->where('lupstatus','OPEN')
+            ->whereNotNull('nolup')            
             ->where('duedate_status',1)
             ->where('deletion_flag',0)
             ->whereNull('dateapproved_evidence')
@@ -245,9 +248,11 @@ class DashboardController extends Controller
                                 'mylupregulatory_review'=>$mylupregulatory_review,
                                 'mylupregulatory_approval'=>$mylupregulatory_approval,
                                 'mylupsubordinate'=>$mylupsubordinate,
-                                'myluponprocess'=>$myluponprocess,                                
+                                'myluponprocess'=>$myluponprocess,     
+                                'myluponcancel'=>$myluponcancel,                               
                                 'mylupactionreview'=>$mylupactionreview,
                                 'mylupactionopen'=>$mylupactionopen,
+                                'mylupactioncancel'=>$mylupactioncancel,
                                 'mylupactionoverdue'=>$mylupactionoverdue,
                                 'mylupactionextension'=>$mylupactionextension,
                                 'mydeptlupactionopen'=>$mydeptlupactionopen,
@@ -256,7 +261,13 @@ class DashboardController extends Controller
                                 'luponreview'=>$luponreview,
                                 'luponapproval'=>$luponapproval,
                                 'luponapproved'=>$luponapproved,
+                                'luponcancel'=>$luponcancel,
+                                'luponclosing'=>$luponclosing,
+                                'luponcancelapproval'=>$luponcancelapproval,
+                                'luponclosingapproval'=>$luponclosingapproval,
                                 'lupactionoverdue'=>$lupactionoverdue,
+                                'lupactionclosing'=>$lupactionclosing,
+                                'lupactioncancel'=>$lupactioncancel,
                                 'lupactionextension'=>$lupactionextension,
                                 'lupactionextensionapproval'=>$lupactionextensionapproval,
                                 'quotes'=>$quotes,

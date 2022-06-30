@@ -25,34 +25,23 @@
         <div class="card">
           <div class="card-body pt-3">
             <!-- Bordered Tabs -->
-            <ul class="nav nav-tabs nav-tabs-bordered">
-  
-              
+            <ul class="nav nav-tabs nav-tabs-bordered" id="UserMenu">
               <li class="nav-item">
-                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Overview</button>
-              </li>
-              
-             {{--  @if ($hidden1=="") --}}
+                <a class="nav-link active" data-bs-toggle="tab" href="#profile-overview">Overview</a>
+              </li>      
                 <li class="nav-item">
-                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit" {{ $hidden1=="" ? '' : $hidden1 }}>Edit Profile</button>
-                </li>            
-              {{-- @endif --}}
-              {{-- @if ($hidden2=="")  --}}
+                  <a class="nav-link" data-bs-toggle="tab" href="#profile-edit" {{ $hidden1=="" ? '' : $hidden1 }}>Edit Profile</a>
+                </li>     
                 <li class="nav-item">
-                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password" {{ $hidden2=="" ? '' : $hidden2 }}>Change Password</button>
+                  <a class="nav-link" data-bs-toggle="tab" href="#profile-change-password" {{ $hidden2=="" ? '' : $hidden2 }}>Change Password</a>
                 </li>
-              {{-- @endif --}}
-  
-            </ul>
-            <div class="tab-content pt-2">
-  
+            </ul>              
+            <div class="tab-content pt-2">  
               <div class="tab-pane fade show active profile-overview" id="profile-overview">
                 <h5 class="card-title">Notes</h5>
                 <p class="small fst-italic">
-                {{$user->notes}}
-  
-                <h5 class="card-title">Profile Details</h5>
-  
+                {{$user->notes}}  
+                <h5 class="card-title">Profile Details</h5>  
                 <div class="row">
                   <div class="col-lg-3 col-md-4 label ">Full Name</div>
                   <div class="col-lg-9 col-md-8">
@@ -91,14 +80,14 @@
                 <div class="row">
                   <div class="col-lg-3 col-md-4 label">Level</div>
                   <div class="col-lg-9 col-md-8">
-                  {{$level}}
+                  {{$user->level==1 ? 'User' :($user->level==2 ? 'Reviewer' :($user->level==3 ? 'Approver' :''))}}
                   </div>
                 </div>
   
                 <div class="row">
                   <div class="col-lg-3 col-md-4 label">Active</div>
                   <div class="col-lg-9 col-md-8">
-                    {{$active}}
+                    {{$user->active==1 ? 'Yes' : 'No'}}
                   </div>
                 </div>
   
@@ -188,12 +177,12 @@
                   <div class="row mb-3">
                     <label for="level" class="col-md-4 col-lg-3 col-form-label">Level</label>                    
                     <div class="col-md-8 col-lg-9">                      
-                      <input name="level" list="listlevel" class="form-control" id="level" value="{{ old('level',$level) }}" {{ $disabled }} required/>
+                      <input name="level" list="listlevel" class="form-control" id="level" value="{{ old('level',$user->level==1 ? 'User' :($user->level==2 ? 'Reviewer' :($user->level==3 ? 'Approver' :''))) }}" {{ $disabled }} required/>
                       <datalist id="listlevel">
                         
-                        <option value="1">User</option>
-                        <option value="2">Reviewer</option>
-                        <option value="3">Approver</option>
+                        <option value="User">User</option>
+                        <option value="Reviewer">Reviewer</option>
+                        <option value="Approver">Approver</option>
                         
 
                       </datalist> 
@@ -203,7 +192,7 @@
                   <div class="row mb-3">
                     <label for="active" class="col-md-4 col-lg-3 col-form-label">Active</label>                    
                     <div class="col-md-8 col-lg-9">                      
-                      <input name="active" type="text" class="form-control" id="active" value="{{ old('active',$active) }}" {{ $disabled }} required/>
+                      <input name="active" type="text" class="form-control" id="active" value="{{ old('active',$user->active==1 ? 'Yes' : 'No') }}" {{ $disabled }} required/>
                     </div>
                   </div>  
                                     
@@ -219,18 +208,16 @@
                     </ol>
                   </nav>
                   <div class="text-center">
-                    <button type="submit" class="btn btn-primary" name="saveprofile">Save Changes</button>
-                        
+                    <button type="submit" class="btn btn-primary" name="saveprofile">Save Changes</button>                        
                   </div>
                 </form>
                 <div class="text-center mt-1">
-                <form action="{{ $buttonlink }}" method="post" id="myForm">
-                  @method('put')
-                  @csrf  
-                  <button type="submit" class="{{ $buttoncolor }}" name="activebutton" {{ $hidebutton }}>{{ $buttoncaption }}</button> {{-- //button for activate or deactivate user --}}                        
-                </form>
-                
-              </div>
+                  <form action="{{ $buttonlink }}" method="post" id="myForm">
+                    @method('put')
+                    @csrf  
+                    <button type="submit" class="{{ $buttoncolor }}" name="activebutton" {{ $hidebutton }}>{{ $buttoncaption }}</button> {{-- //button for activate or deactivate user --}}                        
+                  </form>                
+                </div>
             @endif    
 
               </div>    {{--  End Profile Edit Form    --}}    

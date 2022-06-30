@@ -71,7 +71,7 @@ function lupallstatusactions( $lupparents){
                 $date2 = strtotime($lupparents[$i]->duedate_action ?:'');
                 $datediff =round(($date2-$date1)/(60*60*24),0);
                 
-                if($datediff<8 AND !$lupparents[$i]->dateapproved_evidence AND $lupparents[$i]->nolup AND $lupparents[$i]->actionstatus=="OPEN" AND $lupparents[$i]->lupstatus=="OPEN" AND $lupparents[$i]->signdate_action){
+                if($datediff<8 AND !$lupparents[$i]->dateapproved_evidence AND $lupparents[$i]->nolup AND $lupparents[$i]->actionstatus=="OPEN" AND $lupparents[$i]->signdate_action){
                         $statusaction[] = "OVERDUE";
                 }else{
                     $statusaction []= $lupparents[$i]->actionstatus;

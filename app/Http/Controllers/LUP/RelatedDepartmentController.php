@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\LUP;
 
 use Illuminate\Http\Request;
+use App\Models\LUP\LUPParent;
+use App\Mail\LUP\LUPNotifToQC;
 use App\Models\ICCS\ICCSApproval;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use App\Models\LUP\RelatedDepartment;
-use App\Models\LUP\LUPParent;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Schema;
 
@@ -31,16 +33,41 @@ class RelatedDepartmentController extends Controller
 
     public function storedepartment(Request $request){        
         $cek = RelatedDepartment::where('code',$request->modalhidecodelup)->where('department',$request->department)->exists();   
+        $lup = LUPParent::where('code',$request->modalhidecodelup)->first();
+        
         if($cek){
-                return back()->with('error','Related Department Already Exists..');
+                return back()->with('error','Failed...Related Department Already Exists..');
         }else{
                 $relateddepartment = new RelatedDepartment;
                 $relateddepartment->code = $request->modalhidecodelup;
                 $relateddepartment->approval_code = $request->code;
                 $relateddepartment->username = $request->username;
-                $relateddepartment->department = $request->department;        
+                $relateddepartment->department = $request->department;                   
                 $relateddepartment->save();
-                return back();
+                $relateddepartment = RelatedDepartment::where('code',$request->modalhidecodelup)->where('username',$request->username)->first();     
+                
+                            //Send Notif to PIC        
+                    $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lup->id).'/edit"'.' style="
+                    background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
+                    inline-block;text-decoration: none;"'.'>Go to LUP</a>';    
+                    $duedate = date('d-M-Y',strtotime($lup->duedate_start));            
+                    $mailData = [
+                        'code' => $lup->code,
+                        'documentname' => $lup->documentname,
+                        'lup_current' => $lup->lup_current,
+                        'lup_proposed' => $lup->lup_proposed,
+                        'lup_reason' => $lup->lup_reason,   
+                        'categorization' => $lup->categorization,                     
+                        'risk_assestment' => $lup->risk_assestment,  
+                        'urllup'=>$urllup,
+                        'duedate'=>$duedate,
+                        'name'=>$relateddepartment->user->name,
+                    ];                             
+                $emailto = $relateddepartment->user->email;
+                
+                Mail::to(env('MAIL_TO_TESTING'))        
+                    ->send(new LUPNotifToQC($mailData,$lup));  
+                return back()->with('Success','Success...LUP Has been submitted to related department');
         }
 
     }

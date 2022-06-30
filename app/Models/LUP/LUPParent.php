@@ -146,6 +146,12 @@ class LUPParent extends Model
                   ->where('lupstatus','ON PROCESS');
         });
     }
+    public function scopeMyOnCancel($query)
+    {
+        $query->where('inisiator',Auth::user()->username)
+        ->where('lupstatus','ON CANCEL')
+        ;
+    }
     public function scopeOnStatus($query,$status)
     {
         $query->where('lupstatus',$status);

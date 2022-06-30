@@ -85,8 +85,7 @@ class LUPDashboardController extends Controller
                 ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
                 ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')  
                 ->where('lup_actions.pic_action',Auth::user()->username)  
-                ->where('lup_actions.actionstatus','OPEN')  
-                ->where('lup_parents.lupstatus','OPEN') 
+                ->where('lup_actions.actionstatus','OPEN')                
                 ->where('lup_actions.evidence_filename',null)            
                 ->whereDate('lup_actions.duedate_action','>=',now()->addDays(8))
                 ->orderBy('duedate_action','asc')                  
@@ -106,8 +105,7 @@ class LUPDashboardController extends Controller
             ->leftjoin('users', 'users.username', '=', 'lup_actions.pic_action')
             ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code', 'lup_actions.*','users.*','users.department as pic_dept')
             ->where('users.department',Auth::user()->department)
-            ->whereNotNull('nolup')
-            ->where('lupstatus','OPEN')
+            ->whereNotNull('nolup')            
             ->where('duedate_status',1)
             ->where('deletion_flag',0)
             ->whereNull('dateapproved_evidence')
@@ -127,8 +125,7 @@ class LUPDashboardController extends Controller
                 ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
                 ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')  
                 ->where('lup_actions.pic_action',Auth::user()->username)  
-                ->where('lup_actions.actionstatus','OPEN')  
-                ->where('lup_parents.lupstatus','OPEN') 
+                ->where('lup_actions.actionstatus','OPEN')                 
                 ->where('lup_actions.evidence_filename',null)            
                 ->whereDate('lup_actions.duedate_action','<',now()->addDays(8))
                 ->orderBy('duedate_action','asc')            
@@ -147,8 +144,7 @@ class LUPDashboardController extends Controller
                 ->leftjoin('users', 'users.username', '=', 'lup_actions.pic_action')
                 ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code', 'lup_actions.*','users.*','users.department as pic_dept',)
                 ->where('users.department',Auth::user()->department)
-                ->whereNotNull('nolup')
-                ->where('lupstatus','OPEN')
+                ->whereNotNull('nolup')                
                 ->where('duedate_status',1)
                 ->where('deletion_flag',0)
                 ->whereNull('dateapproved_evidence')
@@ -167,8 +163,24 @@ class LUPDashboardController extends Controller
                 ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
                 ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')  
                 ->where('lup_actions.pic_action',Auth::user()->username)  
-                ->where('lup_actions.actionstatus','ON EXTENSION')  
-                ->where('lup_parents.lupstatus','OPEN')             
+                ->where('lup_actions.actionstatus','LIKE','ON EXTENSION%')                            
+                ->orderBy('duedate_action','asc')
+                ->get();                          
+
+        $statusaction=lupallstatusactions( $lupparents);        
+        
+        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        'statusaction'=>$statusaction,        
+        ]);
+    }
+
+    public function querylup_myactioncancel()
+    {
+        $lupparents = DB::table('lup_parents')
+                ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
+                ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')  
+                ->where('lup_actions.pic_action',Auth::user()->username)  
+                ->where('lup_actions.actionstatus','ON CANCEL')                            
                 ->orderBy('duedate_action','asc')
                 ->get();                          
 
@@ -187,7 +199,7 @@ class LUPDashboardController extends Controller
                 ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')  
                 ->where('lup_actions.pic_action',Auth::user()->username)  
                 ->where('lup_actions.signdate_action',null)            
-                ->where('lup_parents.lupstatus','ON PROCESS')             
+                ->where('lup_parents.lupstatus','APPROVED')             
                 ->orderBy('duedate_action','asc')
                 ->get();                          
 
@@ -218,6 +230,22 @@ class LUPDashboardController extends Controller
         ]);             
     }
 
+    public function querylup_myoncancel()
+    {
+        $lupparents = DB::table('lup_parents')
+                ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
+                ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')  
+                ->where('inisiator',Auth::user()->username)
+                ->where('lupstatus','ON CANCEL')                    
+                ->get();                          
+
+        $statusaction=lupallstatusactions( $lupparents);        
+        
+        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        'statusaction'=>$statusaction,        
+        ]);             
+    }
+
     public function querylup_onprocess()
     {
         $lupparents = DB::table('lup_parents')
@@ -232,6 +260,67 @@ class LUPDashboardController extends Controller
         'statusaction'=>$statusaction,        
         ]);             
     }
+
+    public function querylup_onclosing()
+    {
+        $lupparents = DB::table('lup_parents')
+                ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
+                ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')  
+                ->where('lupstatus','ON CLOSING')                    
+                ->get();                          
+
+        $statusaction=lupallstatusactions( $lupparents);        
+        
+        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        'statusaction'=>$statusaction,        
+        ]);             
+    }
+
+    public function querylup_oncancel()
+    {
+        $lupparents = DB::table('lup_parents')
+                ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
+                ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')  
+                ->where('lupstatus','ON CANCEL')                    
+                ->get();                          
+
+        $statusaction=lupallstatusactions( $lupparents);        
+        
+        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        'statusaction'=>$statusaction,        
+        ]);             
+    }
+
+    public function querylup_onclosingapproval()
+    {
+        $lupparents = DB::table('lup_parents')
+                ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
+                ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')  
+                ->where('lupstatus','ON CLOSING APPROVAL')                    
+                ->get();                          
+
+        $statusaction=lupallstatusactions( $lupparents);        
+        
+        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        'statusaction'=>$statusaction,        
+        ]);             
+    }
+
+    public function querylup_oncancelapproval()
+    {
+        $lupparents = DB::table('lup_parents')
+                ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
+                ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')  
+                ->where('lupstatus','ON CANCEL APPROVAL')                    
+                ->get();                          
+
+        $statusaction=lupallstatusactions( $lupparents);        
+        
+        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        'statusaction'=>$statusaction,        
+        ]);             
+    }
+
     public function querylup_onreview()
     {
         $lupparents = DB::table('lup_parents')
@@ -282,8 +371,7 @@ class LUPDashboardController extends Controller
         $lupparents = DB::table('lup_parents')
                 ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
                 ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')                   
-                ->where('lup_actions.actionstatus','OPEN')  
-                ->where('lup_parents.lupstatus','OPEN') 
+                ->where('lup_actions.actionstatus','OPEN')               
                 ->where('lup_actions.evidence_filename',null)            
                 ->whereDate('lup_actions.duedate_action','<',now()->addDays(8))
                 ->orderBy('duedate_action','asc')            
@@ -301,8 +389,23 @@ class LUPDashboardController extends Controller
         $lupparents = DB::table('lup_parents')
                 ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
                 ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')                
-                ->where('lup_actions.actionstatus','ON EXTENSION')  
-                ->where('lup_parents.lupstatus','OPEN')             
+                ->where('lup_actions.actionstatus','ON EXTENSION')                            
+                ->orderBy('duedate_action','asc')
+                ->get();                          
+
+        $statusaction=lupallstatusactions( $lupparents);        
+        
+        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        'statusaction'=>$statusaction,        
+        ]);
+    }
+
+    public function querylup_actionclosing()
+    {
+        $lupparents = DB::table('lup_parents')
+                ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
+                ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')                
+                ->where('lup_actions.actionstatus','ON CLOSING')                           
                 ->orderBy('duedate_action','asc')
                 ->get();                          
 
@@ -318,8 +421,22 @@ class LUPDashboardController extends Controller
         $lupparents = DB::table('lup_parents')
                 ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
                 ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')                 
-                ->where('lup_actions.actionstatus','ON EXTENSION APPROVAL')  
-                ->where('lup_parents.lupstatus','OPEN')             
+                ->where('lup_actions.actionstatus','ON EXTENSION APPROVAL')                            
+                ->orderBy('duedate_action','asc')
+                ->get();                          
+
+        $statusaction=lupallstatusactions( $lupparents);        
+        
+        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        'statusaction'=>$statusaction,        
+        ]);
+    }
+    public function querylup_actioncancel()
+    {
+        $lupparents = DB::table('lup_parents')
+                ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
+                ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')                 
+                ->where('lup_actions.actionstatus','ON CANCEL')                            
                 ->orderBy('duedate_action','asc')
                 ->get();                          
 

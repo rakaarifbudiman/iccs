@@ -56,8 +56,8 @@ class LUPAction extends Model
         return $encrypt;
     }
 
-    public function scopeClosed($query)
+    public function scopeStatus($query,$status)
     {
-        $query->where('actionstatus','CLOSED');
+        $query->where('actionstatus',$status);
     }
 }
