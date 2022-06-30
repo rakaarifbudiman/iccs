@@ -180,8 +180,31 @@ class LUPParentPolicy
         return ($lup->lupstatus == "ON CANCEL APPROVAL") 
             && ($user->level==3)
                 ? Response::allow()
-                    : Response::deny('Failed... You are not authorized'); 
-       
+                    : Response::deny('Failed... You are not authorized');       
+    }
+
+    public function requestclosinglup(User $user, LUPParent $lup)
+    {                
+        $action = $lup->lupaction->where('actionstatus','<>','CLOSED')->where('actionstatus','<>','CANCEL')->count();        
+        return ($lup->lupstatus=="OPEN") 
+            && ($user->level ==2) && ($action<1)
+                ? Response::allow()
+                    : Response::deny('Failed... You are not authorized ');                  
+    }
+
+    public function closinglup(User $user, LUPParent $lup)
+    {                
+        $action = $lup->lupaction->where('actionstatus','<>','CLOSED')->where('actionstatus','<>','CANCEL')->count();        
+        return ($lup->lupstatus=="ON CLOSING") 
+            && ($user->level ==3) && ($action<1)
+                ? Response::allow()
+                    : Response::deny('Failed... You are not authorized ');                  
+    }
+    public function displayclosinglup(User $user, LUPParent $lup)
+    {                
+        return ($lup->lupstatus=="ON CLOSING" || $lup->lupstatus=="CLOSED")             
+                ? Response::allow()
+                    : Response::deny('Failed... You are not authorized ');                  
     }
 
 

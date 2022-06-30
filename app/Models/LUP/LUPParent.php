@@ -95,9 +95,17 @@ class LUPParent extends Model
     {
         return $this->hasOne(User::class,'username','cancel_requester');
     }
+    public function cancel_reviewers()
+    {
+        return $this->hasOne(User::class,'username','cancel_reviewer');
+    }
     public function cancel_approvers()
     {
         return $this->hasOne(User::class,'username','cancel_approver');
+    }
+    public function closing_reviewers()
+    {
+        return $this->hasOne(User::class,'username','reviewer_closing');
     }
     public function closing_approvers()
     {

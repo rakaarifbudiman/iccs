@@ -61,7 +61,7 @@
                             @can('confirmedlup',$lupparent)
                                 <a href="#" class="btn btn-sm btn-primary edit" data-bs-toggle="modal" data-bs-target="#modaleditconfirmer{{ $lupparent->id }}" title="Edit Confirmer"><i class="ri-edit-2-fill"></i></a>                       
                                 <a href="#" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalconfirmedlup{{ $lupparent->id }}" title="Confirmed LUP"><i class="bi-check-lg"></i></a>                   
-                            @endcan                         
+                            @endcan 
                             
                         </th>
                         <th scope="row">Confirmer</th>                                               
@@ -70,8 +70,58 @@
                         <td class="{{$lupparent->dateconfirmed ? 'bg-success text-white' :'bg-danger'}}">@date($lupparent->dateconfirmed,'d-M-y')</td>
                         <td class="setwidth"><textarea  readonly>{{ $lupparent->note_confirmer }}</textarea></td>
                         
-                    </tr>         
-                                                       
+                    </tr>        
+                    <tr>
+                        <th scope="row">
+                            @can('reviewcancel',$lupparent)
+                                <a title="Review Cancel LUP" class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#modalreviewcancellup{{$lupparent->id}}"><i class="bi-check-lg"></i>                                         
+                            @endcan                          
+                        </th>
+                        <th scope="row">Cancel Reviewer</th>                                               
+                        <td>{{ $lupparent->cancel_reviewer }}</td>                    
+                        <td>{{ $lupparent->cancel_reviewer ? $lupparent->cancel_reviewers->department : '' }}</td>
+                        <td>@date($lupparent->datecancel_reviewed,'d-M-y')</td>
+                        <td class="setwidth"><textarea  readonly>{{ $lupparent->cancel_notes }}</textarea></td>                        
+                    </tr>        
+                    <tr>
+                        <th scope="row">
+                            @can('approvedcancel',$lupparent)
+                                <a title="Approved Cancel LUP" class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#modalapprovedcancellup{{$lupparent->id}}"><i class="bi-check-lg"></i>             
+                            @endcan                        
+                        </th>
+                        <th scope="row">Cancel Approver</th>                                               
+                        <td>{{ $lupparent->cancel_approver }}</td>                    
+                        <td>{{ $lupparent->cancel_approver ? $lupparent->cancel_approvers->department : '' }}</td>
+                        <td>@date($lupparent->datecancel_approved,'d-M-y')</td>
+                        <td class="setwidth"><textarea  readonly>{{ $lupparent->approvercancel_notes }}</textarea></td>                        
+                    </tr>        
+                    <tr>
+                        <th scope="row">
+                            @can('requestclosinglup',$lupparent)
+                                <a title="Request Closing LUP" class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#modalrequestclosinglup{{$lupparent->id}}"><i class="bi-check-lg"></i>         
+                            @endcan                             
+                        </th>
+                        <th scope="row">Closing Reviewer</th>                                               
+                        <td>{{ $lupparent->reviewer_closing }}</td>                    
+                        <td>{{ $lupparent->reviewer_closing ? $lupparent->closing_reviewers->department : '' }}</td>
+                        <td class="{{$lupparent->dateclosing_reviewer ? 'bg-success text-white' :'bg-danger'}}">@date($lupparent->dateclosing_reviewer,'d-M-y')</td>
+                        <td class="setwidth"><textarea  readonly>{{ $lupparent->closing_notes }}</textarea></td>                        
+                    </tr>        
+                    <tr>
+                        <th scope="row">
+                            @can('closinglup',$lupparent)
+                                <a title="Approved Closing LUP" class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#modalapprovedclosinglup{{$lupparent->id}}"><i class="bi-check-lg"></i>                                         
+                            @endcan          
+                            @can('displayclosinglup',$lupparent)                   
+                                <a title="Display Closing LUP" class="btn btn-sm btn-secondary text-white" href="#" data-bs-toggle="modal" data-bs-target="#modaldisplayclosinglup{{$lupparent->id}}"><i class="bi-eye"></i>         
+                            @endcan    
+                        </th>
+                        <th scope="row">Closing Approver</th>                                               
+                        <td>{{ $lupparent->approver_closing }}</td>                    
+                        <td>{{ $lupparent->approver_closing ? $lupparent->closing_approvers->department : '' }}</td>
+                        <td class="{{$lupparent->dateclosing_approver ? 'bg-success text-white' :'bg-danger'}}">@date($lupparent->dateclosing_approver,'d-M-y')</td>
+                        <td class="setwidth"><textarea  readonly>{{ $lupparent->approverclosing_notes }}</textarea></td>                        
+                    </tr>                          
                         
          
                     {{-- @include('lup.modal.modalapproval') --}}

@@ -18,6 +18,7 @@ use App\Models\ICCS\ICCSApproval;
 use App\Mail\LUP\LUPNotifToLeader;
 use App\Mail\LUP\LUPRequestCancel;
 use Illuminate\Support\Facades\DB;
+use App\Mail\LUP\LUPRequestClosing;
 use App\Models\ICCS\RelatedUtility;
 use App\Http\Controllers\Controller;
 use App\Models\ICCS\RelatedDocument;
@@ -1082,7 +1083,7 @@ class LUPParentController extends Controller
         $decrypted = Crypt::decryptString($id);
         //get data lup
         $lup = LUPParent::find($decrypted); 
-        //$this->authorize('signinisiator', $lup);          
+        $this->authorize('requestclosinglup', $lup);          
         $lup->reviewer_closing = Auth::user()->username;
         $lup->approver_closing = $request->approver; 
         $lup->verified_a = $request->verified_a;    
@@ -1099,22 +1100,34 @@ class LUPParentController extends Controller
                 inline-block;text-decoration: none;"'.'>Go to LUP</a>';    
                 $duedate = date('d-M-Y',strtotime($lup->duedate_start));            
                 $mailData = [
+                    'nolup'=> $lup->nolup,
                     'code' => $lup->code,
-                    'documentname' => $lup->documentname,
-                    'lup_current' => $lup->lup_current,
-                    'lup_proposed' => $lup->lup_proposed,
-                    'lup_reason' => $lup->lup_reason,   
-                    'categorization' => $lup->categorization,                     
-                    'risk_assestment' => $lup->risk_assestment,  
-                    'urllup'=>$urllup,
-                    'duedate'=>$duedate,
+                    'verified_a' => $lup->verified_a,
+                    'verified_b' => $lup->verified_b,
+                    'verified_c' => $lup->verified_c,                    
+                    'urllup'=>$urllup,                    
                     'name'=>Auth::user()->username,
                     'note'=>$request->closing_notes,
                 ];        
             $emailto = $lup->closing_approvers->email;         
             Mail::to(env('MAIL_TO_TESTING'))           
-                ->send(new LUPRequestCancel($mailData,$lup)); 
-            return back()->with('success','Success...Cancellation has been submitted');       
+                ->send(new LUPRequestClosing($mailData,$lup)); 
+            return back()->with('success','Success...Closing has been submitted');      
+    }
+    //Approved Closing LUP
+    public function closinglup(Request $request,$id)
+    {      
+        $decrypted = Crypt::decryptString($id);
+        //get data lup
+        $lup = LUPParent::find($decrypted); 
+        //$this->authorize('signinisiator', $lup);    
+        
+        $lup->approverclosing_notes = $request->approverclosing_notes;    
+        $lup->dateclosing_approver = now();         
+        $lup->lupstatus = 'CLOSED';                
+        $lup->save();          
+            
+        return back()->with('success','Success...LUP has been CLOSED');     
         
     }
 }
