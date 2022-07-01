@@ -54,7 +54,7 @@
                       </a>
                       @can('approvedevidence',$lupaction)
                         <a href="#" data-bs-toggle="modal" data-bs-target="#modalapprovedevidence{{ $lupaction->id }}" class="btn btn-sm btn-success text-white" title="Approved Closing Evidence"><i class="bi-file-earmark-check"></i></a>
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalrejectevidence{{ $lupaction->id }}" class="btn btn-sm btn-danger text-white" title="Reject Closing Evidence"><i class="bi-file-earmark-x"></i></a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalrejectevidence{{ $lupaction->id }}" class="btn btn-sm btn-danger text-white" title="Reject Closing Evidence" {{!$lupaction->evidence_filename ? 'hidden' : ''}}><i class="bi-file-earmark-x"></i></a>
                       @endcan        
                       @can('extended',$lupaction)              
                         <a href="#" data-bs-toggle="modal" data-bs-target="#modalextension{{ $lupaction->id }}" class="btn btn-sm btn-info" title="Submit Due Date Extension"><i class="bi-calendar-plus"></i></a>
@@ -73,57 +73,58 @@
                       @endcan
                       @can('approvedcancelaction',$lupaction)
                         <a href="#" data-bs-toggle="modal" data-bs-target="#modalapprovedcancelaction{{ $lupaction->id }}" class="btn btn-sm btn-success text-white" title="Approved Cancel Action"><i class="bi-bookmark-check"></i></a>                            
-                      @endcan
+                      @endcan  
+                    </th>
+                      <td>{{$lupaction->action}}</td>         
+                      <td>{{ $lupaction->pic_action }}</td>                    
+                      <td>@date($lupaction->signdate_action,'d-M-y')</td>
+                      <td>@date($lupaction->duedate_action,'d-M-y')</td>
+                      <td class="{{$lupaction->statusaction=='OVERDUE' ? "bg-danger text-white" : 
+                      ($lupaction->statusaction=='CLOSED' ? "bg-success text-white" : 
+                      ($lupaction->statusaction=='ON EXTENSION' ? "bg-primary text-white" :
+                      ""))
+                    }}">{{ $lupaction->statusaction }}</td>  
+                    <td>{{$lupaction->sign_type}}</td>                                    
+                    <td>{{(!$lupaction->pic_action || !$lupaction->pic->department) ? '' : $lupaction->pic->department}}</td>                                          
+                  </tr> 
+                  @include('lup.modal.edit.actionplan')  
+                  @empty             
+                  @endforelse
+                  </tbody>
+            </table>       
+          </div>        
+      </div>
+@include('lup.review.multievidence')    
+      <div class="row">     
+        <div class="col-md-12 mb-2">
+          <div class="form-control">
+            <label for="action_notes">Justification</label>
+            <input type="text" class="form-control text-small" name="action_notes" id="action_notes" placeholder="Fill this ...If No action plan needed" value = "{{ old('action_notes',$lupparent->action_notes) }}" autocomplete="off" {{Auth::user()->can('confirmedlup',$lupparent) ? '':'disabled'}}>          
+            @error('action_notes')
+              <div class="text-danger">{{ $message }}</div>
+            @enderror 
+          </div>
+        </div>      
+      </div>    
+      <div class="row">
+        <div class="col-md-12 mb-2">
+          <div class="form-control">
+            <label for="action_notifier"> Proposed Change Notify To </label>  
+            <textarea class="form-control text-small" type="email" list="listuser listuser2" id="action_notifier" name="action_notifier" multiple="multiple" placeholder="Select user to notify with button Add Notification and delete user with button Delete Notification..." value="{{ old('action_notifier') }}" disabled>{{$lupparent->action_notifier}}</textarea>
+          </div>
+        </div> 
+      </div>
+  
+  </div>           <!-- End Action Plan Form --> 
 
-                                                      
-                                              
+
+
+
                      
                               
                       
                       
                                                               
-                  </th>
-                    <td>{{$lupaction->action}}</td>         
-                    <td>{{ $lupaction->pic_action }}</td>                    
-                    <td>@date($lupaction->signdate_action,'d-M-y')</td>
-                    <td>@date($lupaction->duedate_action,'d-M-y')</td>
-                    <td class="{{$lupaction->statusaction=='OVERDUE' ? "bg-danger text-white" : 
-                    ($lupaction->statusaction=='CLOSED' ? "bg-success text-white" : 
-                    ($lupaction->statusaction=='ON EXTENSION' ? "bg-primary text-white" :
-                    ""))
-                  }}">{{ $lupaction->statusaction }}</td>  
-                  <td>{{$lupaction->sign_type}}</td>                                    
-                  <td>{{(!$lupaction->pic_action || !$lupaction->pic->department) ? '' : $lupaction->pic->department}}</td>     
-                                        
-                </tr> 
-                @include('lup.modal.edit.actionplan')  
-                @empty             
-                @endforelse
-                </tbody>
-          </table>       
-        </div>        
-    </div>    
-    <div class="row">     
-      <div class="col-md-12 mb-2">
-        <div class="form-control">
-          <label for="action_notes">Justification</label>
-          <input type="text" class="form-control text-small" name="action_notes" id="action_notes" placeholder="Fill this ...If No action plan needed" value = "{{ old('action_notes',$lupparent->action_notes) }}" autocomplete="off" {{Auth::user()->can('confirmedlup',$lupparent) ? '':'disabled'}}>          
-          @error('action_notes')
-            <div class="text-danger">{{ $message }}</div>
-          @enderror 
-        </div>
-      </div>      
-    </div>    
-    <div class="row">
-      <div class="col-md-12 mb-2">
-        <div class="form-control">
-          <label for="action_notifier"> Proposed Change Notify To </label>  
-          <textarea class="form-control text-small" type="email" list="listuser listuser2" id="action_notifier" name="action_notifier" multiple="multiple" placeholder="Select user to notify with button Add Notification and delete user with button Delete Notification..." value="{{ old('action_notifier') }}" disabled>{{$lupparent->action_notifier}}</textarea>
-        </div>
-      </div> 
-    </div>
-
-</div>           <!-- End Action Plan Form --> 
                                               
                         
                         

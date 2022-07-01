@@ -57,6 +57,7 @@ use App\Http\Controllers\LUP\RelatedDepartmentController;
 
     /* lup attachments */    
     Route::POST('/lup/attachment/{id}/upload', [LUPFileController::class, 'upload']);
+    Route::POST('/lup/attachment/{id}/uploadevidence', [LUPFileController::class, 'uploadevidence']);
     Route::POST('/lup/attachment/{id}/update', [LUPFileController::class, 'reupload']);
     Route::get('/lup/attachment/{id}/download', [LUPFileController::class, 'download']);
     Route::get('/lup/attachment/{id}/delete', [LUPFileController::class, 'destroy_attachment']);
@@ -129,6 +130,8 @@ Route::group(['middleware' => 'reviewer'], function() {
     Route::get('/lup/{id}/cancellup', [LUPParentController::class, 'cancellup']);  
     Route::get('/lup/{id}/reactivation', [LUPParentController::class, 'reactivation']); 
     Route::put('/lup/{id}/updateapprover', [LUPParentController::class, 'updateapprover']); 
+    Route::put('/lup/{id}/updateconfirmer', [LUPParentController::class, 'updateconfirmer']); 
+    Route::put('/lup/{id}/updatereviewerqcjm', [LUPParentController::class, 'updatereviewerqcjm']); 
     Route::put('/lup/action/{id}/approvedevidence', [lupActionController::class, 'approvedevidence']);
     Route::put('/lup/action/{id}/rejectevidence', [lupActionController::class, 'rejectevidence']);
     Route::put('/lup/action/{id}/reviewextension', [LUPActionController::class, 'reviewextension']);    

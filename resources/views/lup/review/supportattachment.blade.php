@@ -19,7 +19,7 @@
     </thead>
     
       <tbody>      
-        @forelse ($lupparent->lupfile as $index =>$attachment)          
+        @forelse ($lupparent->lupfile->where('is_evidence',false) as $index =>$attachment)          
         
         <tr>
             <th scope="row">{{$index +1 }}</th>

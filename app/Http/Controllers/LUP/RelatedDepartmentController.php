@@ -97,7 +97,8 @@ class RelatedDepartmentController extends Controller
     {
         $decrypted = Crypt::decryptString($id);
         $relateddepartment = RelatedDepartment::find($decrypted);  
-        
+        $lup=$relateddepartment->lupparent;
+        $this->authorize('update',$lup);
         auditlups($relateddepartment,Auth::user()->username,'Delete Related Department',$relateddepartment->code,
                 'related_departments','',$relateddepartment->makeHidden(['id', 'deleted_at']),'');
         $relateddepartment->delete();

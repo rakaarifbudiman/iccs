@@ -32,7 +32,7 @@
                     <tr>
                         <th scope="row">
                             @can('signreviewerqcjm',$lupparent)
-                                <a href="#" class="btn btn-sm btn-primary edit" data-bs-toggle="modal" data-bs-target="#modaleditapprover{{ $lupparent->id }}" title="Edit Approver"><i class="ri-edit-2-fill"></i></a>                   
+                                <a href="#" class="btn btn-sm btn-primary edit" data-bs-toggle="modal" data-bs-target="#modaledit_reviewer2{{ $lupparent->id }}" title="Edit Reviewer 2"><i class="ri-edit-2-fill"></i></a>                   
                                 <a href="#" class="btn btn-sm btn-success edit" data-bs-toggle="modal" data-bs-target="#modalsign_reviewerqcjm{{ $lupparent->id }}" title="Sign reviewer 2"><i class="bi-check-lg"></i></a>                                                                                       
                             @endcan                               
                         </th>

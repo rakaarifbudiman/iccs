@@ -308,10 +308,10 @@
           <nav class="header-nav ">
             <ul class="d-flex align-items-center">
               <li class="nav-item dropdown">
-                <a class="nav-link card-icon rounded-circle d-flex align-items-center justify-content-center" href="/queryluponclosingapproval" 
-                  data-bs-toggle="tooltip" data-bs-placement="left" title="LUP ON CLOSING APPROVAL">
+                <a class="nav-link card-icon rounded-circle d-flex align-items-center justify-content-center" href="/queryluponclosing" 
+                  data-bs-toggle="tooltip" data-bs-placement="left" title="LUP ON CLOSING">
                   <i class="bi bi-door-open-fill"></i>
-                  <span class="badge {{ $luponclosingapproval==0 ? 'bg-success' : 'bg-danger' }}  badge-number">{{ $luponclosingapproval}}</span>
+                  <span class="badge {{ $luponclosing==0 ? 'bg-success' : 'bg-danger' }}  badge-number">{{ $luponclosing}}</span>
                 </a><!-- End Notification Icon -->
               </li>
             </ul>

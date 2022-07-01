@@ -244,7 +244,7 @@
                             <th style="width: 35.6028%;">Date</th>     
                             <th style="width: 35.6028%;">Uploader</th>                               
                         </tr>
-                        @forelse ($lup->lupfile as $index=>$attachment)
+                        @forelse ($lup->lupfile->where('is_evidence',false) as $index=>$attachment)
                             <tr>
                             <td style="width: 5%;"><small>{{ $index +1 }}</small></td>
                             <td style="width: 80%;"><small>{{ $attachment->document_name }}</small></td>

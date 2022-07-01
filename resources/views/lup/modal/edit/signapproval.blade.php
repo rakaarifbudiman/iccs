@@ -40,6 +40,42 @@
       </div>
     </div>
   </div>
+  <!-- Modal Edit Reviewer QSE-->
+<div class="modal fade" id="modaledit_reviewer2{{ $lupparent->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md" role="utility">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit Reviewer by QCJM</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" name="upload-file" class="form-horizontal" enctype="multipart/form-data" id="upload-file" action="/lup/{{Crypt::encryptString($lupparent->id)}}/updatereviewerqcjm">
+        @csrf  
+        @method('put')     
+      <div class="modal-body"> 
+          <div class="row mb-3">
+              <label for="reviewer" class="col-sm col-form-label col-form-label-sm">Reviewer 2</label>
+              <div class="col-sm-8">
+                  <input class="form-control form-control-sm" area="text" list="listapprover" id="reviewer2" name="reviewer2" placeholder="Select Reviewer 2" required autocomplete="off">                                               
+                  <datalist id="listapprover">
+                    @foreach ($listapprovers as $listapprover)
+                      <option value="{{ $listapprover->username }}">{{ $listapprover->username }} - {{ $listapprover->name }}</option>
+                    @endforeach
+                </datalist>       
+              </div>                                 
+            </div>           
+        <input class="form-control form-control-sm" type="text" id="modalhidedatesign_leader" name="modalhidedatesign_leader" value="@date($lupparent->datesign_leader)" hidden> 
+        <input class="form-control form-control-sm" type="text" id="modalhidecodelup" name="modalhidecodelup" value="{{ $lupparent->code }}" hidden>
+        <input class="form-control form-control-sm" type="text" id="modalhidepicaction" name="modalhidepicaction" value="" hidden>
+        <input class="form-control form-control-sm" type="text" id="modalhidestatuslup" name="modalhidestatuslup" value="{{ $lupparent->lupstatus }}" hidden>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+        <button type="submit" class="btn btn-primary" name="saveaction">Update</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
 
   <!-- Modal Sign Reviewer QCJM-->
 <div class="modal fade" id="modalsign_reviewerqcjm{{ $lupparent->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -84,6 +120,44 @@
     </div>
   </div>
 
+<!-- Modal Edit Approver-->
+<div class="modal fade" id="modaleditapprover{{ $lupparent->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md" role="utility">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit Approver</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" name="upload-file" class="form-horizontal" enctype="multipart/form-data" id="upload-file" action="/lup/{{Crypt::encryptString($lupparent->id)}}/updateapprover">
+        @csrf  
+        @method('put')     
+      <div class="modal-body"> 
+          <div class="row mb-3">
+              <label for="approver" class="col-sm col-form-label col-form-label-sm">Approver</label>
+              <div class="col-sm-8">
+                  <input class="form-control form-control-sm" area="text" list="listapprover" id="approver" name="approver" placeholder="Select Approver" required autocomplete="off">                                               
+                  <datalist id="listapprover">
+                    @foreach ($listapprovers as $listapprover)
+                      <option value="{{ $listapprover->username }}">{{ $listapprover->username }} - {{ $listapprover->name }}</option>
+                    @endforeach
+                </datalist>       
+              </div>                                 
+            </div>           
+        <input class="form-control form-control-sm" type="text" id="modalhidedatesign_leader" name="modalhidedatesign_leader" value="@date($lupparent->datesign_leader)" hidden> 
+        <input class="form-control form-control-sm" type="text" id="modalhidecodelup" name="modalhidecodelup" value="{{ $lupparent->code }}" hidden>
+        <input class="form-control form-control-sm" type="text" id="modalhidepicaction" name="modalhidepicaction" value="" hidden>
+        <input class="form-control form-control-sm" type="text" id="modalhidestatuslup" name="modalhidestatuslup" value="{{ $lupparent->lupstatus }}" hidden>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+        <button type="submit" class="btn btn-primary" name="saveaction">Update</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+
+
   <!-- Modal Sign Approver-->
 <div class="modal fade" id="modalapprovedlup{{ $lupparent->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-md" role="utility">
@@ -116,6 +190,43 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
         <button type="submit" class="btn btn-primary" name="saveaction">Sign</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Edit Confirmer-->
+<div class="modal fade" id="modaleditconfirmer{{ $lupparent->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md" role="utility">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit Confirmer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" name="upload-file" class="form-horizontal" enctype="multipart/form-data" id="upload-file" action="/lup/{{Crypt::encryptString($lupparent->id)}}/updateconfirmer">
+        @csrf  
+        @method('put')     
+      <div class="modal-body"> 
+          <div class="row mb-3">
+              <label for="confirmer" class="col-sm col-form-label col-form-label-sm">Confirmer</label>
+              <div class="col-sm-8">
+                  <input class="form-control form-control-sm" area="text" list="listapprover" id="confirmer" name="confirmer" placeholder="Select Confirmer" required autocomplete="off">                                               
+                  <datalist id="listapprover">
+                    @foreach ($listapprovers as $listapprover)
+                      <option value="{{ $listapprover->username }}">{{ $listapprover->username }} - {{ $listapprover->name }}</option>
+                    @endforeach
+                </datalist>       
+              </div>                                 
+            </div>           
+        <input class="form-control form-control-sm" type="text" id="modalhidedatesign_leader" name="modalhidedatesign_leader" value="@date($lupparent->datesign_leader)" hidden> 
+        <input class="form-control form-control-sm" type="text" id="modalhidecodelup" name="modalhidecodelup" value="{{ $lupparent->code }}" hidden>
+        <input class="form-control form-control-sm" type="text" id="modalhidepicaction" name="modalhidepicaction" value="" hidden>
+        <input class="form-control form-control-sm" type="text" id="modalhidestatuslup" name="modalhidestatuslup" value="{{ $lupparent->lupstatus }}" hidden>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+        <button type="submit" class="btn btn-primary" name="saveaction">Update</button>
       </div>
     </form>
     </div>

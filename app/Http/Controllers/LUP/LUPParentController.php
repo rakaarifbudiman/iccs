@@ -1183,4 +1183,88 @@ class LUPParentController extends Controller
                 ->send(new LUPHasRollback($mailData,$lup)); 
             return back()->with('success','Success...LUP Has been Rollback to ON REVIEW');      
     }
+
+    //Update Reviewer 2
+    public function updatereviewerqcjm(Request $request,$id)
+    {      
+        $decrypted = Crypt::decryptString($id);
+        //get data lup
+        $lup = LUPParent::find($decrypted); 
+        $this->authorize('signreviewerqcjm', $lup);  
+        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_parents'),['updated_at']);        
+           
+        //get old value 
+        foreach($fields as $field){
+            $old[$field]= $lup->$field;
+        }
+        
+        $lup->reviewer2 = $request->reviewer2;                 
+        $lup->save();          
+        
+        foreach($fields as $field){
+            if($lup->wasChanged($field)){
+                if($old[$field]!=$lup->$field ){
+                    auditlups($lup,Auth::user()->username,'Audit Change',$lup->code,
+                    'lup_parents',$field,$old[$field],$lup->$field );
+                }
+            }
+        }                   
+            return back();      
+    }
+
+    //Update Approver
+    public function updateapprover(Request $request,$id)
+    {      
+        $decrypted = Crypt::decryptString($id);
+        //get data lup
+        $lup = LUPParent::find($decrypted); 
+        $this->authorize('signapprover', $lup);  
+        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_parents'),['updated_at']);        
+           
+        //get old value 
+        foreach($fields as $field){
+            $old[$field]= $lup->$field;
+        }
+        
+        $lup->approver = $request->approver;                 
+        $lup->save();          
+        
+        foreach($fields as $field){
+            if($lup->wasChanged($field)){
+                if($old[$field]!=$lup->$field ){
+                    auditlups($lup,Auth::user()->username,'Audit Change',$lup->code,
+                    'lup_parents',$field,$old[$field],$lup->$field );
+                }
+            }
+        }                   
+            return back();      
+    }
+
+    //Update Confirmer
+    public function updateconfirmer(Request $request,$id)
+    {      
+        $decrypted = Crypt::decryptString($id);
+        //get data lup
+        $lup = LUPParent::find($decrypted); 
+        $this->authorize('confirmedlup', $lup);  
+        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_parents'),['updated_at']);        
+           
+        //get old value 
+        foreach($fields as $field){
+            $old[$field]= $lup->$field;
+        }
+        
+        $lup->confirmer = $request->confirmer;                 
+        $lup->save();          
+        
+        foreach($fields as $field){
+            if($lup->wasChanged($field)){
+                if($old[$field]!=$lup->$field ){
+                    auditlups($lup,Auth::user()->username,'Audit Change',$lup->code,
+                    'lup_parents',$field,$old[$field],$lup->$field );
+                }
+            }
+        }                   
+            return back();      
+    }
 }

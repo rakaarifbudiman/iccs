@@ -57,10 +57,13 @@ class LUPParentSeeder extends Seeder
             }elseif($lupparents->regulatory_variation=='- Tidak Berdampak'){
                 $lupparents->regulatory_variation=null;
             }elseif($lupparents->regulatory_variation=='- Variasi Minor'){
+                $lupparents->regulatory_impact=true;
                 $lupparents->regulatory_variation='Minor';
             }elseif($lupparents->regulatory_variation=='- Variasi Mayor'){
+                $lupparents->regulatory_impact=true;
                 $lupparents->regulatory_variation='Major';
             }elseif($lupparents->regulatory_variation=='- Variasi Minor - Notifikasi'){
+                $lupparents->regulatory_impact=true;
                 $lupparents->regulatory_variation='Notification';
             }
 
@@ -108,6 +111,9 @@ class LUPParentSeeder extends Seeder
                 $lupparents->dateconfirmed = null;
                 $lupparents->approved = null;
                 $lupparents->confirmed = null;
+            }elseif($lupparents->lupstatus=="OPEN"){
+                $lupparents->reviewer2=$lupparents->approver;
+                $lupparents->confirmer=$lupparents->approver;
             }
             $lupparents->save();
         }
