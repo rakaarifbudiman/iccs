@@ -25,21 +25,22 @@ class LUPParentSeeder extends Seeder
         inisiator,leader,datesign_inisiator,datesign_leader,note_reviewer,note_approver,datesubmit_regulatory_reviewer,regulatory_change_type,
         regulatory_variation,regulatory_reviewer,datesubmit_regulatory_approver,regulatory_approver,datesign_regulatory_approver,
         datesubmit_reviewer,reviewer,datesubmit_approver,approver,approved,dateapproved,duedate_start_temporary,risk_assestment,
-        closing_notes,verified_a,verified_b,verified_c,reviewer_closing,approver_closing,dateclosing_approver,note_regulatory_reviewer
+        closing_notes,verified_a,verified_b,verified_c,reviewer_closing,approver_closing,dateclosing_approver,note_regulatory_reviewer,datesubmit_reviewer2
         )
         SELECT dateinput, nodokumenlup, nolup, NamaDok, JenisLUP,JenisLUPNote, date_format(dateinput,'%y'),
         StatusLUP,StatusSaatIni,DetailUsulanPerubahan,AlasanPerubahan,6Kategori,81Permanen,82Sementara,811StartPermanen,822FinishSementara,
         Inisiator,AtasanInisiator,SignDateInisiator,SignDateAtasanInisiator,Note1,Note2,DateSubmitToReg,JenisPerubahanReg,
         JenisReg,RegReviewer,DateRegReview,RegApprover,DateRegApproved,
         DateSubmitToQC,Reviewer,DateSubmitToApprover,Approver,LUPApproved,DateApproved,821StartSementara,DeskripsiKajianResiko,
-        CatatanClosing,VerifikasiA,VerifikasiB,VerifikasiC,ClosingBy,ApproverClosing,DateClosing,13Note
+        CatatanClosing,VerifikasiA,VerifikasiB,VerifikasiC,ClosingBy,ApproverClosing,DateClosing,13Note,DateSubmitToApprover
         FROM old_iccs.old_lupparents";
         $result = DB::select(DB::raw($sqlquery));
         
         //fill duedate_type
         $count=lupparent::all()->count();        
         for($i = 1; $i <= $count; $i++){        
-            $lupparents = lupparent::find($i);
+            $lupparents = lupparent::find($i);          
+
             if ($lupparents->permanent==1 && $lupparents->temporary==0){
                 $lupparents->duedate_type ='Permanent' ;
             }elseif($lupparents->permanent==0 && $lupparents->temporary==1){
@@ -93,6 +94,21 @@ class LUPParentSeeder extends Seeder
                 $lupparents->regulatory_approver=$regapprover->username;;
             }
 
+            //change LUP Status
+            if($lupparents->lupstatus=="ON PROCESS"){
+                $lupparents->lupstatus="CREATE";
+                $lupparents->datesign_leader=null;
+            }elseif($lupparents->lupstatus=="ON REVIEW" || $lupparents->lupstatus=="ON APPROVAL"){
+                $lupparents->lupstatus="ON PROCESS";
+                $lupparents->datesign_leader=null;
+                $lupparents->note_reviewer2 =null;
+                $lupparents->note_confirmer =null;        
+                $lupparents->datesubmit_approver = null;
+                $lupparents->dateapproved = null;
+                $lupparents->dateconfirmed = null;
+                $lupparents->approved = null;
+                $lupparents->confirmed = null;
+            }
             $lupparents->save();
         }
 

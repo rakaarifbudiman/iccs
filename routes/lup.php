@@ -147,4 +147,5 @@ Route::group(['middleware' => 'approver'], function() {
     Route::put('/lup/action/{id}/rejectextension', [lupActionController::class, 'rejectextension']);
     Route::put('/lup/{id}/approvedcancellup', [LUPParentController::class, 'approvedcancellup']);
     Route::put('/lup/{id}/closinglup', [LUPParentController::class, 'closinglup']);  
+    Route::put('/lup/{id}/rollback', [LUPParentController::class, 'rollback']);  
 });

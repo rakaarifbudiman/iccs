@@ -207,5 +207,12 @@ class LUPParentPolicy
                     : Response::deny('Failed... You are not authorized ');                  
     }
 
+    public function rollback(User $user, LUPParent $lup)
+    {                
+        return ($lup->lupstatus=="OPEN") && ($user->level ==3)             
+                ? Response::allow()
+                    : Response::deny('Failed... You are not authorized ');                  
+    }
+
 
 }

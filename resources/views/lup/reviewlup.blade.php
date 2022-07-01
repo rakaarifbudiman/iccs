@@ -30,7 +30,13 @@
             <a title="Request Cancel LUP" class="breadcrumb-item" href="#" data-bs-toggle="modal" data-bs-target="#modalrequestcancellup{{$lupparent->id}}"><i class="ri-close-circle-line"></i>         
             </a>          
           </li>  
-        @endcan                 
+        @endcan   
+        @can('rollback',$lupparent)
+        <li class="breadcrumb-item active">
+          <a title="Rollback to ON REVIEW" class="breadcrumb-item" href="#" data-bs-toggle="modal" data-bs-target="#modalrollbacklup{{$lupparent->id}}"><i class="bi-skip-backward-fill"></i>         
+          </a>          
+        </li>       
+        @endcan         
         <li class="breadcrumb-item active">
           <a href="#" title="Download Regulatory Cheat Sheet" onclick="window.open('/lup/downloadregcheatsheet','_blank').focus"><i class="ri-article-line"></i>            
           </a>          
@@ -52,8 +58,14 @@
                   ON PROCESS  : LUP being review by QSE <br>
                   ON REVIEW   : LUP being review by Related Departments <br>
                   ON APPROVAL : LUP being review by QCJM <br>
-                  APPROVED    : LUP has been approved , received No LUP, and fill action plan <br>
-                  OPEN        : LUP has been confirmed by QCJM and waiting PIC action to close their action                  
+                  APPROVED    : LUP has been approved , received No LUP, and waiting for fill action plan <br>
+                  OPEN        : LUP has been confirmed by QCJM and waiting PIC action to close their action <br>
+                  ON CANCEL   : LUP has been request for cancellation and being review by QSE <br>    
+                  ON CANCEL APPROVAL   : LUP has been request for cancellation and being review by QCJM <br>     
+                  ON CLOSING   : LUP has been request for closing and being review by QCJM <br>    
+                  CLOSED   : LUP has been CLOSED, no need further action <br>  
+                  CANCEL   : LUP has been CANCEL, no need further action <br> 
+                               
                 </li>                
               </ul><!-- End Messages Dropdown Items -->         
         </li>

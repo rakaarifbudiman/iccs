@@ -14,6 +14,7 @@ use App\Models\LUP\LUPAction;
 use App\Models\LUP\LUPParent;
 use App\Mail\LUP\LUPHasCancel;
 use App\Mail\LUP\LUPNotifToQC;
+use App\Mail\LUP\LUPHasRollback;
 use App\Models\ICCS\ICCSApproval;
 use App\Mail\LUP\LUPNotifToLeader;
 use App\Mail\LUP\LUPRequestCancel;
@@ -1127,7 +1128,59 @@ class LUPParentController extends Controller
         $lup->lupstatus = 'CLOSED';                
         $lup->save();          
             
-        return back()->with('success','Success...LUP has been CLOSED');     
+        return back()->with('success','Success...LUP has been CLOSED');       
+    }
+
+    //Rollback LUP
+    public function rollback(Request $request,$id)
+    {      
+        $decrypted = Crypt::decryptString($id);
+        //get data lup
+        $lup = LUPParent::find($decrypted); 
+        $this->authorize('rollback', $lup);  
+        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_parents'),['updated_at']);        
+           
+        //get old value 
+        foreach($fields as $field){
+            $old[$field]= $lup->$field;
+        }
         
+        $lup->approver = Auth::user()->username;
+        $lup->note_approver = $request->note_approver;       
+        $lup->note_reviewer2 ='';
+        $lup->note_confirmer ='';        
+        $lup->datesubmit_approver = null;
+        $lup->dateapproved = null;
+        $lup->dateconfirmed = null;
+        $lup->approved = null;
+        $lup->confirmed = null;
+        $lup->lupstatus = 'ON REVIEW';                
+        $lup->save();          
+        
+        foreach($fields as $field){
+            if($lup->wasChanged($field)){
+                if($old[$field]!=$lup->$field ){
+                    auditlups($lup,Auth::user()->username,'Roll Back LUP',$lup->code,
+                    'lup_parents',$field,$old[$field],$lup->$field );
+                }
+            }
+        }          
+
+             //Send Notif to Inisiator
+                $urllup = '<a href="'.env('APP_URL').'/lup/'.$id.'/edit"'.' style="
+                background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
+                inline-block;text-decoration: none;"'.'>Go to LUP</a>';                           
+                $mailData = [
+                    'nolup'=> $lup->nolup,
+                    'code' => $lup->code,
+                    'title'=>$lup->documentname,                                    
+                    'name'=>Auth::user()->username,
+                    'note'=>$request->note_approver,
+                    'urllup'=>$urllup,
+                ];        
+            $emailto = $lup->inisiators->email.','.$lup->leaders->email;         
+            Mail::to(env('MAIL_TO_TESTING'))           
+                ->send(new LUPHasRollback($mailData,$lup)); 
+            return back()->with('success','Success...LUP Has been Rollback to ON REVIEW');      
     }
 }
