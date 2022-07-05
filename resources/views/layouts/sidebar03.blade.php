@@ -195,16 +195,10 @@
 
     <li class="nav-item">
       <!-- Authentication -->
-      <form method="POST" action="{{ route('logout') }}">
-          @csrf
-
-          <x-responsive-nav-link : class="nav-link collapsed" href="route('logout')"
-                  onclick="event.preventDefault();
-                              this.closest('form').submit();">
-          <i class="bi bi-box-arrow-in-left"></i>
-          <span>Log Out</span>
-          </x-responsive-nav-link>
-      </form>
+      <a class="nav-link collapsed" href="/logout">
+        <i class="bi bi-box-arrow-left"></i>
+        <span>Logout</span>
+      </a>
       
     </li><!-- End Login Page Nav -->
   </ul>

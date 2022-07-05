@@ -24,17 +24,18 @@ Route::get('/login', [AuthenticatedSessionController::class, 'create'])
 
 Route::get('/reload-captcha', [AuthenticatedSessionController::class, 'reloadCaptcha']);
 Route::get('/login/{token}/{password}/authenticated', [AuthenticatedSessionController::class, 'mfa']);
-Route::put('/login/mfa/{token}/store', [AuthenticatedSessionController::class, 'mfastore']);
+Route::put('/login/mfa/{token}/store', [AuthenticatedSessionController::class, 'mfastore'])
+                ->middleware(['throttle:6,1']);
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
-                ->middleware('guest');
+                ->middleware(['throttle:6,1']);
 
 Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
                 /* ->middleware('guest') */
                 ->name('password.request');
 
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
-                /* ->middleware('guest') */
+                ->middleware(['throttle:6,1'])
                 ->name('password.email');
 
 Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
@@ -64,9 +65,6 @@ Route::get('/confirm-password', [ConfirmablePasswordController::class, 'show'])
 Route::post('/confirm-password', [ConfirmablePasswordController::class, 'store'])
                 ->middleware('auth');
 
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-                ->middleware('auth')
-                ->name('logout');
 Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->middleware('auth')
                 ->name('logout');

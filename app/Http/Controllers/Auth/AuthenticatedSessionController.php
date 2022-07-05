@@ -33,11 +33,12 @@ class AuthenticatedSessionController extends Controller
     public function mfa($token,$password)
     {
         $cekuser = DB::Table('mfalogins')->where('token',$token)->first();
-        $user= DB::table('users')->where('email',$cekuser->email)->first();
-        $password = Crypt::decryptString($password);        
         if(!$cekuser){            
             return redirect('/login')->with('error','Failed...This Link has Expired !!');
         }
+        $user= DB::table('users')->where('email',$cekuser->email)->first();
+        $password = Crypt::decryptString($password);        
+        
         $cektime = (strtotime(\Carbon\Carbon::now()) - strtotime($cekuser->created_at))/60 ;        
         if ($cektime < 5){
         }else{
@@ -64,19 +65,20 @@ class AuthenticatedSessionController extends Controller
     {   
         
         $user = DB::table('users')->where('username',$request->username)->first();
+        
         if(!$user){
-            return redirect('/login')->with('error','Failed...Your credentials does not match with database');     
+            return back()->with('error','Failed...Your credentials does not match with database');     
         }
         if ($user->active==0){         
-            return redirect('/login')->with('error','Failed...Your account has not been activated, Please Call Quality Compliance Team');            
+            return back()->with('error','Failed...Your account has not been activated, Please Call Quality Compliance Team');            
         }
+
         if (Hash::check($request->password, $user->password) AND $user) {
             $username = $request->username;
             $password = Crypt::encryptString($request->password);
             $key = random_int(100000, 999999); 
             $hashkey = Hash::make($key);
-            $token = Str::random(80);
-
+            $token = Str::random(80);            
             DB::table('mfalogins')->insert([
                 'email' => $user->email, 
                 'token' => $token, 
@@ -94,7 +96,7 @@ class AuthenticatedSessionController extends Controller
             ->send(new MFA($mailData));            
             return redirect('/login/'.$token.'/'.$password.'/authenticated')->with('success','Please check your email to get a key');            
         }else{
-            return redirect('/login')->with('error','Failed...Your credentials does not match with database');     
+            return back()->with('error','Failed...Your credentials does not match with database');     
         }             
        
     }

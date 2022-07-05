@@ -21,7 +21,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)    {
         $schedule->command('backup:clean')->daily()->at('23:00')->runInBackground();
         $schedule->command('backup:run')->hourly()->between('7:00', '18:00')->weekdays();  
-        $schedule->command('lup:sign')->daily()->at('03:00')->weekdays();       
+        $schedule->command('lup:sign')->daily()->at('03:00')->weekdays();   
+        $schedule->command('login-token:delete')->daily()->at('15:45')->runInBackground();    
     }
 
     /**

@@ -20,7 +20,7 @@ class DeleteLoginToken extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Clear login token';
 
     /**
      * Execute the console command.
@@ -33,12 +33,11 @@ class DeleteLoginToken extends Command
         $tokens = DB::table('mfalogins')->get(); 
         
         foreach ($tokens as $token){
-           $cektime = (strtotime(\Carbon\Carbon::now()) - strtotime($token->created_at))/60 ; 
-           $deltoken = DB::table('mfalogins')->where('token',$token)->delete();             
-            /* if ($cektime < 5){
+           $cektime = (strtotime(\Carbon\Carbon::now()) - strtotime($token->created_at))/60 ;                      
+            if ($cektime < 5){
             }else{
-                $deltoken = DB::table('mfalogins')->where('token',$token)->delete();                
-            } */
+                $deltoken = DB::table('mfalogins')->where('token',$token->token)->delete();                
+            } 
         }        
         return 0;
     }

@@ -118,17 +118,13 @@
           </li>
 
           <li>
-              <!-- Authentication -->
-              <form method="POST" action="{{ route('logout') }}">
-                  @csrf
+              <!-- Authentication -->            
 
-                  <x-responsive-nav-link : class="dropdown-item d-flex align-items-center" href="route('logout')"
-                          onclick="event.preventDefault();
-                                      this.closest('form').submit();">
+                  <x-responsive-nav-link : class="dropdown-item d-flex align-items-center" href="/logout">
                    <i class="bi bi-box-arrow-right"></i>                   
                       {{ __('Log Out') }}
                   </x-responsive-nav-link>
-              </form>
+              
             
           </li>
 

@@ -27,13 +27,10 @@
                 </div>
             </form>
 
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-
-                <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900">
-                    {{ __('Log Out') }}
-                </button>
-            </form>
+            <x-responsive-nav-link : class="dropdown-item d-flex align-items-center" href="/logout">
+                <i class="bi bi-box-arrow-right"></i>                   
+                   {{ __('Log Out') }}
+               </x-responsive-nav-link>
         </div>
     </x-auth-card>
 </x-guest-layout>
