@@ -25,10 +25,10 @@ Route::get('/login', [AuthenticatedSessionController::class, 'create'])
 Route::get('/reload-captcha', [AuthenticatedSessionController::class, 'reloadCaptcha']);
 Route::get('/login/{token}/{password}/authenticated', [AuthenticatedSessionController::class, 'mfa']);
 Route::put('/login/mfa/{token}/store', [AuthenticatedSessionController::class, 'mfastore'])
-                ->middleware(['throttle:6,1']);
+                ->middleware(['throttle:login']);               
 
-Route::post('/login', [AuthenticatedSessionController::class, 'store'])
-                ->middleware(['throttle:6,1']);
+Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+            //->middleware(['throttle:login']);
 
 Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
                 /* ->middleware('guest') */

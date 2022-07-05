@@ -33,12 +33,12 @@ class CreateUsersTable extends Migration
             $table->datetime('deleted_at')->nullable();
             $table->datetime('last_seen')->nullable();
             $table->string('ip_login')->nullable();
-            $table->string('token')->nullable();
+            $table->string('token')->nullable();            
             $table->smallInteger('level_rdms')->nullable();
             $table->smallInteger('level_rnie')->nullable();
             $table->smallInteger('level_woms')->nullable();
             $table->smallInteger('level_capa')->nullable();
-            $table->index(['level','active','deleted_at','last_seen']);
+            $table->index(['level','active','last_seen']);
         });
     }
 

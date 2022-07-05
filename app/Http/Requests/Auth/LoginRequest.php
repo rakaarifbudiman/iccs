@@ -45,22 +45,28 @@ class LoginRequest extends FormRequest
      * @throws \Illuminate\Validation\ValidationException
      */
     public function authenticate()
-    {
-        $this->ensureIsNotRateLimited();        
-        if (! Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey(), $second = 300 );
+    {        
+        $user = USER::where('username',$this->input('username'))->first();
+        $executed = RateLimiter::attempt(
+            'login:'.$user->username,
+            $perMinute = 2,
+            function() {                   
+                }
+        );    
 
-            throw ValidationException::withMessages([
-                'username' => __('auth.failed'),
-            ]);
-        }
-           
-            $id=auth::user()->id;
-            $user = User::find($id);
-            $user->last_seen = \Carbon\Carbon::now();        
-            $user->save();
+            if (! $executed) {            
+                $user->active = 0;
+                $user->save();
+                $seconds = RateLimiter::availableIn('login:'.$user->username);
+                throw ValidationException::withMessages([
+                    'username' => trans('auth.throttle', [
+                        'seconds' => $seconds,
+                        //'minutes' => ceil($seconds / 60),
+                    ]),
+                ]);                     
+            }                   
             
-            RateLimiter::clear($this->throttleKey());     
+       
         
     }
 
@@ -73,7 +79,7 @@ class LoginRequest extends FormRequest
      */
     public function ensureIsNotRateLimited()
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 3)) {
             return;
         }
 
@@ -101,7 +107,8 @@ class LoginRequest extends FormRequest
     public function messages()
     {
         return [
-            'captcha.captcha' => 'Incorrect Captcha...',                 
+            'captcha.captcha' => 'Incorrect Captcha...',      
+            'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',           
         ];
     }
 }

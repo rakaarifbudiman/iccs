@@ -50,7 +50,6 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/web.php'));
         });
     }
-
     /**
      * Configure the rate limiters for the application.
      *
@@ -59,9 +58,8 @@ class RouteServiceProvider extends ServiceProvider
     protected function configureRateLimiting()
     {
         RateLimiter::for('login', function (Request $request) {
-            return [   
-                Limit::perMinute(500),             
-                Limit::perMinute(5)->by($request->input('username')),
+            return [                              
+                Limit::perMinute(3)->by($request->input('username')),
             ];
         });
 
