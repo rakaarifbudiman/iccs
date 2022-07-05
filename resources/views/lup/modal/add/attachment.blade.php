@@ -106,20 +106,7 @@
           <div class="col-sm-8">
               <input class="form-control form-control-sm" type="text" id="modaltxtadd_partdesc" name="modaltxtadd_partdesc" placeholder="Description" required>                                               
           </div>                                 
-        </div> 
-        <div class="row mb-3">
-          <label for="modaltxtadd_site" class="col-sm col-form-label col-form-label-sm">Site</label>
-          <div class="col-sm-8">
-              <input class="form-control form-control-sm" type="text" id="modaltxtadd_site" name="modaltxtadd_site" placeholder="Site">                                               
-          </div>                                 
-        </div>    
-        <div class="row mb-3">
-          <label for="modaltxtadd_market" class="col-sm col-form-label col-form-label-sm">Market</label>
-          <div class="col-sm-8">
-              <input class="form-control form-control-sm" type="text" id="modaltxtadd_market" name="modaltxtadd_market" placeholder="Market">                                               
-          </div>                                 
         </div>       
-         
         <input class="form-control form-control-sm" type="text" id="modalhidecodelup" name="modalhidecodelup" value="{{ $lupparent->code }}" hidden>
         <input class="form-control form-control-sm" type="text" id="modalhidepicaction" name="modalhidepicaction" value="" hidden>
         <input class="form-control form-control-sm" type="text" id="modalhidestatuslup" name="modalhidestatuslup" value="{{ $lupparent->lupstatus }}" hidden>

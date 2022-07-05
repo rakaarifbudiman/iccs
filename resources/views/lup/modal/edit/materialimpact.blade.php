@@ -23,19 +23,7 @@
                 <div class="col-sm-8">
                     <input class="form-control form-control-sm" type="text" id="modaltxtedit2_partdesc" name="modaltxtedit2_partdesc" placeholder="Description" value="{{ old('modaltxtedit2_partdesc',$relatedmaterial->partdesc) }}" required>                                               
                 </div>                                 
-              </div> 
-              <div class="row mb-3">
-                <label for="modaltxtedit2_site" class="col-sm col-form-label col-form-label-sm">Site</label>
-                <div class="col-sm-8">
-                    <input class="form-control form-control-sm" type="text" id="modaltxtedit2_site" name="modaltxtedit2_site" placeholder="Site" value="{{ old('modaltxtedit2_site',$relatedmaterial->site) }}">                                               
-                </div>                                 
-              </div>    
-              <div class="row mb-3">
-                <label for="modaltxtedit2_market" class="col-sm col-form-label col-form-label-sm">Market</label>
-                <div class="col-sm-8">
-                    <input class="form-control form-control-sm" type="text" id="modaltxtedit2_market" name="modaltxtedit2_market" placeholder="Market" value="{{ old('modaltxtedit2_market',$relatedmaterial->market) }}">                                               
-                </div>                                 
-              </div>            
+              </div>               
               <input class="form-control form-control-sm" type="text" id="modalhidecodelup" name="modalhidecodelup" value="{{ $lupparent->code }}" hidden>          
               <input class="form-control form-control-sm" type="text" id="modalhidestatuslup" name="modalhidestatuslup" value="{{ $lupparent->lupstatus }}" hidden>
             </div>
@@ -75,19 +63,7 @@
                     <div class="col-sm-8">
                         <input class="form-control form-control-sm" type="text" id="modaltxtedit_partdesc" name="modaltxtedit_partdesc" placeholder="Description" value="{{ old('modaltxtedit_partdesc',$relatedmaterial->partdesc) }}" required>                                               
                     </div>                                 
-                  </div> 
-                  <div class="row mb-3">
-                    <label for="modaltxtedit_site" class="col-sm col-form-label col-form-label-sm">Site</label>
-                    <div class="col-sm-8">
-                        <input class="form-control form-control-sm" type="text" id="modaltxtedit_site" name="modaltxtedit_site" placeholder="Site" value="{{ old('modaltxtedit_site',$relatedmaterial->site) }}">                                               
-                    </div>                                 
-                  </div>    
-                  <div class="row mb-3">
-                    <label for="modaltxtedit_market" class="col-sm col-form-label col-form-label-sm">Market</label>
-                    <div class="col-sm-8">
-                        <input class="form-control form-control-sm" type="text" id="modaltxtedit_market" name="modaltxtedit_market" placeholder="Market" value="{{ old('modaltxtedit_market',$relatedmaterial->market) }}">                                               
-                    </div>                                 
-                  </div>            
+                  </div>                     
                   <input class="form-control form-control-sm" type="text" id="modalhidecodelup" name="modalhidecodelup" value="{{ $lupparent->code }}" hidden>          
                   <input class="form-control form-control-sm" type="text" id="modalhidestatuslup" name="modalhidestatuslup" value="{{ $lupparent->lupstatus }}" hidden>
                 </div>

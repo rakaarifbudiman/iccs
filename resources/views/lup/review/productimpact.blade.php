@@ -8,9 +8,7 @@
                       <th scope="col"> No. </th>    
                       <th scope="col"> Operation </th>                
                       <th scope="col">Part No</th>  
-                      <th scope="col">Description</th>             
-                      <th scope="col">Site Manufacturer</th>                      
-                      <th class="col-sm">Market Country</th>
+                      <th scope="col">Description</th>                      
                       <th scope="col">By</th> 
                       <th scope="col">Date</th>                                       
                   </tr>
@@ -34,9 +32,7 @@
                             
                         </td>
                       <td>{{ $relatedmaterial->partsap }}</td>         
-                      <td>{{ $relatedmaterial->partdesc }}</td>                    
-                      <td>{{ $relatedmaterial->site }}</td>
-                      <td>{{ $relatedmaterial->market }}</td>
+                      <td>{{ $relatedmaterial->partdesc }}</td>                      
                       <td>{{ $relatedmaterial->uploader }}</td>
                       <td>@date($relatedmaterial->created_at,'d-M-y')</td> 
                       

@@ -73,7 +73,7 @@
                   <input name="id" type="id" class="form-control @error('id') is-invalid @enderror" id="id" value="{{ $mailSetting->id }}" hidden autocomplete="off"/>                      
                   <div class="text-center">
                     <button type="submit" class="btn btn-primary" name="saveprofile">Save Changes</button>
-                    <a href="/grade" class="btn btn-warning" name="dismiss">Dismiss</a>    
+                    <a href="/" class="btn btn-warning" name="dismiss">Dismiss</a>    
                   </div>
                 </form> 
                         

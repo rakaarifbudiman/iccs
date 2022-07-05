@@ -16,9 +16,7 @@ class RelatedMaterialController extends Controller
         $relatedmaterial = new RelatedMaterial;
         $relatedmaterial->code = $request->modalhidecodelup;
         $relatedmaterial->partsap = $request->modaltxtadd_partsap;
-        $relatedmaterial->partdesc = $request->modaltxtadd_partdesc;
-        $relatedmaterial->site = $request->modaltxtadd_site;
-        $relatedmaterial->market = $request->modaltxtadd_market;
+        $relatedmaterial->partdesc = $request->modaltxtadd_partdesc;        
         $relatedmaterial->uploader = Auth::user()->username;
         $relatedmaterial->save();
         return back();
@@ -34,9 +32,7 @@ class RelatedMaterialController extends Controller
             $old[$field]= $relatedmaterial->$field;
         }        
         $relatedmaterial->partsap = $request->modaltxtedit_partsap;
-        $relatedmaterial->partdesc = $request->modaltxtedit_partdesc;
-        $relatedmaterial->site = $request->modaltxtedit_site;
-        $relatedmaterial->market = $request->modaltxtedit_market;
+        $relatedmaterial->partdesc = $request->modaltxtedit_partdesc;        
         $relatedmaterial->uploader = Auth::user()->username;
         $relatedmaterial->updated_at = now();
         $relatedmaterial->save();

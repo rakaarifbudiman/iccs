@@ -49,6 +49,7 @@ use App\Http\Controllers\LUP\RelatedDepartmentController;
     Route::POST('/lup/approvals/autofill2', [RelatedDepartmentController::class, 'autofillapprovals2']);
     Route::POST('/lup/{id}/storedepartment', [RelatedDepartmentController::class, 'storedepartment']);
     Route::put('/lup/{id}/signdepartment', [RelatedDepartmentController::class, 'signdepartment']);
+    Route::put('/lup/{id}/notifdepartment', [RelatedDepartmentController::class, 'notifdepartment']);
     Route::get('/lup/department-impact/{id}/delete', [RelatedDepartmentController::class, 'delete']);
     Route::get('/lup/department-impact/{id}/cancelsign', [RelatedDepartmentController::class, 'cancelsign']);
 

@@ -145,17 +145,13 @@
                         <tr style="background-color: #0072e5;  color:#ffffff">
                             <th style="width: 4.39716%;">No</th>
                             <th style="width: 10%;">Part Number</th>
-                            <th style="width: 35.6028%;">Description</th>
-                            <th style="width: 25%;">Site Manufacturer</th>
-                            <th style="width: 25%;">Market Country</th>                
+                            <th style="width: 35.6028%;">Description</th>                            
                         </tr>
                         @forelse ($lup->relatedmaterial as $index=>$relatedmaterial)
                             <tr>
                             <td style="width: 5%;"><small>{{ $index +1 }}</small></td>
                             <td style="width: 35%;"><small>{{ $relatedmaterial->partsap }}</small></td>
-                            <td style="width: 25%;"><small>{{ $relatedmaterial->partdesc }}</small></td>
-                            <td style="width: 5%;"><small>{{ $relatedmaterial->site }}</small></td>
-                            <td style="width: 25%;">{{ $relatedmaterial->market }}</td>                
+                            <td style="width: 25%;"><small>{{ $relatedmaterial->partdesc }}</small></td>                            
                             </tr>
                         @empty                
                         @endforelse            
@@ -635,7 +631,7 @@
 	<table style="height: 127px; width: 100.553%; border-collapse: collapse; vertical-align: top; margin-top:10px">
 		<tbody>
 			<tr style="height: 18px; border-style: none;">
-				<td style="height: 18px; border-bottom: double;background-color: #004890;  color:#ffffff" colspan="3"><strong>V. Closing Change Control Verification and Approval </strong></td>	
+				<td style="height: 18px;width: 50%; border-bottom: double;background-color: #004890;  color:#ffffff" colspan="3"><strong>V. Closing Change Control Verification and Approval </strong></td>	
 				<td style="height: 18px; border-bottom: double; text-align:right;background-color: #004890;  color:#ffffff" colspan="4"><small># {{ $lup->code}} | No : {{ $lup->nolup}} | Rev : {{ $lup->revision }} | Status : {{ $lup->lupstatus }}</td>	
 			</tr>   
 			<tr style="height: 18px; border-style: none;">

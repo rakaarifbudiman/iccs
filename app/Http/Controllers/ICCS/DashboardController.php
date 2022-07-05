@@ -28,7 +28,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        //lup
+        //lup        
         $quotes = Inspiring::quote();
         $luponprocess = LUPParent::OnStatus('ON PROCESS')->count();
         $luponreview = LUPParent::OnStatus('ON REVIEW')->count();

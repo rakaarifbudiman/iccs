@@ -42,7 +42,7 @@ class ICCSPathSeeder extends Seeder
         DB::table('iccsfilepaths')->insert([
                 
             'seq' => 1,
-            'filepath' => 'public/panduan/Tutorial-Penggunaan-ICCS.pdf',
+            'filepath' => 'panduan/Tutorial-Penggunaan-ICCS.pdf',
             'description' => 'Tutorial ICCS',
             'notes' => 'Tutorial ICCS',           
 

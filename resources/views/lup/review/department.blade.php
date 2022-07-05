@@ -115,6 +115,7 @@
                         <td>          
                             @can('signrelateddepartment',$relateddepartment)
                                 <a href="#" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modaleditdepartment{{ $relateddepartment->id }}" title="Comment and Sign"><i class="bi-check-lg"></i></a>                                                          
+                                <a href="#" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modalnotifdepartment{{ $relateddepartment->id }}" title="Send Revise Notif to Inisiator"><i class="ri-mail-send-line"></i></a>                                                          
                             @elsecan('cancelsignrelateddepartment',$relateddepartment)
                                 <a href="/lup/department-impact/{{Crypt::encryptString($relateddepartment->id)}}/cancelsign" onclick="return confirm('Are you sure want to cancel sign this lup ?');" class="btn btn-info btn-sm" title="Cancel Sign Department"><i class="bi-person-x"></i></a>                                                             
                             @endcan   

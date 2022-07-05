@@ -41,8 +41,9 @@ class RelatedDepartmentPolicy
     public function deleterelateddepartment(User $user, RelatedDepartment $relateddepartment)
     {        
         $lup = LUPParent::where('code',$relateddepartment->code)->first();
+        $disposisi = DB::table('related_departments')->where('code',$lup->code)->where('username',$user->username)->first();
         return ($lup->lupstatus=="ON REVIEW") 
-            && !$relateddepartment->signdate 
+            && !$relateddepartment->signdate && ($user->level >1 || $disposisi)
                 ? Response::allow()
                     : Response::deny('Failed... '.($lup->lupstatus=="ON REVIEW" ? 'LUP has been signed' :  'LUP status is '.$lup->lupstatus));                  
     }

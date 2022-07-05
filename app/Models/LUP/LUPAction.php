@@ -4,10 +4,11 @@ namespace App\Models\LUP;
 
 use App\Models\User;
 use App\Models\LUP\LUPParent;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Crypt;
 
 class LUPAction extends Model
 {
@@ -59,5 +60,20 @@ class LUPAction extends Model
     public function scopeStatus($query,$status)
     {
         $query->where('actionstatus',$status);
+    }
+
+    public function scopeOverdue($query)
+    {
+        $query->where('actionstatus','OPEN')
+            ->where('evidence_filename',null)  
+            ->where('signdate_action','<>',null)         
+            ->whereDate('duedate_action','<',now()->addDays(8)); 
+    }
+    public function scopeOverdueThisMonth($query)
+    {
+        $query->where('actionstatus','OPEN')
+            ->where('evidence_filename',null)  
+            ->where('signdate_action','<>',null)         
+            ->whereMonth('duedate_action',Carbon::today()->month);     
     }
 }

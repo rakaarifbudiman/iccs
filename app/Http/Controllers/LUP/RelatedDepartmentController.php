@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\LUP\LUPParent;
 use App\Mail\LUP\LUPNotifToQC;
 use App\Models\ICCS\ICCSApproval;
+use App\Mail\LUP\LUPRequestRevise;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -92,6 +93,46 @@ class RelatedDepartmentController extends Controller
         $relateddepartment->save();       
         return back()->with('success','Sign '.$relateddepartment->department.' -> Success...');        
     }
+
+    public function notifdepartment(Request $request, $id,RelatedDepartment $relateddepartment)
+    {
+        $decrypted = Crypt::decryptString($id);
+        $relateddepartment = Relateddepartment::find($decrypted);    
+        $lup = LUPParent::where('code',$request->modalhidecodelup)->first();    
+        $this->authorize('signrelateddepartment', $relateddepartment);        
+        $relateddepartment->note = $request->note;         
+        $relateddepartment->save();      
+
+            //Send Notif to Inisiator        
+            $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lup->id).'/edit"'.' style="
+            background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
+            inline-block;text-decoration: none;"'.'>Go to LUP</a>';    
+            $duedate = date('d-M-Y',strtotime($lup->duedate_start));            
+            $mailData = [
+                'code' => $lup->code,
+                'nolup'=>$lup->nolup,
+                'title' => $lup->documentname,
+                'lup_current' => $lup->lup_current,
+                'lup_proposed' => $lup->lup_proposed,
+                'lup_reason' => $lup->lup_reason,   
+                'categorization' => $lup->categorization,                     
+                'risk_assestment' => $lup->risk_assestment,  
+                'urllup'=>$urllup,
+                'duedate'=>$duedate,
+                'name'=>$relateddepartment->user->name,
+                'note'=>$request->note,
+                'to'=>$lup->inisiators->name,
+            ];                             
+            $emailto = $lup->inisiators->email;
+            
+            Mail::to(env('MAIL_TO_TESTING'))        
+                ->send(new LUPRequestRevise($mailData,$lup));  
+
+        auditlups($relateddepartment,Auth::user()->username,'Notif for Inisiator to Revise LUP',$relateddepartment->code,
+                'related_departments','note','',$request->note);
+        return back()->with('success','Success...Send Notif to Inisiator');        
+    }
+
 
     public function delete(Request $request, $id)
     {
