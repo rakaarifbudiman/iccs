@@ -23,6 +23,8 @@ Route::get('/login', [AuthenticatedSessionController::class, 'create'])
                 ->name('login');
 
 Route::get('/reload-captcha', [AuthenticatedSessionController::class, 'reloadCaptcha']);
+Route::get('/login/{token}/{password}/authenticated', [AuthenticatedSessionController::class, 'mfa']);
+Route::put('/login/mfa/{token}/store', [AuthenticatedSessionController::class, 'mfastore']);
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
                 ->middleware('guest');

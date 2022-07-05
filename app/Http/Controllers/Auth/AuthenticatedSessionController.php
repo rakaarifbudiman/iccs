@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Mail;
+use App\Models\User;
+use App\Mail\Auth\MFA;
+use App\Mail\DemoMail;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
+use App\Http\Requests\Auth\AuthRequest;
 use App\Providers\RouteServiceProvider;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Models\User;
-use Mail;
-use App\Mail\DemoMail;
-
 
 class AuthenticatedSessionController extends Controller
 {    
@@ -24,7 +29,30 @@ class AuthenticatedSessionController extends Controller
     public function create()
     {
         return view('auth.login');
-    }
+    }   
+    public function mfa($token,$password)
+    {
+        $cekuser = DB::Table('mfalogins')->where('token',$token)->first();
+        $user= DB::table('users')->where('email',$cekuser->email)->first();
+        $password = Crypt::decryptString($password);        
+        if(!$cekuser){            
+            return redirect('/login')->with('error','Failed...This Link has Expired !!');
+        }
+        $cektime = (strtotime(\Carbon\Carbon::now()) - strtotime($cekuser->created_at))/60 ;        
+        if ($cektime < 5){
+        }else{
+            $deltoken = DB::table('mfalogins')->where('token',$token)->delete();
+            return redirect('/login')->with('error','Failed...This Link has Expired !!');
+        }
+        $cekuser = DB::Table('mfalogins')->where('token',$token)->first();   
+        return view('auth.mfa',[
+            'token'=>$token,
+            'username'=>$user->username,
+            'password'=>$password,
+            'hashkey'=>$cekuser->key
+        ]);
+    }  
+    
 
     /**
      * Handle an incoming authentication request.
@@ -33,21 +61,55 @@ class AuthenticatedSessionController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(LoginRequest $request)
-    {        
-
-        $request->authenticate();
+    {   
         
-        $request->session()->regenerate();
-        
-        if (auth::user()->active==0){
-            Auth::guard('web')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-            return redirect('/login')->with('error','Your account has not been activated, Please Call Quality Compliance Team');
-            
+        $user = DB::table('users')->where('username',$request->username)->first();
+        if(!$user){
+            return redirect('/login')->with('error','Failed...Your credentials does not match with database');     
         }
+        if ($user->active==0){         
+            return redirect('/login')->with('error','Failed...Your account has not been activated, Please Call Quality Compliance Team');            
+        }
+        if (Hash::check($request->password, $user->password) AND $user) {
+            $username = $request->username;
+            $password = Crypt::encryptString($request->password);
+            $key = random_int(100000, 999999); 
+            $hashkey = Hash::make($key);
+            $token = Str::random(80);
+
+            DB::table('mfalogins')->insert([
+                'email' => $user->email, 
+                'token' => $token, 
+                'key' => $hashkey,
+                'created_at' => now()
+              ]);          
+            
+            $mailData = [                          
+                'name'=>$user->name,
+                'email'=>$user->email,
+                'key'=>$key,
+            ];   
+            $emailto = $user->email;
+            Mail::to(env('MAIL_TO_TESTING'))            
+            ->send(new MFA($mailData));            
+            return redirect('/login/'.$token.'/'.$password.'/authenticated')->with('success','Please check your email to get a key');            
+        }else{
+            return redirect('/login')->with('error','Failed...Your credentials does not match with database');     
+        }             
+       
+    }
+
+    public function mfastore(AuthRequest $request,$token)
+    {
+        $cekuser = DB::Table('mfalogins')->where('token',$token)->first();      
         
-        return redirect()->intended(RouteServiceProvider::HOME);
+        if (Hash::check($request->key, $cekuser->key)) {           
+            $request->authenticate();        
+            $request->session()->regenerate();       
+            return redirect()->intended(RouteServiceProvider::HOME);
+        }else{
+            return back()->with('error','Failed...Your key does not match with database');
+        }        
     }
 
     /**
