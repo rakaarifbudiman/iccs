@@ -55,7 +55,7 @@ class AuthenticatedSessionController extends Controller
             $password = Crypt::encryptString($request->password);
             $key = random_int(100000, 999999); 
             $hashkey = Hash::make($key);
-            $token = Str::random(80);            
+            $token = Str::replace('/','',Str::random(80));            
             DB::table('mfalogins')->insert([
                 'email' => $user->email, 
                 'token' => $token, 

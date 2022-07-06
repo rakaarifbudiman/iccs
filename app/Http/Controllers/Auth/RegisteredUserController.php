@@ -45,7 +45,7 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'level' => 1,
             'password' => Hash::make($request->password),
-            'unid' => Str::random(20),
+            'unid' => Str::replace('/','',Str::random(80)),
         ]);
 
         $emailreviewers = DB::table('users')

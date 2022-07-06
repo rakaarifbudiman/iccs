@@ -56,7 +56,7 @@ class PasswordResetLinkController extends Controller
         if ($cekuser->count() >1){
             return back()->with('error','You cannot use password reset because there are '.$cekuser->count().' users that using same email ('.$listuser.')');
         }
-        $token = Str::random(80);
+        $token = Str::replace('/','',Str::random(80));
         DB::table('password_resets')->insert([
             'email' => $request->email, 
             'token' => $token, 

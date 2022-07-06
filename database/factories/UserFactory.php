@@ -26,7 +26,7 @@ class UserFactory extends Factory
     			'level' => $this->faker->numberBetween(1,3),
                 'active' => $this->faker->numberBetween(0,1),
     			'notes' => $this->faker->address,
-                'unid' => Str::random(20)
+                'unid' => Str::replace('/','',Str::random(80))
         ];
     }
 
