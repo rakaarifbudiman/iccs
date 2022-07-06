@@ -40,8 +40,8 @@ class AuthenticatedSessionController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(LoginRequest $request)
-    {           
-        $user = USER::where('username',$request->username)->first();
+    {                   
+        $user = USER::where('username',Str::lower($request->username))->first();        
         if(!$user){
             return back()->with('error','Failed...Your credentials does not match with database');     
         }
@@ -111,7 +111,13 @@ class AuthenticatedSessionController extends Controller
         
         if (Hash::check($request->key, $user->key)) {           
             $request->authenticate();        
-            $request->session()->regenerate();       
+            $request->session()->regenerate();              
+            DB::table('logins')->insert([
+                'username' => Auth::user()->username, 
+                'ip' => $request->ip(), 
+                'user-agent' => $request->header('User-Agent'),
+                'created_at' => now()
+            ]);     
             return redirect()->intended(RouteServiceProvider::HOME);
         }else{
             return back()->with('error','Failed...Your key does not match with database');

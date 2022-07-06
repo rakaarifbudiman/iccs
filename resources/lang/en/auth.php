@@ -15,5 +15,5 @@ return [
 
     'failed' => 'These credentials do not match our records.',
     'password' => 'The provided password is incorrect.',
-    'throttle' => 'Too many login attempts. Your account has been deactivated. Please Call ICCS Admin & Please try again in :seconds seconds.',
+    'throttle' => 'Too many login attempts. Your account has been deactivated, Please Call Quality Compliance Team & Please try again in :minutes minutes :lastseconds seconds.',
 ];

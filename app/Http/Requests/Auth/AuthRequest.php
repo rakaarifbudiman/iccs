@@ -54,10 +54,8 @@ class AuthRequest extends FormRequest
             throw ValidationException::withMessages([
                 'username' => __('auth.failed'),
             ]);
-        }
-           
-            $id=auth::user()->id;
-            $user = User::find($id);
+        }                      
+            $user = User::find(auth::user()->id);
             $user->last_seen = \Carbon\Carbon::now();        
             $user->save();
             
@@ -85,7 +83,9 @@ class AuthRequest extends FormRequest
         throw ValidationException::withMessages([
             'username' => trans('auth.throttle', [
                 'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
+                'minutes' => floor($seconds / 60),
+                'lastseconds'=>fmod($seconds,60)
+                
             ]),
         ]);
     }
