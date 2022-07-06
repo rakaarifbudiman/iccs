@@ -8,9 +8,14 @@
 	@endif
 	<title>{{ $lup->nolup }}</title>
 	<style>
+		h1 {
+		font-size: 18px!important;font-weight: bold;
+		text-align: center; color:#004890
+		}
 		*{
 			font-size: 12px;
 		}
+		
 		@page { 
 			margin-top: 0.5cm;
 			margin-bottom: 0.5cm;
@@ -50,13 +55,12 @@
 		<table style="height: 127px; width: 100.553%; vertical-align: top;">
 			<tbody>
 				<tr style="height: 18px; border-style: none;">
-					<td style="width: 25%; height: 18px; border-style: none; vertical-align: top;" >
+					<td style="width: 10%; height: 18px; border-style: none; vertical-align: top;" >
 						<img style="height: 90px; margin-top: 15px;" src="assets/img/logo-sgh.PNG" />	
 					</td>
-					<td style="width: 20%; height: 18px; border-style: none; vertical-align: bottom;">
-						<h3 style="text-align: center; padding-top: 0px; font-size: 16;background-color: #004890;color:#ffffff"> 
-							<strong>Change Control # {{ $lup->code }}<br>No : {{ $lup->nolup }}</strong>
-						</h3>
+					<td style="width: 100%; height: 36px; border-style: none; vertical-align: bottom;">
+						<h1> Change Control #{{ $lup->code }}<br>No : {{ $lup->nolup }}							
+						</h1>
 					</td>
 					<td style="width: 25%; height: 18px; border-style: none; vertical-align: top;">
 						<img style="height: 80px;float: right; margin-top: 15px;" src="{{$qrcodepath}}" />  
@@ -341,7 +345,7 @@
     <tr style="height: 18px; border-style: none;">
 		<td style="width: 32%; height: 18px; border-style: none; vertical-align: top;" ><strong><small>Categorization</small></strong></td>
 		<td style="width: 3.1746%; height: 18px; border-style: none; vertical-align: top;"><small>:</small></td>
-		<td style="width: 25.1484%; height: 18px; border-style: none; vertical-align: top;" colspan="5"><strong><small>{{$lup->categorization}}&nbsp;</small></strong></td>
+		<td style="width: 25.1484%; height: 18px; border-style: none; vertical-align: top;{{ $lup->categorization=='Minor' ? '' : 'color:rgb(240, 11, 11)'}}" colspan="5"><strong><small>{{$lup->categorization}}&nbsp;</small></strong></td>
 	</tr>
     <tr style="height: 36px; border-style: none;">
 		<td style="width: 32%; height: 36px; border-style: none; vertical-align: top;"><strong><small>Risk Assestment</small></strong></td>
@@ -482,7 +486,7 @@
         <td style="width: 3.1746%; height: 18px; border-style: none; vertical-align: top;" ><small></small></td>
 		<td style="width: 32%; height: 18px; border-style: none; vertical-align: top;"><strong><small>Review by Regulatory</small></strong></td>
 		<td style="width: 3.1746%; height: 18px; border-style: none; vertical-align: top;" ><small>:</small></td>
-		<td style="width: 50%; height: 18px; border-style: none; vertical-align: top; text-align:justify;"><small>{{$lup->reviewer_regulatory ? $lup->reviewers_regulatory->name : '' }}</small></td>
+		<td style="width: 50%; height: 18px; border-style: none; vertical-align: top; text-align:justify;"><small>{{$lup->regulatory_reviewer ? $lup->regulatory_reviewers->name : '' }}</small></td>
         <td style="width: 15%; height: 18px; border-style: none; vertical-align: top;"><strong><small>Date</small></strong></td>
 		<td style="width: 3.1746%; height: 18px; border-style: none; vertical-align: top;" ><small>:</small></td>
 		<td style="width: 25.1484%; height: 18px; border-style: none; vertical-align: top; text-align:right;"><small>@date($lup->datesubmit_regulatory_approver,'d-M-y')</small></td>
@@ -497,7 +501,7 @@
         <td style="width: 3.1746%; height: 18px; border-style: none; vertical-align: top;" ><small></small></td>
 		<td style="width: 32%; height: 18px; border-style: none; vertical-align: top;"><strong><small>Approved by Regulatory</small></strong></td>
 		<td style="width: 3.1746%; height: 18px; border-style: none; vertical-align: top;" ><small>:</small></td>
-		<td style="width: 50%; height: 18px; border-style: none; vertical-align: top; text-align:justify;"><small>{{$lup->approver_regulatory ? $lup->approvers_regulatory->name : ''}}</small></td>
+		<td style="width: 50%; height: 18px; border-style: none; vertical-align: top; text-align:justify;"><small>{{$lup->regulatory_approver ? $lup->regulatory_approvers->name : '' }}</small></td>
         <td style="width: 15%; height: 18px; border-style: none; vertical-align: top;"><strong><small>Date</small></strong></td>
 		<td style="width: 3.1746%; height: 18px; border-style: none; vertical-align: top;" ><small>:</small></td>
 		<td style="width: 25.1484%; height: 18px; border-style: none; vertical-align: top; text-align:right;"><small>@date($lup->datesign_regulatory_approver,'d-M-y')</small></td>
@@ -565,8 +569,7 @@
 								<th style="width: 20%;">Department</th>                            
 								<th style="width: 20%;">Due Date</th>
 								<th style="width: 20%;">PIC</th>                            
-								<th style="width: 20%;">Date Closed</th>
-								<th style="width: 5%;">Extend Count</th>
+								<th style="width: 20%;">Date Closed</th>								
 							</tr>
 							@forelse ($lup->lupaction as $index=>$lupaction)
 							<tr>
@@ -575,8 +578,7 @@
 								<td style="width: 25%;">{{ $lupaction->pic->department }}</td>                            
 								<td style="width: 5%; text-align:center;"><small>@date($lupaction->duedate_action,'d-M-y')</small></td>
 								<td style="width: 25%;"><small>{{ $lupaction->pic->name }}</small></td>
-								<td style="width: 5%;text-align:center;"><small>@date($lupaction->dateapproved_evidence,'d-M-y')</small></td>
-								<td style="width: 5%;text-align:center"><small>{{ $lupaction->extension_count }}</small></td>
+								<td style="width: 5%;text-align:center;"><small>@date($lupaction->dateapproved_evidence,'d-M-y')</small></td>								
 							</tr>
 							@empty
 								

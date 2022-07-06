@@ -87,7 +87,7 @@
                         @endcan
                       </th>
                       <th scope="row">Regulatory - Approval</th>                                               
-                      <td>{{ $lupparent->regulatory_approver }}</td>                    
+                      <td>{{ $lupparent->regulatory_approver ? $lupparent->regulatory_approvers->name : '' }}</td>                    
                       <td>{{ $lupparent->regulatory_approver ? $lupparent->regulatory_approvers->department :''}}</td>
                       <td class="{{$lupparent->datesign_regulatory_approver ? 'bg-success text-white' :'bg-danger'}}">@date($lupparent->datesign_regulatory_approver,'d-M-y')</td> 
                       <td class="setwidth"><textarea  readonly>{{ $lupparent->note_regulatory_approver }}</textarea></td>  
