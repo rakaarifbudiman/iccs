@@ -49,7 +49,7 @@ class LoginRequest extends FormRequest
         $user = USER::where('username',$this->input('username'))->first();
         $executed = RateLimiter::attempt(
             'login:'.$user->username,
-            $perMinute = 2,
+            $perMinute = 3,
             function() {                   
                 }
         );    
@@ -64,10 +64,7 @@ class LoginRequest extends FormRequest
                         //'minutes' => ceil($seconds / 60),
                     ]),
                 ]);                     
-            }                   
-            
-       
-        
+            }     
     }
 
     /**
@@ -108,7 +105,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'captcha.captcha' => 'Incorrect Captcha...',      
-            'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',           
+            'auth.throttle' => 'Too many login attempts. Your account has been deactivated. Please Call ICCS Admin & Please try again in :seconds seconds.',           
         ];
     }
 }
