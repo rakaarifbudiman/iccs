@@ -117,54 +117,34 @@
                               <input type="text" class="form-control" @error('documentname') is-invalid @enderror name="documentname" id="documentname" placeholder="Title" value = "{{ old('documentname',$lupparent->documentname) }}" required autofocus autocomplete="off" {{Auth::user()->can('update',$lupparent) ? '':'disabled'}}>
                               <label for="documentname">Title</label>
                             </div>
-                          </div>                          
-                          <div class="col-md-4 mb-2">
-                            <label>Change Related to :</label><br>
-                            <div class="form-check form-switch">                                 
-                              @foreach ($listtypes->skip(0)->take(5) as $listype)                              
-                                  <input class="form-check-input" type="checkbox" name="lup_type[]" value="{{$listype->luptype}}" 
-                                    @foreach ($luptypes as $luptype)
-                                      {{$listype->luptype==$luptype ? 'checked' : '' }}
-                                    @endforeach
-                                    >{{$listype->luptype}}
-                                  <br>                                                                                       
-                              @endforeach   
-                            </div>               
-                          </div>  
-                          <div class="col-md-4 mb-2">       
-                            <label> </label><br>                     
-                            <div class="form-check form-switch">                                 
-                              @foreach ($listtypes->skip(5)->take(5) as $listype)                              
-                                  <input class="form-check-input" type="checkbox" name="lup_type[]" value="{{$listype->luptype}}" 
-                                    @foreach ($luptypes as $luptype)
-                                      {{$listype->luptype==$luptype ? 'checked' : '' }}
-                                    @endforeach
-                                    >{{$listype->luptype}}
-                                  <br>                                                                                       
-                              @endforeach   
-                            </div>               
-                          </div>  
-                          <div class="col-md-4 mb-2">       
-                            <label> </label><br>                      
-                            <div class="form-check form-switch">                                 
-                              @foreach ($listtypes->skip(10) as $listype)                              
-                                  <input class="form-check-input" type="checkbox" name="lup_type[]" value="{{$listype->luptype}}" 
-                                    @foreach ($luptypes as $luptype)
-                                      {{$listype->luptype==$luptype ? 'checked' : '' }}
-                                    @endforeach
-                                    >{{$listype->luptype}}
-                                  <br>                                                                                       
-                              @endforeach   
-                            </div>               
-                          </div>  
-                          <div class="col-md-12 mb-2">
+                          </div>
+                          <div class="col-md-11 mb-2">
                             <div class="form-floating input-sm">
                               <textarea style="height: 100px" type="text" class="form-control text-small" min-height ="100"name="lup_type" id="lup_type" placeholder="Change Related to" autocomplete="off" disabled>{{ $lupparent->lup_type }}</textarea>
-                              <label for="lup_type">Change Related to</label>
+                              <label for="lup_type">Change Related to</label>                              
                               @error('lup_type')
                                 <div class="text-danger">{{ $message }}</div>
                               @enderror 
+                            </div>                            
+                          </div>     
+                          <div class="col-md-1 mb-2">
+                            <div class="form-floating input-sm">
+                              <button href="#" class="btn btn-primary text-white edit" data-bs-toggle="modal" data-bs-target="#modaleditluptype" title="Edit Action Plan"><i class="ri-edit-2-fill"></i></button>                                                                                            
+                              @include('lup.modal.edit.luptype')
                             </div>
+                          </div>                                          
+                          <div class="col-md-11 mb-2">
+                            <div class="form-floating input-sm">
+                              <textarea style="height: 100px"type="text" class="form-control text-small" name="lup_subtype" id="lup_subtype" placeholder="Change Sub Category" autocomplete="off" disabled>{{ old('lup_subtype',$lupparent->lup_subtype) }}</textarea>
+                              <label for="lup_subtype">Change Sub Category</label>
+                            </div>
+                          </div>
+                          <div class="col-md-1 mb-2">
+                            <div class="form-floating input-sm">
+                              <button href="#" class="btn btn-primary text-white edit" data-bs-toggle="modal" data-bs-target="#modaleditlupsubtype" title="Edit Action Plan"><i class="ri-edit-2-fill"></i></button>                                                                                                                          
+                            </div>
+                          </div>   
+                          <div class="col-md-12 mb-2">
                             <div class="form-floating input-sm mt-2">
                               <input type="text" class="form-control text-small" name="lup_type_others" id="lup_type_others" placeholder="If Others (Specify)" value = "{{ old('lup_type_others',$lupparent->lup_type_others) }}" autocomplete="off" {{Auth::user()->can('update',$lupparent) ? '':'disabled'}}>
                               <label for="lup_type_others">If Others (Specify)</label>
@@ -172,14 +152,8 @@
                                 <div class="text-danger">{{ $message }}</div>
                               @enderror 
                             </div>
-                          </div>                          
-                          <div class="col-md-6 mb-2">
-                            <div class="form-floating input-sm">
-                              <input type="text" class="form-control text-small" name="lup_subtype" id="lup_subtype" placeholder="Change Sub Category" value = "{{ old('lup_subtype',$lupparent->lup_subtype) }}" autocomplete="off" {{Auth::user()->can('update',$lupparent) ? '':'disabled'}}>
-                              <label for="lup_subtype">Change Sub Category</label>
-                            </div>
-                          </div>
-                          <div class="col-md-6 mb-2">
+                          </div>      
+                          <div class="col-md-4 mb-2">
                             <div class="form-floating input-sm">
                                 <select class="form-select" @error('duedate_type') is-invalid @enderror name="duedate_type" id="duedate_type" aria-label="Change Type" required autocomplete="off" {{Auth::user()->can('update',$lupparent) ? '':'disabled'}}>
                                     <option selected value="{{ $lupparent->duedate_type }}">{{ old('duedate_type',$lupparent->duedate_type) }}</option>
@@ -192,64 +166,65 @@
                               @enderror 
                             </div>
                           </div>
-                          <div class="col-md-6 mb-2">                  
-                            <div class="form-floating">
-                              <input type="date" class="form-control text-small" name="duedate_start" id="duedate_start" placeholder="Due Date Implementation" value="@date($lupparent->duedate_start,'Y-m-d')" required autocomplete="off" {{Auth::user()->can('update',$lupparent) ? '':'disabled'}}>
-                              <label for="duedate_start" @error('duedate_start') is-invalid @enderror id="labelfor_duedate_start">Due Date Implementation (@date($lupparent->duedate_start,'d-M-Y'))</label>
-                              @error('duedate_start')
-                                <div class="text-danger">{{ $message }}</div>
-                              @enderror 
-                            </div>                 
-                          </div>    
-                          <div class="col-md-6 mb-2">                  
-                            <div class="form-floating">
-                              <input type="date" class="form-control text-small" @error('duedate_finish') is-invalid @enderror name="duedate_finish" id="duedate_finish" placeholder="Due Date Finish" value="@date($lupparent->duedate_finish,'Y-m-d')" autocomplete="off" {{Auth::user()->can('update',$lupparent) ? '':'disabled'}}>
-                              <label for="duedate_finish">Due Date Finish (@date($lupparent->duedate_finish,'d-M-Y'))</label>
-                              @error('duedate_finish')
-                                <div class="text-danger">{{ $message }}</div>
-                              @enderror 
-                            </div>                 
-                          </div>     
+                              <div class="col-md-4 mb-2">                  
+                                <div class="form-floating">
+                                  <input type="date" class="form-control text-small" name="duedate_start" id="duedate_start" placeholder="Due Date Implementation" value="@date($lupparent->duedate_start,'Y-m-d')" required autocomplete="off" {{Auth::user()->can('update',$lupparent) ? '':'disabled'}}>
+                                  <label for="duedate_start" @error('duedate_start') is-invalid @enderror id="labelfor_duedate_start">Due Date Implementation (@date($lupparent->duedate_start,'d-M-Y'))</label>
+                                  @error('duedate_start')
+                                    <div class="text-danger">{{ $message }}</div>
+                                  @enderror 
+                                </div>                 
+                              </div>    
+                              <div class="col-md-4 mb-2">                  
+                                <div class="form-floating">
+                                  <input type="date" class="form-control text-small" @error('duedate_finish') is-invalid @enderror name="duedate_finish" id="duedate_finish" placeholder="Due Date Finish" value="@date($lupparent->duedate_finish,'Y-m-d')" autocomplete="off" {{Auth::user()->can('update',$lupparent) ? '':'disabled'}}>
+                                  <label for="duedate_finish">Due Date Finish (@date($lupparent->duedate_finish,'d-M-Y'))</label>
+                                  @error('duedate_finish')
+                                    <div class="text-danger">{{ $message }}</div>
+                                  @enderror 
+                                </div>                 
+                              </div>     
+                            <div class="row">
+                              <div class="col-sm-4 mb-2">         
+                                <label class="form-check-label mb-2" id="lup_current" name="lup_current">Current Condition :</label>               
+                                <div class="form-floating">
+                                    <label for="lup_current">Current Condition</label>
+                                    <textarea  placeholder="Fill Current Condition" @error('lup_current') is-invalid @enderror name="lup_current" id="lup_current" required minlength="10" maxlength="2000" autocomplete="off" {{Auth::user()->can('update',$lupparent) ? '':'disabled'}}>
+                                        {{ old('lup_current',$lupparent->lup_current) }}
+                                      </textarea><!-- End TinyMCE Editor -->  
+                                  @error('lup_current')
+                                    <div class="text-danger">{{ $message }}</div>
+                                  @enderror                         
                                   
-                          <div class="col-sm-4 mb-2">         
-                            <label class="form-check-label mb-2" id="lup_current" name="lup_current">Current Condition :</label>               
-                            <div class="form-floating">
-                                <label for="lup_current">Current Condition</label>
-                                <textarea  placeholder="Fill Current Condition" @error('lup_current') is-invalid @enderror name="lup_current" id="lup_current" required minlength="10" maxlength="2000" autocomplete="off" {{Auth::user()->can('update',$lupparent) ? '':'disabled'}}>
-                                    {{ old('lup_current',$lupparent->lup_current) }}
-                                  </textarea><!-- End TinyMCE Editor -->  
-                              @error('lup_current')
-                                <div class="text-danger">{{ $message }}</div>
-                              @enderror                         
-                              
-                            </div>
-                          </div>
-                          <div class="col-sm-4 mb-2">         
-                            <label class="form-check-label mb-2" id="lup_proposed" name="lup_proposed">Proposed :</label>               
-                            <div class="form-floating">
-                                <label for="lup_proposed">Proposed</label>
-                                <textarea placeholder="Fill Proposed Change" @error('lup_proposed') is-invalid @enderror name="lup_proposed" id="lup_proposed" required minlength="10" maxlength="2000" autocomplete="off" {{Auth::user()->can('update',$lupparent) ? '':'disabled'}}>
-                                    {{ old('lup_proposed',$lupparent->lup_proposed) }}
-                                  </textarea><!-- End TinyMCE Editor -->         
-                              @error('lup_proposed')
-                                <div class="text-danger">{{ $message }}</div>
-                              @enderror                  
-                              
-                            </div>
-                          </div>
-                          <div class="col-sm-4 mb-2">         
-                            <label class="form-check-label mb-2" id="lup_reason" name="lup_reason">Change Reason :</label>               
-                            <div class="form-floating">
-                                <label for="lup_reason">Change Reason</label>
-                                <textarea placeholder="Fill Change Reason"  @error('lup_reason') is-invalid @enderror name="lup_reason" id="lup_reason" required minlength="10" maxlength="2000" autocomplete="off" {{Auth::user()->can('update',$lupparent) ? '':'disabled'}}>
-                                    {{ old('lup_reason',$lupparent->lup_reason) }}
-                                  </textarea><!-- End TinyMCE Editor -->     
-                              @error('lup_reason')
-                                <div class="text-danger">{{ $message }}</div>
-                              @enderror                      
-                              
-                            </div>
-                          </div>                          
+                                </div>
+                              </div>
+                              <div class="col-sm-4 mb-2">         
+                                <label class="form-check-label mb-2" id="lup_proposed" name="lup_proposed">Proposed :</label>               
+                                <div class="form-floating">
+                                    <label for="lup_proposed">Proposed</label>
+                                    <textarea placeholder="Fill Proposed Change" @error('lup_proposed') is-invalid @enderror name="lup_proposed" id="lup_proposed" required minlength="10" maxlength="2000" autocomplete="off" {{Auth::user()->can('update',$lupparent) ? '':'disabled'}}>
+                                        {{ old('lup_proposed',$lupparent->lup_proposed) }}
+                                      </textarea><!-- End TinyMCE Editor -->         
+                                  @error('lup_proposed')
+                                    <div class="text-danger">{{ $message }}</div>
+                                  @enderror                  
+                                  
+                                </div>
+                              </div>
+                              <div class="col-sm-4 mb-2">         
+                                <label class="form-check-label mb-2" id="lup_reason" name="lup_reason">Change Reason :</label>               
+                                <div class="form-floating">
+                                    <label for="lup_reason">Change Reason</label>
+                                    <textarea placeholder="Fill Change Reason"  @error('lup_reason') is-invalid @enderror name="lup_reason" id="lup_reason" required minlength="10" maxlength="2000" autocomplete="off" {{Auth::user()->can('update',$lupparent) ? '':'disabled'}}>
+                                        {{ old('lup_reason',$lupparent->lup_reason) }}
+                                      </textarea><!-- End TinyMCE Editor -->     
+                                  @error('lup_reason')
+                                    <div class="text-danger">{{ $message }}</div>
+                                  @enderror                      
+                                  
+                                </div>
+                              </div>  
+                            </div>                        
                       </div>                            
                   </div>           <!-- End Details Form -->                     
                   @include('lup.review.categorization')   

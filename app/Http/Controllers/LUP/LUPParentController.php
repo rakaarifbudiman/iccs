@@ -64,8 +64,11 @@ class LUPParentController extends Controller
     //show form new lup
     public function create()
     {
-        $listtypes = DB::table('lup_types')->get('luptype');      
-        return view('lup.newlup',['listtypes'=>$listtypes]);
+        $listtypes = DB::table('lup_types')->get('luptype');   
+        $listsubtypes = DB::table('lup_subtypes')->get('luptype');   
+        return view('lup.newlup',[
+            'listtypes'=>$listtypes,
+            'listsubtypes'=>$listsubtypes]);
     }
 
     // store new lup
@@ -82,8 +85,9 @@ class LUPParentController extends Controller
         $data2 = array('code'=>$newcode,'inisiator'=>Auth::user()->username,'lupstatus'=>'CREATE',
         'year'=> date('y'),'date_input' => now());     
         $data3= array('lup_type'=>collect($request->input('lup_type'))->implode(';'));  
+        $data4= array('lup_subtype'=>collect($request->input('lup_subtype'))->implode(';'));  
         //save process
-        $store = LUPParent::create(array_merge($data1,$data2,$data3));
+        $store = LUPParent::create(array_merge($data1,$data2,$data3,$data4));
         $encrypted = Crypt::encryptString($store->id);        
         return redirect('/lup/'.$encrypted.'/edit')->with('success','LUP has been created with following code : '.$store->code);           
     }
@@ -94,7 +98,9 @@ class LUPParentController extends Controller
         $decrypted = Crypt::decryptString($id);         
         $lupparent=LUPParent::find($decrypted);                          
         $luptypes = explode(';',$lupparent->lup_type);
-        $listtypes = DB::table('lup_types')->get('luptype');       
+        $lupsubtypes = explode(';',$lupparent->lup_subtype);
+        $listtypes = DB::table('lup_types')->get('luptype');    
+        $listsubtypes = DB::table('lup_subtypes')->get('luptype');     
         $listusers = User::where([['active',1]])->get();
         $listactionclose = LUPAction::where('code',$lupparent->code)->where('actionstatus','CLOSED')->get();
         $listapprovers = $listusers->where('level',3);
@@ -108,7 +114,9 @@ class LUPParentController extends Controller
             'lupparent'=>$lupparent,   
             'listactionclose'=>$listactionclose,  
             'listtypes'=>$listtypes,     
-            'luptypes'=>$luptypes,                                  
+            'luptypes'=>$luptypes,   
+            'listsubtypes'=>$listsubtypes,     
+            'lupsubtypes'=>$lupsubtypes,                                  
             'listusers'=>$listusers,
             'listleaders'=>$listleaders,
             'listapprovers'=>$listapprovers,
@@ -137,7 +145,9 @@ class LUPParentController extends Controller
         }else{
             $data2 = array('duedate_start'=>$request->duedate_start." 00:00:00",'duedate_finish'=>$request->duedate_finish." 00:00:00");        
         }
-        $data3= array('lup_type'=>collect($request->input('lup_type'))->implode(';'));     
+        $data3= array('lup_type'=>collect($request->input('lup_type'))->implode(';'));    
+        $data4= array('lup_subtype'=>collect($request->input('lup_subtype'))->implode(';'));   
+        
         //categorization
         if($request->boolean('patient_impact')==true){
             $categorization = array('categorization'=>'Critical');
@@ -155,9 +165,9 @@ class LUPParentController extends Controller
             $categorization = array('categorization'=>'Minor');
         }            
         if($lupparent->adjustments==0){
-            $lupparent->update(array_merge($data1,$data2,$data3,$categorization));       
+            $lupparent->update(array_merge($data1,$data2,$data3,$data4,$categorization));       
         }else{
-            $lupparent->update(array_merge($data1,$data2,$data3));       
+            $lupparent->update(array_merge($data1,$data2,$data3,$data4));       
         }         
                        
         //check audit change     
