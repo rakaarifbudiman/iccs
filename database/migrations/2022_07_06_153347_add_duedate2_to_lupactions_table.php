@@ -13,11 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('mfalogins', function (Blueprint $table) {
-            $table->string('username')->index();
-            $table->string('token');
-            $table->string('key');
-            $table->timestamp('created_at')->nullable();
+        Schema::table('lup_actions', function (Blueprint $table) {
+            $table->datetime('old_duedate2')->nullable();     
         });
     }
 
@@ -28,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('mfalogins');
+        Schema::table('lup_actions', function (Blueprint $table) {
+            $table->dropColumn('old_duedate2');
+        });
     }
 };

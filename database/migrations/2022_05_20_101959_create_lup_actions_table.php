@@ -35,7 +35,7 @@ return new class extends Migration
             $table->datetime('date_reminder')->nullable();
             $table->boolean('deletion_flag')->default(0);
             $table->boolean('duedate_status')->default(0);
-            $table->datetime('old_duedate')->nullable();
+            $table->datetime('old_duedate')->nullable();            
             $table->longText('extension_notes')->nullable();
             $table->longText('cancel_duedate_notes')->nullable();
             $table->longText('cancel_extension_notes')->nullable();

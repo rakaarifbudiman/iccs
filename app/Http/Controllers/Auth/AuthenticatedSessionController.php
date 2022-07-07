@@ -57,7 +57,7 @@ class AuthenticatedSessionController extends Controller
             $hashkey = Hash::make($key);
             $token = Str::replace('/','',Str::random(80));            
             DB::table('mfalogins')->insert([
-                'email' => $user->email, 
+                'username' => $user->username, 
                 'token' => $token, 
                 'key' => $hashkey,
                 'created_at' => now()
@@ -82,25 +82,25 @@ class AuthenticatedSessionController extends Controller
 
     public function mfa($token,$password)
     {
-        $cekuser = DB::Table('mfalogins')->where('token',$token)->first();
-        if(!$cekuser){            
+        $user = DB::Table('mfalogins')->where('token',$token)->first();
+        if(!$user){            
             return redirect('/login')->with('error','Failed...This Link has Expired !!');
         }
-        $user= DB::table('users')->where('email',$cekuser->email)->first();
+        
         $password = Crypt::decryptString($password);        
         
-        $cektime = (strtotime(\Carbon\Carbon::now()) - strtotime($cekuser->created_at))/60 ;        
+        $cektime = (strtotime(\Carbon\Carbon::now()) - strtotime($user->created_at))/60 ;        
         if ($cektime < 5){
         }else{
             $deltoken = DB::table('mfalogins')->where('token',$token)->delete();
             return redirect('/login')->with('error','Failed...This Link has Expired !!');
         }
-        $cekuser = DB::Table('mfalogins')->where('token',$token)->first();   
+        
         return view('auth.mfa',[
             'token'=>$token,
             'username'=>$user->username,
             'password'=>$password,
-            'hashkey'=>$cekuser->key
+            'hashkey'=>$user->key
         ]);
     }  
     

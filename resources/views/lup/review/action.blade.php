@@ -36,7 +36,7 @@
                 
                 <tr>
                     <th scope="row">{{ $index +1 }}</th> 
-                    <th scope="row"> 
+                    <th scope="row">                       
                       @can('update',$lupaction)
                         <a href="#" class="btn btn-sm btn-primary text-white edit" data-bs-toggle="modal" data-bs-target="#modaleditaction{{ $lupaction->id }}" title="Edit Action Plan"><i class="ri-edit-2-fill"></i></a>                                                                       
                         <a href="/lup/action/{{Crypt::encryptString($lupaction->id)}}/delete" onclick="return confirm('Are you sure want to delete this action ?');" class="btn btn-danger text-white btn-sm" title="Delete Action Plan"><i class=" ri-delete-bin-5-fill"></i></a>                             
@@ -53,8 +53,9 @@
                         {{ $lupaction->evidence_filename ? '' : 'hidden'}}><i class=" bi-download"></i>
                       </a>
                       @can('approvedevidence',$lupaction)
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalapprovedevidence{{ $lupaction->id }}" class="btn btn-sm btn-success text-white" title="Approved Closing Evidence"><i class="bi-file-earmark-check"></i></a>
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalrejectevidence{{ $lupaction->id }}" class="btn btn-sm btn-danger text-white" title="Reject Closing Evidence" {{!$lupaction->evidence_filename ? 'hidden' : ''}}><i class="bi-file-earmark-x"></i></a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalapprovedwithevidence{{ $lupaction->id }}" class="btn btn-sm btn-success text-white" title="Approved Closing Evidence" {{!$lupaction->evidence_filename ? 'hidden' : ''}}><i class="bi-file-earmark-check"></i></a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalapprovedevidence{{ $lupaction->id }}" class="btn btn-sm btn-success text-white" title="Approved Closing Evidence" {{$lupaction->evidence_filename ? 'hidden' : ''}}><i class="bi-file-earmark-check"></i></a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalrejectevidence{{ $lupaction->id }}" class="btn btn-sm btn-warning" title="Reject Closing Evidence" {{!$lupaction->evidence_filename ? 'hidden' : ''}}><i class="bi-file-earmark-x"></i></a>
                       @endcan        
                       @can('extended',$lupaction)              
                         <a href="#" data-bs-toggle="modal" data-bs-target="#modalextension{{ $lupaction->id }}" class="btn btn-sm btn-info" title="Submit Due Date Extension"><i class="bi-calendar-plus"></i></a>

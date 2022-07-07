@@ -148,8 +148,7 @@ class LUPActionController extends Controller
            $name = $request->file('evidence_filename')->getClientOriginalName();
            $ext = pathinfo($name, PATHINFO_EXTENSION);
            $path = $request->file('evidence_filename')->storeAs($paths,$code.'.'.$ext);          
-            $lupactions->evidence_filename = $path;
-            $lupactions->actionstatus = 'ON CLOSING';
+            $lupactions->evidence_filename = $path;            
             $lupactions->evidence_uploader = Auth::User()->username;
             $lupactions->dateupload_evidence = \Carbon\Carbon::now();
             $lupactions->save(); 
@@ -167,8 +166,7 @@ class LUPActionController extends Controller
 
     //Approved Closing Evidence
     public function approvedevidence($id, LUPAction $lupactions,Request $request)
-    {
-        
+    {        
         $decrypted = Crypt::decryptString($id);
         //get data lupaction
         $lupactions = LUPAction::find($decrypted);          
@@ -191,8 +189,7 @@ class LUPActionController extends Controller
         $decrypted = Crypt::decryptString($id);
         //get data lupaction    
         $lupactions = LUPAction::find($decrypted);        
-        $this->authorize('approvedevidence',$lupactions);     
-            $lupactions->actionstatus='OPEN';
+        $this->authorize('approvedevidence',$lupactions);            
             $email_uploader =$lupactions->evidence_uploaders->email;
             $lupactions->evidence_filename = null;           
             $lupactions->evidence_uploader = null;
@@ -235,6 +232,8 @@ class LUPActionController extends Controller
             $lupactions->actionstatus='ON EXTENSION';         
             if(!$lupactions->old_duedate ){
                 $lupactions->old_duedate = $lupactions->duedate_action;
+            }else{
+                $lupactions->old_duedate2 = $lupactions->duedate_action;
             }               
             $lupactions->duedate_action = $request->duedate_action;  
             $lupactions->extension_notes = $request->extension_notes;          

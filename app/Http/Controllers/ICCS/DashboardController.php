@@ -46,7 +46,8 @@ class DashboardController extends Controller
             ->where('evidence_filename',null)         
             ->whereDate('duedate_action','<',now()->addDays(8))
             ->count();  
-        $lupactionclosing = LUPAction::status('ON CLOSING')->count(); 
+        $lupactionclosing = LUPAction::where('lup_actions.dateapproved_evidence',null)    
+            ->where('lup_actions.evidence_filename','<>',null)->count(); 
         $lupactioncancel = LUPAction::status('ON CANCEL')->count();   
         $mylupactioncancel = LUPAction::status('ON CANCEL')
             ->where('pic_action',Auth::user()->username)      

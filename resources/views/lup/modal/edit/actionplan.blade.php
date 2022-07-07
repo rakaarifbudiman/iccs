@@ -119,6 +119,79 @@
   </div>
 </div> 
 
+<!-- Modal Approved With Evidence Action Plan-->
+<div class="modal fade" id="modalapprovedwithevidence{{ $lupaction->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Approved Closing Evidence</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" name="upload-file" class="form-horizontal" enctype="multipart/form-data" id="upload-file" action="/lup/action/{{Crypt::encryptString($lupaction->id)}}/approvedevidence">
+        @csrf              
+        @method('put')
+      <div class="modal-body">  
+        <div class="row mb-3">
+          <label for="action" class="col-sm col-form-label col-form-label-sm">Action Plan</label>
+          <div class="{{ $lupaction->evidence_filename ? 'col-sm-9' : 'col-sm-8'}}">
+              <input class="form-control form-control-sm" type="text" id="action" name="action" placeholder="Type Action Plan..." value="{{ $lupaction->action }}" disabled>                                                 
+          </div>                                 
+        </div>      
+        <div class="row mb-3">
+          <label for="pic_action" class="col-sm col-form-label col-form-label-sm">PIC Action</label>
+          <div class="{{ $lupaction->evidence_filename ? 'col-sm-9' : 'col-sm-8'}}">
+              <input class="form-control form-control-sm" list="listusers" type="text" id="pic_action" name="pic_action" placeholder="Select PIC Action..." value="{{ $lupaction->pic_action }}" disabled>                                                               
+          </div>                                 
+        </div>      
+        <div class="row mb-3">
+          <label for="evidence_uploader" class="col-sm col-form-label col-form-label-sm">Evidence Uploader</label>
+          <div class="{{ $lupaction->evidence_filename ? 'col-sm-9' : 'col-sm-8'}}">
+              <input class="form-control form-control-sm" list="listusers" type="text" id="evidence_uploader" name="evidence_uploader" placeholder="Select PIC Action..." value="{{ $lupaction->evidence_uploader }}" disabled>                                                               
+          </div>                                 
+        </div> 
+        <div class="row mb-3">
+          <label for="dateupload_evidence" class="col-sm col-form-label col-form-label-sm">Date Upload Evidence</label>
+          <div class="col-sm-8">
+              <input class="form-control form-control-sm" list="listusers" type="text" id="dateupload_evidence" name="dateupload_evidence" value="@date($lupaction->dateupload_evidence,'d-M-y')" disabled>                                                               
+          </div>     
+          @if($lupaction->evidence_filename)   
+          <div class="col-sm-1">           
+            <a href="/lup/action/{{ $lupaction->id }}/downloadevidence" class="btn btn-sm btn-success" title="Download Closing Evidence" 
+              {{ $lupaction->evidence_filename ? '' : 'hidden'}}><i class=" bi-download"></i>
+            </a>  
+          </div>   
+          @endif                             
+        </div>   
+        
+        @if(!$lupaction->evidence_filename)
+          <div class="row mb-3">
+            <label for="referaction" class="col-sm col-form-label col-form-label-sm">Reference Action</label>
+            <div class="{{ $lupaction->evidence_filename ? 'col-sm-9' : 'col-sm-8'}}">
+              <input class="form-control form-control-sm" list="listactionclose" type="text" id="referaction" name="referaction" value="{{old('referaction')}}" autocomplete="off">                                                               
+              <datalist id="listactionclose">
+                @foreach ($listactionclose as $actionclose)
+                <option value="{{ $actionclose->action }}">{{ $actionclose->action }} - {{ $actionclose->pic_action }} - {{ $actionclose->actionstatus }}</option>                        
+                @endforeach
+            </datalist>
+            <p class="breadcrumb-item">If the action has a reference, please select the action reference above</p>
+            </div>                                 
+          </div>   
+        @endif
+                
+         
+        <input class="form-control form-control-sm" type="text" id="modalhidecodelup" name="modalhidecodelup" value="{{ $lupparent->code }}" hidden>
+        <input class="form-control form-control-sm" type="text" id="modalhidepicaction" name="modalhidepicaction" value="" hidden>
+        <input class="form-control form-control-sm" type="text" id="modalhidestatuslup" name="modalhidestatuslup" value="{{ $lupparent->lupstatus }}" hidden>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+        <button type="submit" class="btn btn-primary" name="saveaction">Save</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div> 
+
 <!-- Modal Approved Evidence Action Plan-->
 <div class="modal fade" id="modalapprovedevidence{{ $lupaction->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl" role="document">
@@ -166,7 +239,7 @@
         <div class="row mb-3">
           <label for="referaction" class="col-sm col-form-label col-form-label-sm">Reference Action</label>
           <div class="{{ $lupaction->evidence_filename ? 'col-sm-9' : 'col-sm-8'}}">
-            <input class="form-control form-control-sm" list="listactionclose" type="text" id="referaction" name="referaction" value="{{old('referaction')}}" autocomplete="off">                                                               
+            <input class="form-control form-control-sm" list="listactionclose" type="text" id="referaction" name="referaction" value="{{old('referaction')}}" autocomplete="off" required>                                                               
             <datalist id="listactionclose">
               @foreach ($listactionclose as $actionclose)
               <option value="{{ $actionclose->action }}">{{ $actionclose->action }} - {{ $actionclose->pic_action }} - {{ $actionclose->actionstatus }}</option>                        
@@ -174,8 +247,7 @@
           </datalist>
           <p class="breadcrumb-item">If the action has a reference, please select the action reference above</p>
           </div>                                 
-        </div>   
-                
+        </div>           
          
         <input class="form-control form-control-sm" type="text" id="modalhidecodelup" name="modalhidecodelup" value="{{ $lupparent->code }}" hidden>
         <input class="form-control form-control-sm" type="text" id="modalhidepicaction" name="modalhidepicaction" value="" hidden>
@@ -183,7 +255,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
-        <button type="submit" class="btn btn-primary" name="saveaction">Save</button>
+        <button type="submit" class="btn btn-primary" name="saveaction" {{!$listactionclose ? 'hidden' : ''}}>Save</button>
       </div>
     </form>
     </div>

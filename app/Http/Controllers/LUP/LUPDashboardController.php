@@ -405,7 +405,8 @@ class LUPDashboardController extends Controller
         $lupparents = DB::table('lup_parents')
                 ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
                 ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')                
-                ->where('lup_actions.actionstatus','ON CLOSING')                           
+                ->where('lup_actions.dateapproved_evidence',null)    
+                ->where('lup_actions.evidence_filename','<>',null)                         
                 ->orderBy('duedate_action','asc')
                 ->get();                          
 

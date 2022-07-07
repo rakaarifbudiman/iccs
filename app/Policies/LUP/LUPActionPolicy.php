@@ -57,7 +57,7 @@ class LUPActionPolicy
     public function approvedevidence(User $user, LUPAction $lupaction)
     {               
         return ($lupaction->lupparent->lupstatus=="OPEN")             
-            && ($lupaction->signdate_action) && ($user->level==2) && ($lupaction->actionstatus=="ON CLOSING" || $lupaction->actionstatus=="OPEN") && (!$lupaction->dateapproved_evidence)
+            && ($lupaction->signdate_action) && ($user->level==2) && ($lupaction->actionstatus=="OPEN" || $lupaction->actionstatus=="ON EXTENSION" || $lupaction->actionstatus=="ON EXTENSION APPROVAL") && (!$lupaction->dateapproved_evidence)
                 ? Response::allow()
                     : Response::deny('Failed....'. ($user->level==1 ? 'You are not authorized to sign this action':($lupaction->dateapproved_evidence ? 'This action has been closed':($lupaction->lupparent->lupstatus=="OPEN" ?  : 'LUP status is '.$lupaction->lupparent->lupstatus))));         
     }
