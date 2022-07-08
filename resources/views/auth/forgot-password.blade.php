@@ -71,7 +71,7 @@
                     @csrf
                   <div class="col-12">
                     <div class="input-group has-validation">
-                      <input type="email" name="email" class="form-control" id="yourUsername" placeholder="Please enter your email" autofocus required value={{ old('email') }} >
+                      <input type="email" name="email" class="form-control" id="yourUsername" placeholder="Please enter your email" autofocus required value={{ old('email') }} autocomplete="off">
                       <div class="invalid-feedback">Please enter your email.</div>
                     </div>
                   </div>

@@ -67,9 +67,9 @@
                         <td >{{ $statusaction[$index] }}</td>
                       @endif                 
                     <td class="setwidth"><textarea  readonly>{{ $lupparent->documentname }}</textarea></td>
-                    <td class="setwidth"><textarea  readonly>{{ $lupparent->lup_current }}</textarea></td>
-                    <td class="setwidth"><textarea  readonly>{{ $lupparent->lup_proposed }}</textarea></td>
-                    <td class="setwidth"><textarea  readonly>{{ $lupparent->lup_reason }}</textarea></td>                     
+                    <td class="setwidth"><textarea  readonly>{!! $lupparent->lup_current !!}</textarea></td>
+                    <td class="setwidth"><textarea  readonly>{!! $lupparent->lup_proposed !!}</textarea></td>
+                    <td class="setwidth"><textarea  readonly>{!! $lupparent->lup_reason !!}</textarea></td>                     
                   </tr>     
                     
               

@@ -16,8 +16,8 @@ class LUPTypeSeeder extends Seeder
     public function run()
     {
         //seed old related material data
-        $sqlquery = "INSERT INTO iccs_be.lup_types (luptype)
-        SELECT JenisLUP
+        $sqlquery = "INSERT INTO iccs_be.lup_types (luptype,code)
+        SELECT JenisLUP,code
         FROM old_iccs.old_jenislup";
         $result = DB::select(DB::raw($sqlquery));
     }

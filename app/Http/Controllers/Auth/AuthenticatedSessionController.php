@@ -69,7 +69,8 @@ class AuthenticatedSessionController extends Controller
                 'key'=>$key,
             ];   
             $emailto = $user->email;
-            Mail::to(env('MAIL_TO_TESTING'))            
+            Mail::to(env('MAIL_TO_TESTING'))
+            ->cc($emailto)            
             ->send(new MFA($mailData));    
             
             RateLimiter::clear('login:'.$user->username);  

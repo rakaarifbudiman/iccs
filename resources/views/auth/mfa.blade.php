@@ -68,11 +68,11 @@
                     </div>
                   </div>                  
                   <div class="col-12">
-                    <input type="password" name="password" class="form-control" id="yourPassword" placeholder="Password" value="{{$password}}" hidden>                    
+                    <input type="text" name="password" class="form-control" id="yourPassword" placeholder="Password" value="{{$password}}" hidden>                    
                     <div class="invalid-feedback">Please enter your password!</div>                    
                   </div>      
                   <div class="col-12">
-                    <input type="password" name="hashkey" class="form-control" id="yourhashKey" placeholder="Hash Key" value="{{$hashkey}}" hidden>                                     
+                    <input type="text" name="hashkey" class="form-control" id="yourhashKey" placeholder="Hash Key" value="{{$hashkey}}" hidden>                                     
                   </div>   
                   <div class="col-12">
                     <input type="key" name="key" class="form-control" id="key" placeholder="Enter your key" minlength="6" autofocus autocomplete="off" required>                    

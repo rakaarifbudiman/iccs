@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('lup_types', function (Blueprint $table) {
             $table->id();
+            $table->string('code');
             $table->string('luptype');
             $table->timestamps();
         });

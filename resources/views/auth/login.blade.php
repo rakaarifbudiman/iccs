@@ -11,7 +11,6 @@
 
   <!-- Favicons -->
   <link href="assets/img/logoiccsnew.svg" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -32,13 +31,6 @@
 </head>
 
 <body>
-
-{{-- <main> --}}
-{{-- <x-guest-layout>    
-</x-guest-layout>
-<div class="container">
-<!-- Session Status -->
-<x-auth-session-status class="mb-4" :status="session('status')" /> --}}
 @include('layouts.flash-message')
     <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
       <div class="container">
@@ -113,7 +105,7 @@
             </div>
 
             <div class="credits">
-              Designed by <a href="">ICCS</a>
+              Designed by <a href="" class="text-danger">{{ env('APP_NAME') }}</a>
               
             </div>
             <div class="credits">

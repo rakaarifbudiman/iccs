@@ -45,16 +45,16 @@ class LUPParentController extends Controller
 
     //show masterlist lup
     public function index()
-    {            
+    {                    
             $lupparents = cache()->remember('masterlistlup',300,function(){
                  return DB::table('lup_parents')
                 ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
                 ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')                     
                 ->orderBy('lup_parents.id','desc')
                 ->get();         
-            });  
+            });         
             
-        $statusaction=lupallstatusactions( $lupparents);        
+        $statusaction=lupallstatusactions( $lupparents); 
         
 	    return view('lup.masterlistlup', ['lupparents' => $lupparents,
         'statusaction'=>$statusaction,  
@@ -64,8 +64,8 @@ class LUPParentController extends Controller
     //show form new lup
     public function create()
     {
-        $listtypes = DB::table('lup_types')->get('luptype');   
-        $listsubtypes = DB::table('lup_subtypes')->get('luptype');   
+        $listtypes = DB::table('lup_types')->get();        
+        $listsubtypes = DB::table('lup_subtypes')->get();   
         return view('lup.newlup',[
             'listtypes'=>$listtypes,
             'listsubtypes'=>$listsubtypes]);
@@ -74,6 +74,7 @@ class LUPParentController extends Controller
     // store new lup
     public function store(StoreLUPParentRequest $request)
     {           
+        
         $lupparent = LUPParent::first();         
         if($lupparent==null){
             $newcode='L'.date('y').'00001';
@@ -98,9 +99,9 @@ class LUPParentController extends Controller
         $decrypted = Crypt::decryptString($id);         
         $lupparent=LUPParent::find($decrypted);                          
         $luptypes = explode(';',$lupparent->lup_type);
-        $lupsubtypes = explode(';',$lupparent->lup_subtype);
-        $listtypes = DB::table('lup_types')->get('luptype');    
-        $listsubtypes = DB::table('lup_subtypes')->get('luptype');     
+        $lupsubtypes = explode(';',$lupparent->lup_subtype);        
+        $listtypes = DB::table('lup_types')->get();    
+        $listsubtypes = DB::table('lup_subtypes')->get();         
         $listusers = User::where([['active',1]])->get();
         $listactionclose = LUPAction::where('code',$lupparent->code)->where('actionstatus','CLOSED')->get();
         $listapprovers = $listusers->where('level',3);
@@ -129,6 +130,7 @@ class LUPParentController extends Controller
     //update data LUP
     public function update($id, LUPParent $lupparent, UpdateLUPParentRequest $request)
     {
+        
         $lupparent = LUPParent::Find($id);
         $this->authorize('update', $lupparent); 
         $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_parents'),['updated_at']);        
@@ -164,11 +166,12 @@ class LUPParentController extends Controller
         }else{
             $categorization = array('categorization'=>'Minor');
         }            
+        //@dd(array_merge($data1,$data2,$data3,$data4));
         if($lupparent->adjustments==0){
             $lupparent->update(array_merge($data1,$data2,$data3,$data4,$categorization));       
         }else{
             $lupparent->update(array_merge($data1,$data2,$data3,$data4));       
-        }         
+        }        
                        
         //check audit change     
         if($lupparent->wasChanged()==TRUE){
