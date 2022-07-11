@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\LUP\LUPFile;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Models\FLP\FLPAction;
 use App\Models\LUP\LUPAction;
 use App\Models\LUP\LUPParent;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +18,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Mail\LUP\LUPActionHasExtension;
 use App\Mail\LUP\LUPExtensionHasReject;
 use App\Mail\LUP\LUPActionRequestCancel;
+use App\Mail\LUP\LUPActionNotif;
 use App\Http\Requests\LUP\StoreLUPActionRequest;
 
 class LUPActionController extends Controller
@@ -420,5 +420,35 @@ class LUPActionController extends Controller
             $lupactions->actionstatus='CANCEL';
             $lupactions->save();            
         return back()->with('success','Success...Action Has Been CANCEL ');       
+    }
+
+    //Send Notif to PIC Action
+    public function sendnotif($id)
+    {        
+        $decrypted = Crypt::decryptString($id);
+        //get data lupaction   
+        $lup = LUPParent::find($decrypted);        
+        $lupactions = $lup->lupaction->where('signdate_action',null)->where('actionstatus',null);
+        $this->authorize('sendnotif',$lup); 
+        foreach ($lupactions as $lupaction){
+            $email[] = $lupaction->pic->email;
+        }       
+            
+            //Send Notif to PIC Action       
+        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($id).'/edit"'.' style="
+        background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
+        inline-block;text-decoration: none;"'.'>Go to LUP</a>';                  
+        $mailData = [          
+            'title'=>$lup->documentname, 
+            'proposed'=>$lup->lup_proposed, 
+            'nolup' => $lup->nolup,            
+            'lupactions'=>$lupactions,       
+            'urllup'=>$urllup,            
+        ];                    
+        $emailto = $email;          
+        Mail::to(env('MAIL_TO_TESTING'))          
+            ->send(new LUPActionNotif($mailData,$lupactions));    
+            
+        return back()->with('success','Success...Notification has been sent...');        
     }
 }

@@ -29,7 +29,7 @@ class NotifLoginAttempts extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->subject('ICCS - Security Info - Notification Request Login Attempts')
+        return $this->subject('(WEB TESTING) ICCS - Security Info - Notification Request Login Attempts')
         ->view('emails.auth.loginattempts');
     }
 }

@@ -17,8 +17,7 @@ use App\Http\Controllers\LUP\RelatedDepartmentController;
 
 
  /* route group that only active user can access*/
- Route::group(['middleware' => 'active'], function() {     
-        
+ Route::group(['middleware' => 'active'], function() {
     /* lup route */
     Route::get('/lup/masterlist', [LUPParentController::class, 'index']);
     Route::get('/lup/new', [LUPParentController::class, 'create']);
@@ -85,6 +84,7 @@ use App\Http\Controllers\LUP\RelatedDepartmentController;
     Route::POST('/lup/action/store', [LUPActionController::class, 'store']);    
     Route::put('/lup/action/{id}/update', [LUPActionController::class, 'update']);    
     Route::get('/lup/action/{id}/delete', [LUPActionController::class, 'destroy']);
+    
     Route::get('/lup/action/{id}/sign', [LUPActionController::class, 'sign']);
     Route::get('/lup/action/{id}/cancelsign', [LUPActionController::class, 'cancelsign']);
     Route::POST('/lup/action/{id}/uploadevidence', [LUPActionController::class, 'uploadevidence']);
@@ -133,6 +133,7 @@ Route::group(['middleware' => 'reviewer'], function() {
     Route::put('/lup/{id}/updateapprover', [LUPParentController::class, 'updateapprover']); 
     Route::put('/lup/{id}/updateconfirmer', [LUPParentController::class, 'updateconfirmer']); 
     Route::put('/lup/{id}/updatereviewerqcjm', [LUPParentController::class, 'updatereviewerqcjm']); 
+    Route::get('/lup/action/{id}/sendnotif', [LUPActionController::class, 'sendnotif']); 
     Route::put('/lup/action/{id}/approvedevidence', [lupActionController::class, 'approvedevidence']);
     Route::put('/lup/action/{id}/rejectevidence', [lupActionController::class, 'rejectevidence']);
     Route::put('/lup/action/{id}/reviewextension', [LUPActionController::class, 'reviewextension']);    

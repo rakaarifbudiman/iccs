@@ -13,7 +13,15 @@
             <a href="#" class="btn btn-sm btn-warning text-white" data-bs-toggle="modal" data-bs-target="#modaldeletenotif{{ $lupparent->id }}" title="Delete Notification" 
               {{$lupparent->lupstatus=="APPROVED" ? : 'hidden'}}>
                 Delete Notification<i class="ri-delete-bin-2-fill"></i>
-            </a>          
+            </a>
+            @can('sendnotif',$lupparent)
+              <a href="/lup/action/{{Crypt::encryptString($lupparent->id)}}/sendnotif" onclick="return confirm('Send notif to all PIC Action ?');" class="btn btn-sm btn-primary text-white"  title="Send Mail to All PIC Action" 
+                {{$lupparent->lupstatus=="APPROVED" ? : 'hidden'}}>
+                  <i class="ri-mail-send-line"></i>
+              </a>
+            @endcan
+            
+
           <table class="table datatable w-auto small" id="LUPTable">
             <thead>    
                 <tr>
@@ -25,8 +33,7 @@
                     <th class="col-sm">Due Date</th>
                     <th scope="col">Status</th>    
                     <th scope="col">Sign Type</th>  
-                    <th scope="col">Department</th>  
-
+                    <th scope="col">Department</th>
                 </tr>
             </thead>            
               <tbody>

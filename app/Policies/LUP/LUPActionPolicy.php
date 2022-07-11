@@ -25,13 +25,15 @@ class LUPActionPolicy
         //
     }
     public function update(User $user, LUPAction $lupaction)
-    {       
+    {      
         
         return ($lupaction->lupparent->lupstatus=="APPROVED")             
             && (!$lupaction->signdate_action)
                 ? Response::allow()
                     : Response::deny('Failed....'. ($lupaction->signdate_action ? 'This action has been signed':($lupaction->lupparent->lupstatus=="APPROVED" ?  : 'LUP status is '.$lupaction->lupparent->lupstatus)));         
     }
+
+
     public function sign(User $user, LUPAction $lupaction)
     {       
         

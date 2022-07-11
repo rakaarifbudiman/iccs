@@ -4,6 +4,7 @@ namespace App\Policies\LUP;
 
 use App\Models\User;
 use Illuminate\Support\Str;
+use App\Models\LUP\LUPAction;
 use App\Models\LUP\LUPParent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Auth\Access\Response;
@@ -212,6 +213,17 @@ class LUPParentPolicy
         return ($lup->lupstatus=="OPEN") && ($user->level ==3)             
                 ? Response::allow()
                     : Response::deny('Failed... You are not authorized ');                  
+    }
+
+    public function sendnotif(User $user, LUPParent $lup)
+    {   
+        $lupactions = LUPAction::where('code',$lup->code)
+                ->where('signdate_action',null)
+                ->where('actionstatus',null)->get();            
+        return ($lupactions) && ($lup->lupstatus=="APPROVED")            
+            && ($user->level>1)
+                ? Response::allow()
+                    : Response::deny('You are not authorized');         
     }
 
 

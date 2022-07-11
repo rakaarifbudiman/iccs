@@ -28,7 +28,7 @@ class DemoMail extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->subject('Reset Password ICCS')
+        return $this->subject('(WEB TESTING) Reset Password ICCS')
                     ->view('emails.testemail');
     }
 }
