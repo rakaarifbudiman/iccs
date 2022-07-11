@@ -9,6 +9,7 @@ use Database\Seeders\MailSetting;
 use Database\Seeders\FLPFileSeeder;
 use Database\Seeders\LUPFileSeeder;
 use Database\Seeders\LUPTypeSeeder;
+use Database\Seeders\LUPSubTypeSeeder;
 use Database\Seeders\RDMSUomSeeder;
 use Database\Seeders\AuditLUPSeeder;
 use Database\Seeders\ICCSPathSeeder;
