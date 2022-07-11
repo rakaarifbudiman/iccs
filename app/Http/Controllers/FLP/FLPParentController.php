@@ -477,7 +477,7 @@ class FLPParentController extends Controller
                     'nameleader'=>$nameleader,
                 ];    
                 $emailto = $emailleader;         
-                Mail::to(env('MAIL_TO_TESTING'))   //$emailleader         
+                Mail::to($emailto)   //$emailleader         
                 ->send(new FLPNotifToLeader($mailData,$flp));                
                 
 
@@ -635,7 +635,7 @@ class FLPParentController extends Controller
                 'flplaunch'=>$flplaunch,                    
             ];             
             $emailto = $emailreviewers;
-            Mail::to(env('MAIL_TO_TESTING'))   //$emailreviewers->implode('email',',')         
+            Mail::to($emailto)   //$emailreviewers->implode('email',',')         
             ->send(new FLPNotifToReviewer($mailData,$flp));  
                 
                 
@@ -686,7 +686,7 @@ class FLPParentController extends Controller
                 'nameapprover'=>$nameapprover,                  
             ];        
             $emailto = $emailapprover;     
-            Mail::to(env('MAIL_TO_TESTING'))   //$emailapprover         
+            Mail::to($emailto)   //$emailapprover         
             ->send(new FLPNotifToApprover($mailData,$flp));  
 
             return redirect('/flp/'.$id.'/edit')->with('success','Submit to Approver success...');
@@ -866,7 +866,7 @@ class FLPParentController extends Controller
                        
            ];        
            $emailto = $flp->emailinisiator.','.$flp->emailpicaction.$emailapprover ;     
-           Mail::to(env('MAIL_TO_TESTING'))   //$flp->emailinisiator.','.$flp->emailpicaction.$emailapprover        
+           Mail::to($emailto)   //$flp->emailinisiator.','.$flp->emailpicaction.$emailapprover        
            ->send(new FLPNotifHasApproved($mailData,$flp));   
          
         $id = Crypt::encryptString($flp->id);     

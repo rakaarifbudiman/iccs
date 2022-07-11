@@ -208,8 +208,10 @@ class LUPActionController extends Controller
             'urllup'=>$urllup,            
         ];                    
           
-        $emailto = $lupactions->pic->email.','.$email_uploader;          
-        Mail::to(env('MAIL_TO_TESTING'))     
+        $emailto = $lupactions->pic->email;  
+        $emailcc= $email_uploader;       
+        Mail::to($emailto)  
+            ->cc($emailcc)   
             ->send(new LUPEvidenceHasReject($mailData,$lupactions));    
             
         return back()->with('success','Reject Closing Evidence Success...');             
@@ -258,7 +260,7 @@ class LUPActionController extends Controller
           
         $emailto = $lupactions->lupparent->reviewers->email;              
 
-        Mail::to(env('MAIL_TO_TESTING'))     
+        Mail::to($emailto)     
             ->send(new LUPActionHasExtension($mailData,$lupactions));    
             
         return back()->with('success','Submit Due Date Extension Success...');             
@@ -300,7 +302,7 @@ class LUPActionController extends Controller
           
         $emailto = $lupactions->lupparent->approvers->email;              
 
-        Mail::to(env('MAIL_TO_TESTING'))     
+        Mail::to($emailto)     
             ->send(new LUPActionHasExtension($mailData,$lupactions));    
             
         return back()->with('success','Submit Due Date Extension Success...');       
@@ -363,9 +365,10 @@ class LUPActionController extends Controller
             'note'=>$request->cancel_extension_notes,        
             'urllup'=>$urllup,            
         ];                    
-        $emailto = $lupactions->pic->email.','.$email_extender;  
-        
-        Mail::to(env('MAIL_TO_TESTING'))     
+        $emailto = $lupactions->pic->email;  
+        $emailcc = $email_extender;
+        Mail::to($emailto)    
+            ->cc($emailcc) 
             ->send(new LUPExtensionHasReject($mailData,$lupactions));    
             
         return back()->with('success','Success...Due Date Extension Has Been Rejected...');        
@@ -400,7 +403,7 @@ class LUPActionController extends Controller
           
         $emailto = $lupactions->lupparent->reviewers->email;              
 
-        Mail::to(env('MAIL_TO_TESTING'))     
+        Mail::to($emailto)     
             ->send(new LUPActionRequestCancel($mailData,$lupactions));    
         return back()->with('success','Success...Request Cancel Action Has Been Submitted ');       
     }

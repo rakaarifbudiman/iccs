@@ -51,15 +51,18 @@ class RegisteredUserController extends Controller
         $emailreviewers = DB::table('users')
             ->where('level',2)
             ->where('active',1)->get('email');  
-        $emailto = $emailreviewers->implode('email',',');
-            
-        //Send Notif to Reviewer        
+        $emailto = $request->email;
+        foreach($emailreviewers as $email){
+            $emailcc[]=$email->email;
+        }
+        
+        //Send Notif to Reviewer
         
         $mailData = [
             'user' => $request->username
         ];             
-        Mail::to(env('MAIL_TO_TESTING'))
-        ->cc($request->email)   //$emailreviewers->implode('email',',')         
+        Mail::to($emailto)
+        ->cc($emailcc)  
         ->send(new RequestUserActive($mailData));
 
         return redirect('/login')->with('success','Register success... Please check your email...');        

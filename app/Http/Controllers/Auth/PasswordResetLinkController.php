@@ -72,7 +72,7 @@ class PasswordResetLinkController extends Controller
             'email'=>$cekuser->first()->email,
         ];   
         $emailto = $request->email;
-        Mail::to(env('MAIL_TO_TESTING'))            
+        Mail::to($emailto)            
         ->send(new ResetPassword($mailData));
         
         $iduser = DB::table('users')->where('email',$request->email)->first()->id;

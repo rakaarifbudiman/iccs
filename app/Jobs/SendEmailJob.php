@@ -35,6 +35,6 @@ class SendEmailJob implements ShouldQueue
     {
         $email = new FLPNotifHasApproved($this->mailData,$this->flp);
         @dd($this->mailData);
-        Mail::to(env('MAIL_TO_TESTING'))->send($email);
+        Mail::to($emailto)->send($email);
     }
 }

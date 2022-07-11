@@ -208,9 +208,13 @@ class UserController extends Controller
             $emailreviewers = DB::table('users')
             ->where('level',2)
             ->where('active',1)->get('email');  
-            $emailto = $emailreviewers->implode('email',',');
-            Mail::to(env('MAIL_TO_TESTING'))
-            ->cc($users->email)   
+            $emailto = $users->email;
+            foreach($emailreviewers as $email){
+                $emailcc[]=$email->email;
+            }
+            
+            Mail::to($emailto)
+            ->cc($emailcc)   
             ->send(new NotifyUserActive($mailData));
 
         return back()->with('success','User has been activated!');   

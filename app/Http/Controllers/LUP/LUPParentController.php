@@ -166,7 +166,7 @@ class LUPParentController extends Controller
         }else{
             $categorization = array('categorization'=>'Minor');
         }            
-        //@dd(array_merge($data1,$data2,$data3,$data4));
+        
         if($lupparent->adjustments==0){
             $lupparent->update(array_merge($data1,$data2,$data3,$data4,$categorization));       
         }else{
@@ -244,7 +244,7 @@ class LUPParentController extends Controller
                     'name'=>$lup->leaders->name,
                 ];        
             $emailto = $lup->leaders->email;         
-            Mail::to(env('MAIL_TO_TESTING'))           
+            Mail::to($emailto)           
                 ->send(new LUPNotifToLeader($mailData,$lup));      
                 
 
@@ -287,15 +287,20 @@ class LUPParentController extends Controller
             $lup->lupstatus = "ON PROCESS";            
         }         
         $lup->save();       
-       
+        
         //Send Notif to Reviewer
         $name='Reviewer';
         $emailreviewer = DB::table('approvals')
         ->leftjoin('users as A', 'A.username','=','approvals.username')
         ->select('approvals.*','A.email as emailreviewer')         
         ->where('type','Reviewer LUP')
-        ->where('approvals.active',1)->get('emailreviewer');
-        $emailto = $emailreviewer->implode('emailreviewers',',');
+        ->where('approvals.active',1)->get();
+        $emailto = $emailreviewer->first()->emailreviewer;
+        
+        foreach($emailreviewer as $email){
+            $emailcc[]=$email->emailreviewer;
+        }
+        
         $urllup = '<a href="'.env('APP_URL').'/lup/'.$id.'/edit"'.' style="
         background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
         inline-block;text-decoration: none;"'.'>Go to LUP</a>';    
@@ -314,7 +319,8 @@ class LUPParentController extends Controller
         ];         
     
     
-    Mail::to(env('MAIL_TO_TESTING'))        
+    Mail::to($emailto)  
+        ->cc($emailcc)      
         ->send(new LUPNotifToQC($mailData,$lup));     
         return back()->with('success','Sign Leader success...');
 
@@ -391,7 +397,7 @@ class LUPParentController extends Controller
         ];         
     
     $emailto = $lup->regulatory_reviewers->email;
-    Mail::to(env('MAIL_TO_TESTING'))        
+    Mail::to($emailto)        
         ->send(new LUPNotifToQC($mailData,$lup));   
 
         return back()->with('success','Success...LUP has been submitted to Regulatory Reviewer');
@@ -428,7 +434,7 @@ class LUPParentController extends Controller
         ];         
     
     $emailto = $lup->regulatory_approvers->email;
-    Mail::to(env('MAIL_TO_TESTING'))        
+    Mail::to($emailto)        
         ->send(new LUPNotifToQC($mailData,$lup)); 
         
         return back()->with('success','Sign Regulatory success...');
@@ -572,7 +578,7 @@ class LUPParentController extends Controller
         ];         
     
     $emailto = $lup->reviewerqcjms->email;
-    Mail::to(env('MAIL_TO_TESTING'))        
+    Mail::to($emailto)        
         ->send(new LUPNotifToQC($mailData,$lup));             
     
         return back()->with('Success','LUP has been submitted to next process...');         
@@ -712,9 +718,13 @@ class LUPParentController extends Controller
             'name'=>$name,
             'path'=>$path,
         ];                 
-        $emailto = $lup->emailinisiator.','.$lup->emailleader.','.$lup->emailreviewer.','.$lup->emailapprover;              
-
-        Mail::to(env('MAIL_TO_TESTING'))     
+        $emailto = $lup->inisiators->email;
+        foreach([$lup->leaders->email,$lup->reviewers->email,$lup->approvers->email] as $recipient){
+            $emailcc[]=$recipient; 
+        }               
+        
+        Mail::to($emailto)     
+            ->cc($emailcc)
             ->send(new LUPNotifHasApproved($mailData,$lup));             
            return back()->with('success','LUP approved success');
    }
@@ -814,10 +824,37 @@ class LUPParentController extends Controller
         ->select('lup_actions.*','users.department as pic_dept','users.email as pic_email','lup_actions.id as action_id','users.*')
         ->where('code',$lup->code)
         ->get(); 
-        $emailaction = $lupactions->implode('pic_email',',');        
-        $emailto = $lup->emailinisiator.','.$lup->emailleader.','.$lup->emailreviewer.','.$lup->emailapprover.','.str_replace(' ', '', $lup->action_notifier).','.$emailaction;              
-
-        Mail::to(env('MAIL_TO_TESTING'))     
+        
+        foreach($lupactions as $lupaction){
+            $emailaction[] = $lupaction->pic_email;
+        }       
+        $notifiers = explode(',',str_replace(' ', '', $lup->action_notifier));
+        
+        foreach($notifiers as $notifier){
+            $emailnotifier[] = $notifier;
+        }
+        $emailto = $lup->inisiators->email;
+        if(!$lup->action_notifier && $emailaction){
+                foreach(array_merge([$lup->leaders->email,$lup->reviewers->email,$lup->approvers->email],$emailaction) as $recipient){
+                    $emailcc[] = $recipient;
+                }
+        }elseif($lup->action_notifier && !$emailaction){
+                foreach(array_merge([$lup->leaders->email,$lup->reviewers->email,$lup->approvers->email],$emailnotifier) as $recipient){
+                    $emailcc[] = $recipient;
+                }
+        }elseif(!$lup->action_notifier && !$emailaction){
+                foreach([$lup->leaders->email,$lup->reviewers->email,$lup->approvers->email] as $recipient){
+                    $emailcc[] = $recipient;
+                }
+        }else{
+                foreach(array_merge([$lup->leaders->email,$lup->reviewers->email,$lup->approvers->email],$emailaction,$emailnotifier) as $recipient){
+                    $emailcc[] = $recipient;
+                }
+        }
+       
+       
+        Mail::to($emailto)     
+            ->cc($emailcc)
             ->send(new LUPNotifHasConfirmed($mailData,$lup));    
         return back()->with('success','Success...LUP has been confirmed');
    }
@@ -1000,13 +1037,19 @@ class LUPParentController extends Controller
                 ->leftjoin('users as A', 'A.username','=','approvals.username')
                 ->select('approvals.*','A.email as emailreviewer')         
                 ->where('type','Reviewer LUP')
-                ->where('approvals.active',1)->get('emailreviewer');
-            $emailto = $emailreviewer->implode('emailreviewers',',');
+                ->where('approvals.active',1)->get();
+                $emailto = $emailreviewer->first()->emailreviewer;
+                foreach($emailreviewer as $email){
+                    $emailcc[]=$email->emailreviewer;
+                }
+            
             }else{
                 $emailto = $lup->reviewers->email; 
+                $emailcc = $lup->reviewers->email; 
             }        
             
-            Mail::to(env('MAIL_TO_TESTING'))           
+            Mail::to($emailto)    
+                ->cc($emailcc)       
                 ->send(new LUPRequestCancel($mailData,$lup));               
 
             return back()->with('success','Success...Request Cancellation has been submitted');           
@@ -1045,7 +1088,7 @@ class LUPParentController extends Controller
                     'note'=>$lup->cancel_notes,
                 ];        
             $emailto = $lup->cancel_approvers->email;         
-            Mail::to(env('MAIL_TO_TESTING'))           
+            Mail::to($emailto)           
                 ->send(new LUPRequestCancel($mailData,$lup)); 
             return back()->with('success','Success...Cancellation has been submitted');       
         
@@ -1087,7 +1130,7 @@ class LUPParentController extends Controller
                     'note'=>$request->approvercancel_notes,
                 ];        
             $emailto = $lup->inisiators->email;         
-            Mail::to(env('MAIL_TO_TESTING'))           
+            Mail::to($emailto)           
                 ->send(new LUPHasCancel($mailData,$lup)); 
             return back()->with('success','Success...LUP has been Cancel');        
     }
@@ -1124,7 +1167,7 @@ class LUPParentController extends Controller
                     'note'=>$request->closing_notes,
                 ];        
             $emailto = $lup->closing_approvers->email;         
-            Mail::to(env('MAIL_TO_TESTING'))           
+            Mail::to($emailto)           
                 ->send(new LUPRequestClosing($mailData,$lup)); 
             return back()->with('success','Success...Closing has been submitted');      
     }
@@ -1191,8 +1234,10 @@ class LUPParentController extends Controller
                     'note'=>$request->note_approver,
                     'urllup'=>$urllup,
                 ];        
-            $emailto = $lup->inisiators->email.','.$lup->leaders->email;         
-            Mail::to(env('MAIL_TO_TESTING'))           
+            $emailto = $lup->inisiators->email;
+            $emailcc = $lup->leaders->email;        
+            Mail::to($emailto)    
+                ->cc($emailcc)       
                 ->send(new LUPHasRollback($mailData,$lup)); 
             return back()->with('success','Success...LUP Has been Rollback to ON REVIEW');      
     }

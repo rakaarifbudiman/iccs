@@ -66,7 +66,7 @@ class RelatedDepartmentController extends Controller
                     ];                             
                 $emailto = $relateddepartment->user->email;
                 
-                Mail::to(env('MAIL_TO_TESTING'))        
+                Mail::to($emailto)        
                     ->send(new LUPNotifToQC($mailData,$lup));  
                 return back()->with('Success','Success...LUP Has been submitted to related department');
         }
@@ -125,7 +125,7 @@ class RelatedDepartmentController extends Controller
             ];                             
             $emailto = $lup->inisiators->email;
             
-            Mail::to(env('MAIL_TO_TESTING'))        
+            Mail::to($emailto)        
                 ->send(new LUPRequestRevise($mailData,$lup));  
 
         auditlups($relateddepartment,Auth::user()->username,'Notif for Inisiator to Revise LUP',$relateddepartment->code,
