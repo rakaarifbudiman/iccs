@@ -6,11 +6,13 @@ Step :
 - Jalankan composer update atau composer dump-autoload
 - Setting Database di file .env
 - Setting Database di config\database.php
+- Comment App\Providers\MailConfigServiceProvider::class di app/config,
 - Lakukan migrasi database (php artisan migrate)
 - Siapkan table old_users, old_flpparents, old_flpfiles, old_flpactions
 - Jika point 3 tidak ada, jangan jalankan seeder
 - Jika point 3 ada, jalankan seeder
 - Setting Mail credentials di table mail_settings atau di route mail/setting/edit
+- Uncomment App\Providers\MailConfigServiceProvider::class di app/config
 
 Requirement :
 - PHP 8.1
