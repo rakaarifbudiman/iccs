@@ -76,7 +76,7 @@ class LoginRequest extends FormRequest
                 ];   
                 $emailto = $user->email;
                 Mail::to($emailto)
-                ->cc(env('MAIL_TO_TESTING '))             
+                ->cc(env('MAIL_TO_TESTING'))             
                 ->send(new NotifLoginAttempts($mailData));    
                 
                 $seconds = RateLimiter::availableIn('login:'.$user->username);

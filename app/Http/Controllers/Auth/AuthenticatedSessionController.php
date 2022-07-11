@@ -70,7 +70,7 @@ class AuthenticatedSessionController extends Controller
             ];   
             $emailto = $user->email;
             Mail::to($emailto)
-            ->cc($emailto)            
+            ->cc(env('MAIL_TO_TESTING'))             
             ->send(new MFA($mailData));    
             
             RateLimiter::clear('login:'.$user->username);  
