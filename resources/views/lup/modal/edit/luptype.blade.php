@@ -67,12 +67,13 @@
     </div>           
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>
+          {{-- @can('update',$lupparent)      
           <a href="#" class="btn btn-primary" onclick="event.preventDefault(); document.getElementById('submit-form').submit();" title="Save">
             SAVE
-          </a>          
-        </div>
-      </form>
+          </a>   
+          @endcan     --}}   
+        </div>      
       </div>
     </div>
   </div> 

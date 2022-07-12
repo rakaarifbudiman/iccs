@@ -5,7 +5,7 @@
       <img src="/assets/img/logoiccsnew.svg" alt="">
       <span class="d-none d-lg-block text-indigo">ICCS</span>
     </a>
-    <i class="bi bi-list toggle-sidebar-btn"></i>
+    <i class="bi-grid-3x3-gap toggle-sidebar-btn"></i>
   </div><!-- End Logo -->
 
   <div class="search-bar">
@@ -24,7 +24,7 @@
               $onlineusers = DB::table('users')->where('last_seen','<>',null)->orderBy('last_seen', 'desc')->get();
             @endphp
         <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-          <i class="bi bi-chat-left-text"></i>
+          <i class="ri ri-user-2-fill"></i>
           <span class="badge bg-success badge-number">{{ $onlineusers->count() }}</span>
         </a><!-- End Messages Icon -->        
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">

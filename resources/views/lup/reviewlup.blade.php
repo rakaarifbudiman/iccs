@@ -118,27 +118,28 @@
                               <label for="documentname">Title</label>
                             </div>
                           </div>
-                          <div class="col-md-10 mb-2">
+                          <div class="col-md-5 mb-2">
                             <div class="form-floating input-sm">
-                              <textarea style="height: 100px" type="text" class="form-control text-small" min-height ="100"name="lup_type" id="lup_type" placeholder="Change Related to" autocomplete="off" disabled>{{ $lupparent->lup_type }}</textarea>
+                              <textarea style="height: 100px" type="text" class="form-control text-small" min-height ="100"name="lup_type_text" id="lup_type" placeholder="Change Related to" autocomplete="off" disabled>{{ $lupparent->lup_type }}</textarea>
                               <label for="lup_type">Change Related to</label>                              
                               @error('lup_type')
                                 <div class="text-danger">{{ $message }}</div>
                               @enderror 
                             </div>                            
-                          </div>     
+                          </div>    
+                          <div class="col-md-5 mb-2">
+                            <div class="form-floating input-sm">
+                              <textarea style="height: 100px"type="text" class="form-control text-small" name="lup_subtype_text" id="lup_subtype" placeholder="Change Sub Category" autocomplete="off" disabled>{{ $lupparent->lup_subtype }}</textarea>
+                              <label for="lup_subtype">Change Sub Category</label>
+                            </div>
+                          </div>   
                           <div class="col-md-2 mb-2">
                             <div class="form-floating input-sm">
                               <a href="#" class="btn btn-primary text-white edit" data-bs-toggle="modal" data-bs-target="#modaleditluptype" title="Edit Action Plan"><i class="ri-edit-2-fill"></i> Select Change Related</a>                                                                                            
                               @include('lup.modal.edit.luptype')
                             </div>
                           </div>                                          
-                          <div class="col-md-12 mb-2">
-                            <div class="form-floating input-sm">
-                              <textarea style="height: 100px"type="text" class="form-control text-small" name="lup_subtype" id="lup_subtype" placeholder="Change Sub Category" autocomplete="off" disabled>{{ old('lup_subtype',$lupparent->lup_subtype) }}</textarea>
-                              <label for="lup_subtype">Change Sub Category</label>
-                            </div>
-                          </div>                          
+                                                  
                           <div class="col-md-12 mb-2">
                             <div class="form-floating input-sm mt-2">
                               <input type="text" class="form-control text-small" name="lup_type_others" id="lup_type_others" placeholder="If Others (Specify)" value = "{{ old('lup_type_others',$lupparent->lup_type_others) }}" autocomplete="off" {{Auth::user()->can('update',$lupparent) ? '':'disabled'}}>

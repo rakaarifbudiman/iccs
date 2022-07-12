@@ -61,34 +61,20 @@
 @endphp
 <!-- == End Prevent user view page source == -->  
 
-  <!-- == Header == -->
-
+<!-- == Header == -->
     @include('layouts.header')
     
-  <!-- == Sidebar == -->
-  {{-- //cek akses level user --}}
-  @if (Auth::user()->active==1)   
-      @if (Auth::user()->level==1)
-        @include('layouts.sidebar01')
-      @elseif (Auth::user()->level==2)
-        @include('layouts.sidebar02')      
-      @elseif (Auth::user()->level==3)
-        @include('layouts.sidebar03')      
-      @else
-        @include('layouts.sidebar')         
-      @endif
-  @else
-    @include('layouts.sidebar')
-  @endif
-  
+<!-- == Sidebar == -->  
+    @include('layouts.sidebar')  
+
+<!-- == Content == --> 
   <main id="main" class="main">    
     @include('layouts.flash-message')  
         @yield('content')
     
   </main><!-- End #main -->
 
-  <!-- == Footer == -->
-  @include('layouts.footer');
-  
+<!-- == Footer == -->
+  @include('layouts.footer')  
 </body>
 </html>
