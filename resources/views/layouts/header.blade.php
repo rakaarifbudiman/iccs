@@ -35,19 +35,17 @@
             <li>
               <hr class="dropdown-divider">
             </li>
-              @forelse ($onlineusers->take(5) as $onlineuser)                          
-                                               
+              @forelse ($onlineusers->take(10) as $onlineuser)                                             
                   <li class="message-item">
                     <a href="#">
                       {{-- <img src="assets/img/messages-1.jpg" alt="" class="rounded-circle"> --}}
                       <div>
-                        <button type="button" class="btn btn-white position-relative">{{ $onlineuser->username }} 
-                          <span class="badge rounded-pill 
-                            {{ Cache::has('user-is-online-' . $onlineuser->id) ? 'bg-success' : 'bg-secondary'}} float">
-                            {{ Cache::has('user-is-online-' . $onlineuser->id) ? 'online' : 'offline'}}
-                          </span>
+                        <button type="button" class="btn btn-white position-relative text-left">
+                          {{ $onlineuser->username }}
+                          <span class="position-absolute top-20 start-100 translate-middle p-1 {{ Cache::has('user-is-online-' . $onlineuser->id) ? 'bg-success' : 'bg-danger'}} border border-light rounded-circle">
+                            <span class="visually-hidden">New alerts</span>                  
                         </button>               
-                        <p>@date($onlineuser->last_seen,'d-M-y H:m:s')</p>                                         
+                        <p>{{getDiffFromMinute($onlineuser->last_seen)}} ago</p>                                        
                       </div>
                     </a>
                   </li>
@@ -55,8 +53,7 @@
               @endforelse           
             <li>
               <hr class="dropdown-divider">
-            </li>          
-
+            </li>
             <li class="dropdown-footer">
               <a href="#">Show all online users</a>
             </li>

@@ -81,6 +81,24 @@ function lupallstatusactions( $lupparents){
     return $statusaction;
 }
 
+function getDiffFromMinute($date){
+    $date1 = strtotime($date);
+    $date2 = strtotime(\Carbon\Carbon::now());
+    $diff = round(($date2-$date1)/(60),0);
+    if($diff>60 and $diff<1440){
+      $getdiff = round($diff/60, 0). ' hours'; 
+    }elseif($diff>1440 and $diff<10080){
+      $getdiff = round($diff/1440, 0). ' days'; 
+    }elseif($diff>10080 and $diff<40320){
+      $getdiff = round($diff/10080, 0). ' weeks'; 
+    }elseif($diff>40320){
+      $getdiff = round($diff/40320, 0). ' months'; 
+    }
+    else{
+      $getdiff = $diff . ' min';
+    }                  
+    return $getdiff;
+}
 
                 
 

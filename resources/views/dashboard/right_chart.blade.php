@@ -17,22 +17,9 @@
               <h5 class="card-title">Recent Activity</h5>              
               <div class="activity">
                 @forelse ($lastActivity as $activity)
-                @php
-                  $to = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', $activity->created_at);
-                  $from = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', now());
-                  $diff = $to->diffInMinutes($from);
-                  if($diff>60 and $diff<1440){
-                    $getdiff = round($diff/60, 0). ' hours'; 
-                  }elseif($diff>1440 and $diff<10080){
-                    $getdiff = round($diff/1440, 0). ' days'; 
-                  }elseif($diff>10080 and $diff<40320){
-                    $getdiff = round($diff/10080, 0). ' weeks'; 
-                  }elseif($diff>40320){
-                    $getdiff = round($diff/40320, 0). ' months'; 
-                  }
-                  else{
-                    $getdiff = $diff . ' min';
-                  }
+                @php                                 
+                  $getdiff = getDiffFromMinute($activity->created_at);                
+                  
                 @endphp   
                   <div class="activity-item d-flex">
                     <div class="activite-label">{{$getdiff}}</div>
