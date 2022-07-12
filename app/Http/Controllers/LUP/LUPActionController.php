@@ -69,6 +69,8 @@ class LUPActionController extends Controller
                     }
                 }
             }            
+        
+            activity()->causedBy(Auth::user()->id)->performedOn($lupaction)->event('edited')->log('edited Action LUP  '.$lupaction->code.'-'.$lupaction->action); 
             return back()->with('success','Success... Data was Saved !');
         }else{  
 
@@ -81,10 +83,12 @@ class LUPActionController extends Controller
     {        
         $decrypted = Crypt::decryptString($id);
         $lupaction = LUPAction::find($decrypted);   
-        $this->authorize('update',$lupaction);          
+        $this->authorize('update',$lupaction);     
+        activity()->causedBy(Auth::user()->id)->performedOn($lupaction)->event('deleted')->log('deleted Action LUP  '.$lupaction->code.'-'.$lupaction->action);     
         auditlups($lupaction,Auth::user()->username,'Delete Action',$lupaction->code,
                         'lup_actions','all fields',$lupaction->action . ' | '.$lupaction->pic_action,'' );
-        $lupaction->delete();                   
+        $lupaction->delete();                 
+
         return back()->with('success','Success...Action has been deleted!');               
 
     }
@@ -95,7 +99,9 @@ class LUPActionController extends Controller
         $this->authorize('sign',$lupaction);          
         $lupaction->signdate_action=now();
         $lupaction->sign_type='User';
-        $lupaction->save();                   
+        $lupaction->save();           
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($lupaction)->event('sign')->log('sign Action LUP  '.$lupaction->code.'-'.$lupaction->action);
         return back()->with('success','Success...Action has been signed!');        
 
     }
@@ -108,7 +114,9 @@ class LUPActionController extends Controller
                         'lup_actions','signdate_action',$lupaction->action . ' | '.$lupaction->signdate_action,'' );         
         $lupaction->signdate_action=null;
         $lupaction->sign_type=null;
-        $lupaction->save();                   
+        $lupaction->save();                
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($lupaction)->event('rollback')->log('Cancel Sign Action LUP  '.$lupaction->code.'-'.$lupaction->action);
         return back();               
 
     }
@@ -161,6 +169,8 @@ class LUPActionController extends Controller
                     }
                 }
             }          
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('sign')->log('upload evidence Action LUP  '.$lupactions->code.'-'.$lupactions->action);
         return back()->with('info', 'File Has been uploaded successfully');           
     }
 
@@ -180,6 +190,8 @@ class LUPActionController extends Controller
             $lupactions->dateapproved_evidence =\Carbon\Carbon::now();
             $lupactions->actionstatus='CLOSED';
             $lupactions->save();            
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('sign')->log('approved Action LUP  '.$lupactions->code.'-'.$lupactions->action);
         return back()->with('success','Approved Closing Evidence Success...');       
     }
 
@@ -213,7 +225,8 @@ class LUPActionController extends Controller
         Mail::to($emailto)  
             ->cc($emailcc)   
             ->send(new LUPEvidenceHasReject($mailData,$lupactions));    
-            
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('rollback')->log('reject evidence Action LUP  '.$lupactions->code.'-'.$lupactions->action);
         return back()->with('success','Reject Closing Evidence Success...');             
        
     }
@@ -262,7 +275,8 @@ class LUPActionController extends Controller
 
         Mail::to($emailto)     
             ->send(new LUPActionHasExtension($mailData,$lupactions));    
-            
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('edited')->log('submit extension Action LUP  '.$lupactions->code.'-'.$lupactions->action);    
         return back()->with('success','Submit Due Date Extension Success...');             
        
     }
@@ -304,7 +318,8 @@ class LUPActionController extends Controller
 
         Mail::to($emailto)     
             ->send(new LUPActionHasExtension($mailData,$lupactions));    
-            
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('sign')->log('Review extension Action LUP  '.$lupactions->code.'-'.$lupactions->action);    
         return back()->with('success','Submit Due Date Extension Success...');       
     }
 
@@ -325,6 +340,8 @@ class LUPActionController extends Controller
             $lupactions->approver_extension = Auth::User()->username;
             $lupactions->dateapproved_extension = \Carbon\Carbon::now();
             $lupactions->save();                      
+
+        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('sign')->log('approved extension Action LUP  '.$lupactions->code.'-'.$lupactions->action);
         return back()->with('success','Approved Due Date Extension Success...');        
        
     }
@@ -370,7 +387,8 @@ class LUPActionController extends Controller
         Mail::to($emailto)    
             ->cc($emailcc) 
             ->send(new LUPExtensionHasReject($mailData,$lupactions));    
-            
+
+        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('rollback')->log('reject extension Action LUP  '.$lupactions->code.'-'.$lupactions->action);    
         return back()->with('success','Success...Due Date Extension Has Been Rejected...');        
     }
 
@@ -404,7 +422,9 @@ class LUPActionController extends Controller
         $emailto = $lupactions->lupparent->reviewers->email;              
 
         Mail::to($emailto)     
-            ->send(new LUPActionRequestCancel($mailData,$lupactions));    
+            ->send(new LUPActionRequestCancel($mailData,$lupactions));  
+            
+        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('rollback')->log('request cancel Action LUP  '.$lupactions->code.'-'.$lupactions->action);
         return back()->with('success','Success...Request Cancel Action Has Been Submitted ');       
     }
 
@@ -419,6 +439,8 @@ class LUPActionController extends Controller
             $lupactions->deleted_at =\Carbon\Carbon::now();
             $lupactions->actionstatus='CANCEL';
             $lupactions->save();            
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('sign')->log('approved cancel Action LUP  '.$lupactions->code.'-'.$lupactions->action);
         return back()->with('success','Success...Action Has Been CANCEL ');       
     }
 
@@ -448,7 +470,8 @@ class LUPActionController extends Controller
         $emailto = $email;          
         Mail::to(env('MAIL_TO_TESTING'))          
             ->send(new LUPActionNotif($mailData,$lupactions));    
-            
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('notif')->log('send notif to PIC Action LUP  '.$lup->code);
         return back()->with('success','Success...Notification has been sent...');        
     }
 }

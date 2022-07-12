@@ -68,6 +68,8 @@ class RelatedDepartmentController extends Controller
                 
                 Mail::to($emailto)        
                     ->send(new LUPNotifToQC($mailData,$lup));  
+
+                activity()->causedBy(Auth::user()->id)->performedOn($relateddepartment)->event('notif')->log('send notif LUP to '.$relateddepartment->user->name .'-'.$relateddepartment->code);
                 return back()->with('Success','Success...LUP Has been submitted to related department');
         }
 
@@ -91,6 +93,8 @@ class RelatedDepartmentController extends Controller
         $relateddepartment->note = $request->note; 
         $relateddepartment->signdate = now(); 
         $relateddepartment->save();       
+
+        activity()->causedBy(Auth::user()->id)->performedOn($relateddepartment)->event('sign')->log('sign LUP '.$relateddepartment->code);
         return back()->with('success','Sign '.$relateddepartment->department.' -> Success...');        
     }
 
@@ -130,6 +134,8 @@ class RelatedDepartmentController extends Controller
 
         auditlups($relateddepartment,Auth::user()->username,'Notif for Inisiator to Revise LUP',$relateddepartment->code,
                 'related_departments','note','',$request->note);
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($relateddepartment)->event('notif')->log('send notif LUP to '.$lup->inisiators->name .'-'.$relateddepartment->code);
         return back()->with('success','Success...Send Notif to Inisiator');        
     }
 
@@ -140,9 +146,11 @@ class RelatedDepartmentController extends Controller
         $relateddepartment = RelatedDepartment::find($decrypted);  
         $lup=$relateddepartment->lupparent;
         $this->authorize('update',$lup);
+        activity()->causedBy(Auth::user()->id)->performedOn($relateddepartment)->event('deleted')->log('deleted Related Department LUP '.$relateddepartment->user->name .'-'.$relateddepartment->code);
         auditlups($relateddepartment,Auth::user()->username,'Delete Related Department',$relateddepartment->code,
                 'related_departments','',$relateddepartment->makeHidden(['id', 'deleted_at']),'');
         $relateddepartment->delete();
+
         return back();        
     }
 
@@ -160,8 +168,9 @@ class RelatedDepartmentController extends Controller
             $relateddepartment->note =null;  
             auditlups($relateddepartment,Auth::user()->username,'Cancel Sign Related Department - '.$relateddepartment->department,$relateddepartment->code,
             'related_departments','',$old_datesign,null );                      
-            $relateddepartment->save();        
-            
+            $relateddepartment->save();     
+
+            activity()->causedBy(Auth::user()->id)->performedOn($relateddepartment)->event('rollback')->log('cancel Sisgn Related Department LUP '.$relateddepartment->user->name .'-'.$relateddepartment->code);
             return back()->with('success','Cancel Sign '.$relateddepartment->department.' Success...'); 
     }
 }

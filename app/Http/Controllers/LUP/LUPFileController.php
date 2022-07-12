@@ -102,7 +102,8 @@ class LUPFileController extends Controller
             'is_evidence'=>true,
             'action'=>$request->referaction,            
         ]); 
-           
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('upload multi evidence Action LUP  '.$lup->code);
         return redirect('/lup/'.$id.'/edit')->with('info', 'File Has been uploaded successfully');       
            
     }
@@ -171,7 +172,8 @@ class LUPFileController extends Controller
             auditlups($file,Auth::user()->username,'Change Attachment',$file->code,
                 'lupfiles','document_name',$oldname.' ; '.$oldfile,$file->document_name.' ; '.$file->org_file_name );
         }       
-                                          
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($file)->event('edited')->log('reupload attachment LUP  '.$file->code);
         return redirect('/lup/'.$id.'/edit')->with('info', 'File Has been uploaded successfully');       
            
     }
@@ -183,9 +185,12 @@ class LUPFileController extends Controller
         $file = lupFile::find($decrypted);
         $lup=$file->lupparent;
         $this->authorize('update',$lup);
+        activity()->causedBy(Auth::user()->id)->performedOn($file)->event('deleted')->log('deleted attachment LUP  '.$file->code);
         auditlups($file,Auth::user()->username,'Delete Attachment',$file->code,
                 'lupfiles','',$file->makeHidden(['id', 'deleted_at','file_path','longtext1','longtext2','longtext3','date1','date2','date3']),'');
-        $file->delete();        
+        $file->delete();
+        
+        
         return back()->with('success','Attachment has been deleted!');
     }
 

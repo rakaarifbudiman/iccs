@@ -230,9 +230,9 @@
     <tr style="height: 18px; border-style: none;">
 		<td style="width: 32%; height: 18px; border-style: none; vertical-align: top;"><strong><small>Supportive Attachments</small></strong></td>
 		<td style="width: 3.1746%; height: 18px; border-style: none; vertical-align: top;" ><small>:</small></td>
-		<td style="width: 25.1484%; height: 18px; border-style: none; vertical-align: top; text-align:justify;" colspan="5"><small>{{ $lup->lupfile->count() > 0 ? 'Yes' : 'No'  }}</small></td>
+		<td style="width: 25.1484%; height: 18px; border-style: none; vertical-align: top; text-align:justify;" colspan="5"><small>{{ $lup->lupfile->where('is_evidence',false)->where('notes',null)->count() > 0 ? 'Yes' : 'No'  }}</small></td>
 	</tr>
-    @if($lup->lupfile->count() > 0)
+    @if($lup->lupfile->where('is_evidence',false)->where('notes',null)->count() > 0)
         <tr style="height: 36px; border-style: none;">
             <td style="width: 100%; height: 36px; border-style: none; vertical-align: top;" colspan="7">
                 <div name="attachment">
@@ -244,7 +244,7 @@
                             <th style="width: 35.6028%;">Date</th>     
                             <th style="width: 35.6028%;">Uploader</th>                               
                         </tr>
-                        @forelse ($lup->lupfile->where('is_evidence',false) as $index=>$attachment)
+                        @forelse ($lup->lupfile->where('is_evidence',false)->where('notes',null) as $index=>$attachment)
                             <tr>
                             <td style="width: 5%;"><small>{{ $index +1 }}</small></td>
                             <td style="width: 80%;"><small>{{ $attachment->document_name }}</small></td>

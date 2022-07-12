@@ -16,6 +16,7 @@ use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Route;
+use Spatie\Activitylog\Models\Activity;
 Use IlluminateDatabase\Eloquent\ModelNotFoundException;
 
 
@@ -28,6 +29,9 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        //activity
+        $lastActivity = Activity::latest()->take(10)->get();
+        
         //lup        
         $quotes = Inspiring::quote();
         $luponprocess = LUPParent::OnStatus('ON PROCESS')->count();
@@ -272,6 +276,7 @@ class DashboardController extends Controller
                                 'lupactionextension'=>$lupactionextension,
                                 'lupactionextensionapproval'=>$lupactionextensionapproval,
                                 'quotes'=>$quotes,
+                                'lastActivity'=>$lastActivity,
                     ]);
     }
     public function tcode(Request $request)

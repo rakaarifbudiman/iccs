@@ -89,7 +89,8 @@ class LUPParentController extends Controller
         $data4= array('lup_subtype'=>collect($request->input('lup_subtype'))->implode(';'));  
         //save process
         $store = LUPParent::create(array_merge($data1,$data2,$data3,$data4));
-        $encrypted = Crypt::encryptString($store->id);        
+        $encrypted = Crypt::encryptString($store->id);     
+        activity()->causedBy(Auth::user()->id)->performedOn($store)->event('created')->log('create LUP '.$store->code);   
         return redirect('/lup/'.$encrypted.'/edit')->with('success','LUP has been created with following code : '.$store->code);           
     }
 
@@ -183,6 +184,7 @@ class LUPParentController extends Controller
                     }
                 }
             }            
+            activity()->causedBy(Auth::user()->id)->performedOn($lupparent)->event('edited')->log('edited LUP '.$lupparent->code);   
             return back()->with('success','Data was Saved !');
         }else{
            
@@ -205,7 +207,8 @@ class LUPParentController extends Controller
         //check audit change     
         if($lupparent->wasChanged()==TRUE){                  
                         auditlups($lupparent,Auth::user()->username,'Audit Change',$lupparent->code,
-                        'lup_parents','categorization',$oldcategorization,$lupparent->categorization);                 
+                        'lup_parents','categorization',$oldcategorization,$lupparent->categorization);   
+            activity()->causedBy(Auth::user()->id)->performedOn($lupparent)->event('edited')->log('edited Categorization LUP '.$lupparent->code);              
             return back()->with('success','Data was Saved !');
         }else{
             return back()->with('info','Nothing Changed!');            
@@ -245,17 +248,14 @@ class LUPParentController extends Controller
                 ];        
             $emailto = $lup->leaders->email;         
             Mail::to($emailto)           
-                ->send(new LUPNotifToLeader($mailData,$lup));      
-                
-
+                ->send(new LUPNotifToLeader($mailData,$lup));
             return back()->with('success','Sign Inisiator success...');
 
     }
 
     //cancel sign inisiator
     public function cancelsigninisiator($id, LUPParent $lup)
-    {
-        
+    {        
         $decrypted = Crypt::decryptString($id);        
         //get data lup
         $lup = LUPParent::find($decrypted);
@@ -322,6 +322,7 @@ class LUPParentController extends Controller
     Mail::to($emailto)  
         ->cc($emailcc)      
         ->send(new LUPNotifToQC($mailData,$lup));     
+        activity()->causedBy(Auth::user()->id)->performedOn($lupparent)->event('sign')->log('Sign LUP  '.$lup->code);    
         return back()->with('success','Sign Leader success...');
 
     }
@@ -339,6 +340,8 @@ class LUPParentController extends Controller
         }             
         $lup->leader =$request->leader;             
         $lup->save();        
+
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('Edit Leader LUP  '.$lup->code);  
         return back();
     }      
 
@@ -358,6 +361,7 @@ class LUPParentController extends Controller
             'lup_parents','datesign_leader',$old_datesign_leader,null );                      
             $lup->save();        
             
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Cancel Sign Leader LUP  '.$lup->code); 
             return back()->with('success','Cancel Sign Leader success...');
 
     }
@@ -400,6 +404,7 @@ class LUPParentController extends Controller
     Mail::to($emailto)        
         ->send(new LUPNotifToQC($mailData,$lup));   
 
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('notif')->log('Submit LUP to Regulatory : '.$lup->code); 
         return back()->with('success','Success...LUP has been submitted to Regulatory Reviewer');
     }
 
@@ -437,6 +442,7 @@ class LUPParentController extends Controller
     Mail::to($emailto)        
         ->send(new LUPNotifToQC($mailData,$lup)); 
         
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign Regulatory LUP  '.$lup->code); 
         return back()->with('success','Sign Regulatory success...');
     }
 
@@ -455,7 +461,8 @@ class LUPParentController extends Controller
             auditlups($lup,Auth::user()->username,'Cancel Sign Regulatory Reviewer',$lup->code,
             'lup_parents','datesign_regulatory_reviewer',$old_datesign_regulatory_reviewer,null );                      
             $lup->save();        
-            
+        
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Cancel Sign Regulatory LUP  '.$lup->code); 
             return back()->with('success','Cancel Sign Regulatory Reviewer success...');
 
     }
@@ -473,7 +480,9 @@ class LUPParentController extends Controller
             'lup_parents','regulatory_approver',$lup->regulatory_approver,$request->regulatory_approver);      
         }             
         $lup->regulatory_approver =$request->regulatory_approver;             
-        $lup->save();        
+        $lup->save();       
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('Update Regulatory Approver LUP  '.$lup->code); 
         return back();
     }
 
@@ -489,8 +498,9 @@ class LUPParentController extends Controller
         $lup->note_regulatory_approver =$request->note_regulatory_approver;                           
         $lup->datesign_regulatory_approver =\Carbon\Carbon::now();         
         $lup->save();
-        // email to regulatory_approver
         
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign Regulatory LUP  '.$lup->code); 
         return back()->with('success','Sign Regulatory success...');
     }
 
@@ -508,8 +518,9 @@ class LUPParentController extends Controller
             $lup->note_regulatory_approver =null;  
             auditlups($lup,Auth::user()->username,'Cancel Sign Regulatory Approver',$lup->code,
             'lup_parents','datesign_regulatory_approver',$old_datesign_regulatory_approver,null );                      
-            $lup->save();        
-            
+            $lup->save();
+                  
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Cancel Sign Regulatory LUP  '.$lup->code); 
             return back()->with('success','Cancel Sign Regulatory Approver success...');
     }
 
@@ -537,6 +548,8 @@ class LUPParentController extends Controller
                         'lup_parents',$field,$old[$field],$lup->$field );
                     }                
             }            
+
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited external party LUP  '.$lup->code); 
             return back()->with('success','Data was Saved !');
         }else{
            
@@ -580,7 +593,8 @@ class LUPParentController extends Controller
     $emailto = $lup->reviewerqcjms->email;
     Mail::to($emailto)        
         ->send(new LUPNotifToQC($mailData,$lup));             
-    
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign Reviewer LUP  '.$lup->code); 
         return back()->with('Success','LUP has been submitted to next process...');         
        
     }    
@@ -598,8 +612,8 @@ class LUPParentController extends Controller
         $lup->lupstatus ='ON APPROVAL'; 
         $lup->datesubmit_approver =now();   
         $lup->save();
-
-        //email to reviewer 2
+        
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign Reviewer QCJM LUP  '.$lup->code); 
         return back()->with('Success','LUP has been submitted to next process...');         
        
     }    
@@ -695,6 +709,7 @@ class LUPParentController extends Controller
            'uploader'=>Auth::user()->username,
            'date_upload'=> \Carbon\Carbon::now(),  
            'file_path' => $path,
+           'notes'=>'approval'
            ]);       
            $pdf = PDF::loadView('pdf/lup/luppdf', $data);     
            Storage::put($path, $pdf->output());             
@@ -725,7 +740,9 @@ class LUPParentController extends Controller
         
         Mail::to($emailto)     
             ->cc($emailcc)
-            ->send(new LUPNotifHasApproved($mailData,$lup));             
+            ->send(new LUPNotifHasApproved($mailData,$lup));  
+            
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Approved LUP  '.$lup->code);  
            return back()->with('success','LUP approved success');
    }
 
@@ -794,6 +811,7 @@ class LUPParentController extends Controller
            'uploader'=>Auth::user()->username,
            'date_upload'=> \Carbon\Carbon::now(),  
            'file_path' => $path,
+           'notes'=>'approval'
            ]);       
            $pdf = PDF::loadView('pdf/lup/luppdf', $data);     
            Storage::put($path, $pdf->output());         
@@ -856,6 +874,8 @@ class LUPParentController extends Controller
         Mail::to($emailto)     
             ->cc($emailcc)
             ->send(new LUPNotifHasConfirmed($mailData,$lup));    
+
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Confirmed LUP  '.$lup->code); 
         return back()->with('success','Success...LUP has been confirmed');
    }
 
@@ -931,8 +951,6 @@ class LUPParentController extends Controller
             }            
             return back()->with('success','Data was Saved !');
         }else{
-           
-
             return back()->with('info','Nothing Changed!');            
         }        
     }    
@@ -973,8 +991,6 @@ class LUPParentController extends Controller
             }            
             return back()->with('success','Data was Saved !');
         }else{
-           
-
             return back()->with('info','Nothing Changed!');            
         }        
     }    
@@ -1052,6 +1068,7 @@ class LUPParentController extends Controller
                 ->cc($emailcc)       
                 ->send(new LUPRequestCancel($mailData,$lup));               
 
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Request Cancel LUP  '.$lup->code); 
             return back()->with('success','Success...Request Cancellation has been submitted');           
         
     }
@@ -1090,6 +1107,8 @@ class LUPParentController extends Controller
             $emailto = $lup->cancel_approvers->email;         
             Mail::to($emailto)           
                 ->send(new LUPRequestCancel($mailData,$lup)); 
+            
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Review Cancel LUP  '.$lup->code); 
             return back()->with('success','Success...Cancellation has been submitted');       
         
     }
@@ -1132,6 +1151,8 @@ class LUPParentController extends Controller
             $emailto = $lup->inisiators->email;         
             Mail::to($emailto)           
                 ->send(new LUPHasCancel($mailData,$lup)); 
+            
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Approved Cancel LUP  '.$lup->code); 
             return back()->with('success','Success...LUP has been Cancel');        
     }
     //Request Closing LUP
@@ -1169,6 +1190,8 @@ class LUPParentController extends Controller
             $emailto = $lup->closing_approvers->email;         
             Mail::to($emailto)           
                 ->send(new LUPRequestClosing($mailData,$lup)); 
+            
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Request Closing LUP  '.$lup->code); 
             return back()->with('success','Success...Closing has been submitted');      
     }
     //Approved Closing LUP
@@ -1239,6 +1262,8 @@ class LUPParentController extends Controller
             Mail::to($emailto)    
                 ->cc($emailcc)       
                 ->send(new LUPHasRollback($mailData,$lup)); 
+            
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Rollback LUP  '.$lup->code); 
             return back()->with('success','Success...LUP Has been Rollback to ON REVIEW');      
     }
 
@@ -1266,7 +1291,9 @@ class LUPParentController extends Controller
                     'lup_parents',$field,$old[$field],$lup->$field );
                 }
             }
-        }                   
+        }                  
+        
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited Reviewer QCJM LUP  '.$lup->code); 
             return back();      
     }
 
@@ -1295,6 +1322,7 @@ class LUPParentController extends Controller
                 }
             }
         }                   
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited Approver LUP  '.$lup->code); 
             return back();      
     }
 
@@ -1322,7 +1350,8 @@ class LUPParentController extends Controller
                     'lup_parents',$field,$old[$field],$lup->$field );
                 }
             }
-        }                   
+        }    
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited Confirmer LUP  '.$lup->code);                
             return back();      
     }
 }
