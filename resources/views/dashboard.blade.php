@@ -20,7 +20,7 @@
         @include('dashboard.lup')
         @include('dashboard.lupd')
         @include('dashboard.flp')
-
+        @include('dashboard.chart')
       </div>
     </div><!-- End Left side columns -->
    
