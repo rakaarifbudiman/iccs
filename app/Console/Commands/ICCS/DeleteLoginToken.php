@@ -29,16 +29,14 @@ class DeleteLoginToken extends Command
      */
     public function handle()
     {
-        $expired = Carbon::now()->addMinutes(-5)->timestamp;         
-        $tokens = DB::table('mfalogins')->get(); 
-        
+           
+        $tokens = DB::table('mfalogins')->get();        
         foreach ($tokens as $token){
            $cektime = (strtotime(\Carbon\Carbon::now()) - strtotime($token->created_at))/60 ;                      
-            if ($cektime < 5){
-            }else{
+            if ($cektime > 5){            
                 $deltoken = DB::table('mfalogins')->where('token',$token->token)->delete();                
             } 
         }        
-        return 0;
+        $this->info('Token deleted succesfully');        
     }
 }

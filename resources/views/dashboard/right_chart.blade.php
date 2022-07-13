@@ -22,7 +22,7 @@
                   
                 @endphp   
                   <div class="activity-item d-flex">
-                    <div class="activite-label">{{$getdiff}}</div>
+                    <div class="activite-label">{{$getdiff}} ago</div>
                     <i class='bi bi-circle-fill activity-badge 
                     {{$activity->event=='created' ? 'text-primary' : (
                       $activity->event=='edited' ? 'text-warning' : (

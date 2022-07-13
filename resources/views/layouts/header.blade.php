@@ -43,7 +43,7 @@
                         <button type="button" class="btn btn-white position-relative text-left">
                           {{ $onlineuser->username }}
                           <span class="position-absolute top-20 start-100 translate-middle p-1 {{ Cache::has('user-is-online-' . $onlineuser->id) ? 'bg-success' : 'bg-danger'}} border border-light rounded-circle">
-                            <span class="visually-hidden">New alerts</span>                  
+                                         
                         </button>               
                         <p>{{getDiffFromMinute($onlineuser->last_seen)}} ago</p>                                        
                       </div>

@@ -322,7 +322,7 @@ class LUPParentController extends Controller
     Mail::to($emailto)  
         ->cc($emailcc)      
         ->send(new LUPNotifToQC($mailData,$lup));     
-        activity()->causedBy(Auth::user()->id)->performedOn($lupparent)->event('sign')->log('Sign LUP  '.$lup->code);    
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign LUP  '.$lup->code);    
         return back()->with('success','Sign Leader success...');
 
     }
@@ -464,7 +464,6 @@ class LUPParentController extends Controller
         
             activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Cancel Sign Regulatory LUP  '.$lup->code); 
             return back()->with('success','Cancel Sign Regulatory Reviewer success...');
-
     }
 
     //edit regulatory_approver

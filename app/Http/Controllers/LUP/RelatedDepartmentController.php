@@ -72,7 +72,6 @@ class RelatedDepartmentController extends Controller
                 activity()->causedBy(Auth::user()->id)->performedOn($relateddepartment)->event('notif')->log('send notif LUP to '.$relateddepartment->user->name .'-'.$relateddepartment->code);
                 return back()->with('Success','Success...LUP Has been submitted to related department');
         }
-
     }
 
     public function signdepartment(Request $request, $id,RelatedDepartment $relateddepartment)
@@ -146,7 +145,7 @@ class RelatedDepartmentController extends Controller
         $relateddepartment = RelatedDepartment::find($decrypted);  
         $lup=$relateddepartment->lupparent;
         $this->authorize('update',$lup);
-        activity()->causedBy(Auth::user()->id)->performedOn($relateddepartment)->event('deleted')->log('deleted Related Department LUP '.$relateddepartment->user->name .'-'.$relateddepartment->code);
+        activity()->causedBy(Auth::user()->id)->performedOn($relateddepartment)->event('deleted')->log('deleted Related Department LUP '.$relateddepartment->code.'-'.$relateddepartment->department);
         auditlups($relateddepartment,Auth::user()->username,'Delete Related Department',$relateddepartment->code,
                 'related_departments','',$relateddepartment->makeHidden(['id', 'deleted_at']),'');
         $relateddepartment->delete();
