@@ -1,6 +1,6 @@
 <div class="table-responsive" style="height: 50%;">
     <caption>                  
-        <label class="form-check-label text-orange" for="utility_attachment">Utility/Equipment/Facility Impacted : {{ $lupparent->relatedutility_count > 0 ? 'Yes' : 'No'  }}</label>          
+        <label class="form-check-label text-orange" for="utility_attachment">Utility/Equipment/Facility Impacted : {{ $lupparent->relatedutility->count() > 0 ? 'Yes' : 'No'  }}</label>          
     </caption>
   <table class="table table-bordered w-auto small caption-top" id="LUPTable" style="height: 50%;">        
     <thead>    

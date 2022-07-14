@@ -1,6 +1,6 @@
     <div class="table-responsive">
             <caption>            
-                <label class="form-check-label text-orange">Other Product Impacted : {{ $lupparent->relatedmaterial_count > 0 ? 'Yes' : 'No'  }}</label>
+                <label class="form-check-label text-orange">Other Product Impacted : {{ $lupparent->relatedmaterial->count() > 0 ? 'Yes' : 'No'  }}</label>
             </caption>
           <table class="table table-bordered w-auto small caption-top" id="LUPTable">        
               <thead>    

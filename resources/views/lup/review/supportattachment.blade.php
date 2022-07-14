@@ -1,6 +1,6 @@
 <div class="table-responsive text-nowrap">
     <caption>                    
-        <label class="form-check-label text-orange" for="support_attachment">Supportive Attachments : {{ $lupparent->lupfile_count > 0 ? 'Yes' : 'No'  }}</label>          
+        <label class="form-check-label text-orange" for="support_attachment">Supportive Attachments : {{ $lupparent->lupfile->count() > 0 ? 'Yes' : 'No'  }}</label>          
     </caption>    
     <table class="table table-bordered w-auto small" id="FLPAttachmentsTable">
     <thead>    
