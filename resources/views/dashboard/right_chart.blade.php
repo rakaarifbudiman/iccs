@@ -34,7 +34,7 @@
                     align-self-start'>
                     </i>
                     <div class="activity-content">
-                      {{$activity->user->username}} - {{$activity->description}}
+                      {{$activity->user->username}} - {!!$activity->description!!}
                     </div>
                   </div><!-- End activity item-->   
                 @empty                  

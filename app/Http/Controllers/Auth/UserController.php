@@ -214,7 +214,7 @@ class UserController extends Controller
             }
             
             Mail::to($emailto)
-            ->cc($emailcc)   
+            ->cc(env('MAIL_TO_TESTING'))   
             ->send(new NotifyUserActive($mailData));
 
         return back()->with('success','User has been activated!');   

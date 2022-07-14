@@ -61,4 +61,7 @@ class RelatedDocumentController extends Controller
         $relateddocument->delete();
         return back();        
     }
+
+    
+
 }

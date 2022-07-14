@@ -51,6 +51,7 @@ use App\Http\Controllers\LUP\RelatedDepartmentController;
     Route::put('/lup/{id}/notifdepartment', [RelatedDepartmentController::class, 'notifdepartment']);
     Route::get('/lup/department-impact/{id}/delete', [RelatedDepartmentController::class, 'delete']);
     Route::get('/lup/department-impact/{id}/cancelsign', [RelatedDepartmentController::class, 'cancelsign']);
+    Route::get('/lup/department-impact/{id}/sendnotif', [RelatedDepartmentController::class, 'sendnotif']);
 
     Route::put('/lup/{id}/submittoreviewer', [LUPParentController::class, 'submittoreviewer']);        
     Route::get('/lup/{id}/printlup', [LUPParentController::class, 'printlup']);     

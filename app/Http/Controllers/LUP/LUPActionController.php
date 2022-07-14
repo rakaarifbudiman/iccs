@@ -223,7 +223,7 @@ class LUPActionController extends Controller
         $emailto = $lupactions->pic->email;  
         $emailcc= $email_uploader;       
         Mail::to($emailto)  
-            ->cc($emailcc)   
+            ->cc(env('MAIL_TO_TESTING'))   
             ->send(new LUPEvidenceHasReject($mailData,$lupactions));    
         
         activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('rollback')->log('reject evidence Action LUP  '.$lupactions->code.'-'.$lupactions->action);
@@ -385,7 +385,7 @@ class LUPActionController extends Controller
         $emailto = $lupactions->pic->email;  
         $emailcc = $email_extender;
         Mail::to($emailto)    
-            ->cc($emailcc) 
+            ->cc(env('MAIL_TO_TESTING')) 
             ->send(new LUPExtensionHasReject($mailData,$lupactions));    
 
         activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('rollback')->log('reject extension Action LUP  '.$lupactions->code.'-'.$lupactions->action);    

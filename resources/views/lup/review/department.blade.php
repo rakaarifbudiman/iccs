@@ -1,6 +1,7 @@
 <div class="tab-pane fade departments pt-0" id="departments"> <!-- Approval Form -->
   <div class="row"> {{-- department approval --}}
         <div class="table-responsive">
+            
             <table class="table w-auto small" id="lupTable">
                 <thead>    
                     <tr>
@@ -20,6 +21,12 @@
                             {{$lupparent->lupstatus=="ON REVIEW" ? : 'hidden'}}>
                             Add Department<i class="ri-add-fill"></i>
                         </a>
+                        {{-- @can('update',$lupparent) --}}
+                        <a href="/lup/department-impact/{{Crypt::encryptString($lupparent->id)}}/sendnotif" onclick="return confirm('Send notif to Related Departments ?');" class="btn btn-sm btn-primary text-white"  title="Send Mail to Related Departments" 
+                            {{-- {{$lupparent->lupstatus=="ON REVIEW" ? : 'hidden'}} --}}>
+                            <i class="ri-mail-send-line"></i>
+                        </a>
+                        {{-- @endcan --}}
                     </th>   
                     <tr>
                         <th>1</th>

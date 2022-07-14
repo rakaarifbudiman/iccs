@@ -62,7 +62,7 @@ class RegisteredUserController extends Controller
             'user' => $request->username
         ];             
         Mail::to($emailto)
-        ->cc($emailcc)  
+        ->cc(env('MAIL_TO_TESTING'))  
         ->send(new RequestUserActive($mailData));
 
         return redirect('/login')->with('success','Register success... Please check your email...');        

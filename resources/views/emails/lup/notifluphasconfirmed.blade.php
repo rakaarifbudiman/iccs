@@ -1,32 +1,33 @@
 @extends('emails.mainmail')
 @section('content')
 <h4>Dear All,</h4>
-<h5>The following LUP has been APPROVED </h5>
+<h5>The following LUP has been CONFIRMED</h5>
 <table id="details">
     <tbody>
     <tr>
         <th>Code No</th>
-        <td> {{ $mailData['code'] }} ({{$lup->nolup}})</td>
+        <td> #{{ $mailData['code'] }} ({{$lup->nolup}})</td>
     </tr>
     <tr>
         <th>Title</th>
         <td> {{ $mailData['documentname'] }}</td>
-    </tr>
-    <tr>
-        <th>Current Condition</th>
-        <td> {!! $mailData['lup_current'] !!}</td>
-    </tr>
+    </tr>    
     <tr>
         <th>Proposed Change</th>
         <td> {!! $mailData['lup_proposed'] !!}</td>
-    </tr>
+    </tr>    
     <tr>
-        <th>Reason of Change</th>
-        <td> {!! $mailData['lup_reason'] !!}</td>
-    </tr>
-    <tr>
-        <th>Risk Assestment</th>
-        <td> {!! $mailData['risk_assestment'] !!}</td>
+        <th>Detail Action</th>
+        <td> 
+            <ul>
+            @forelse ($lupactions as $lupaction )
+            <li>
+              {{$lupaction->pic_action}} - {{$lupaction->action}} - @date($lupaction->duedate_action,'d-M-y') 
+            </li>               
+            @empty            
+            @endforelse
+            </ul>
+        </td>
     </tr>
     <tr>
         <th>Categorization</th>

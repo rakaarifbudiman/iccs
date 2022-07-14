@@ -302,7 +302,7 @@
         <div class="row mb-3">
           <label for="code" class="col-sm col-form-label col-form-label-sm">Code Department</label>
           <div class="col-sm-8">
-              <input class="form-control form-control-sm" area="text" list="listdepartment" id="code_relateddepartment" name="code" placeholder="Select Related Department" required autocomplete="off">                                               
+              <input class="form-control form-control-sm" area="text" list="listdepartment" id="code_relateddepartment" name="code" placeholder="Select Related Department" required autocomplete="off" autofocus>                                               
               <datalist id="listdepartment">
                 @foreach ($listdepartments as $listdepartment)
                   <option value="{{ $listdepartment->code }}">{{ $listdepartment->username }} - {{ $listdepartment->type }}</option>

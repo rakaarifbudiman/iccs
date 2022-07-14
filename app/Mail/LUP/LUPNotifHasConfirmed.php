@@ -14,16 +14,17 @@ class LUPNotifHasConfirmed extends Mailable implements ShouldQueue
     use Queueable, SerializesModels;
     public $mailData;
     public $lup;
+    public $lupactions;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($mailData, LUPParent $lup)
+    public function __construct($mailData, LUPParent $lup,$lupactions)
     {
         $this->mailData = $mailData;
-        $this->lup = $lup;
-        
+        $this->lup = $lup;   
+        $this->lupactions = $lupactions;      
     }
     
 
@@ -34,9 +35,9 @@ class LUPNotifHasConfirmed extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        
+        $lupactions= $this->lupactions;
         return $this->subject('(WEB TESTING) Congratulation for New Confirmed LUP System ,for: '.$this->lup->nolup.' Rev-'.$this->lup->revision)
-                    ->view('emails.lup.notifluphasapproved')                   
+                    ->view('emails.lup.notifluphasconfirmed')                   
                     ->attachFromStorage($this->mailData['path'], 
                         $this->lup->nolup.' Rev-'.$this->lup->revision.'.pdf', [
                         'mime' => 'application/pdf']);
