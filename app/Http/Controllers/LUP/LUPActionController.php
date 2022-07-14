@@ -468,7 +468,7 @@ class LUPActionController extends Controller
             'urllup'=>$urllup,            
         ];                    
         $emailto = $email;          
-        Mail::to(env('MAIL_TO_TESTING'))          
+        Mail::to($emailto)          
             ->send(new LUPActionNotif($mailData,$lupactions));    
         
         activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('notif')->log('send notif to PIC Action LUP  '.$lup->code);

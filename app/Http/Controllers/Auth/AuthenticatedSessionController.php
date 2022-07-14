@@ -84,11 +84,11 @@ class AuthenticatedSessionController extends Controller
     public function mfa($token,$password)
     {
         $user = DB::Table('mfalogins')->where('token',$token)->first();
-        $password = Crypt::decryptString($password); 
-        $cektime = (strtotime(\Carbon\Carbon::now()) - strtotime($user->created_at))/60 ;
+        $password = Crypt::decryptString($password);        
         if(!$user){            
             return redirect('/login')->with('error','Failed...This Link has Expired !!');
         }
+        $cektime = (strtotime(\Carbon\Carbon::now()) - strtotime($user->created_at))/60 ;
 
         if ($cektime > 5){        
             $deltoken = DB::table('mfalogins')->where('token',$token)->delete();
@@ -107,10 +107,11 @@ class AuthenticatedSessionController extends Controller
     public function mfastore(AuthRequest $request,$token)
     {
         $user = DB::Table('mfalogins')->where('token',$token)->first();    
-        $cektime = (strtotime(\Carbon\Carbon::now()) - strtotime($user->created_at))/60;   
+           
         if(!$user){            
             return back()->with('error','Failed...This Link has Expired !!');
         }
+        $cektime = (strtotime(\Carbon\Carbon::now()) - strtotime($user->created_at))/60;
         
         if ($cektime > 5){        
             $deltoken = DB::table('mfalogins')->where('token',$token)->delete();

@@ -45,8 +45,14 @@ class LUPParentController extends Controller
 
     //show masterlist lup
     public function index()
-    {                    
-            $lupparents = cache()->remember('masterlistlup',300,function(){
+    {          
+        $lupparents = LUPParent::all();           
+        
+        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+          
+        ]);
+
+            /* $lupparents = cache()->remember('masterlistlup',300,function(){
                  return DB::table('lup_parents')
                 ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
                 ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')                     
@@ -58,7 +64,7 @@ class LUPParentController extends Controller
         
 	    return view('lup.masterlistlup', ['lupparents' => $lupparents,
         'statusaction'=>$statusaction,  
-        ]);
+        ]); */
     }
 
     //show form new lup

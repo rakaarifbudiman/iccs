@@ -25,13 +25,12 @@ class NewPasswordController extends Controller
     {        
         $cekuser = DB::Table('password_resets')->where('token',$token)->first();    
         if(!$cekuser){            
-            return redirect('/forgot-password')->with('error','Failed...This Link has Expired !!');
+            return redirect('/forgot-password')->with('error','Failed...No token found or you have already change your password !!');
         }
         $cektime = (strtotime(\Carbon\Carbon::now()) - strtotime($cekuser->created_at))/60 ;       
         
         $request = $cekuser->email;
-        if ($cektime < env('SESSION_LIFETIME')){
-        }else{
+        if ($cektime > env('SESSION_LIFETIME')){        
             $deltoken = DB::table('password_resets')->where('token',$token)->delete();
             return redirect('/forgot-password')->with('error','Failed...This Link has Expired !!');
         }

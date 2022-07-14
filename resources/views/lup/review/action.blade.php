@@ -107,7 +107,7 @@
         <div class="col-md-12 mb-2">
           <div class="form-control">
             <label for="action_notes">Justification</label>
-            <input type="text" class="form-control text-small" name="action_notes" id="action_notes" placeholder="Fill this ...If No action plan needed" value = "{{ old('action_notes',$lupparent->action_notes) }}" autocomplete="off" {{Auth::user()->can('confirmedlup',$lupparent) ? '':'disabled'}}>          
+            <input type="text" class="form-control text-small" name="action_notes" id="action_notes" placeholder="Fill this ...If No action plan needed" value = "{{ old('action_notes',$lupparent->action_notes) }}" autocomplete="off" {{$lupparent->lupstatus=='APPROVED' ? '':'disabled'}}>          
             @error('action_notes')
               <div class="text-danger">{{ $message }}</div>
             @enderror 
@@ -121,8 +121,7 @@
             <textarea class="form-control text-small" type="email" list="listuser listuser2" id="action_notifier" name="action_notifier" multiple="multiple" placeholder="Select user to notify with button Add Notification and delete user with button Delete Notification..." value="{{ old('action_notifier') }}" disabled>{{$lupparent->action_notifier}}</textarea>
           </div>
         </div> 
-      </div>
-  
+      </div>  
   </div>           <!-- End Action Plan Form --> 
 
 

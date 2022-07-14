@@ -1231,8 +1231,8 @@ h6 {
 }
 
 .setwidth textarea {
-    width: 220px;
-    height: 30px;
+    width: 250px;
+    height: 50px;
     border:none;
     white-space: wrap;
     overflow: hidden;

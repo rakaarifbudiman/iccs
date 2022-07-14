@@ -94,7 +94,7 @@ class LUPDashboardController extends Controller
 
         $statusaction=lupallstatusactions( $lupparents);        
         
-        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        return view('lup.masterlistactionlup', ['lupparents' => $lupparents,
         'statusaction'=>$statusaction,        
         ]);                
     }
@@ -114,7 +114,7 @@ class LUPDashboardController extends Controller
 
         $statusaction=lupallstatusactions( $lupparents);        
         
-        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        return view('lup.masterlistactionlup', ['lupparents' => $lupparents,
         'statusaction'=>$statusaction,        
         ]);                
     }
@@ -133,7 +133,7 @@ class LUPDashboardController extends Controller
 
         $statusaction=lupallstatusactions( $lupparents);        
         
-        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        return view('lup.masterlistactionlup', ['lupparents' => $lupparents,
         'statusaction'=>$statusaction,        
         ]);       
     }
@@ -153,7 +153,7 @@ class LUPDashboardController extends Controller
 
         $statusaction=lupallstatusactions( $lupparents);        
         
-        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        return view('lup.masterlistactionlup', ['lupparents' => $lupparents,
         'statusaction'=>$statusaction,        
         ]);       
     }
@@ -169,7 +169,7 @@ class LUPDashboardController extends Controller
 
         $statusaction=lupallstatusactions( $lupparents);        
         
-        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        return view('lup.masterlistactionlup', ['lupparents' => $lupparents,
         'statusaction'=>$statusaction,        
         ]);
     }
@@ -186,7 +186,7 @@ class LUPDashboardController extends Controller
 
         $statusaction=lupallstatusactions( $lupparents);        
         
-        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        return view('lup.masterlistactionlup', ['lupparents' => $lupparents,
         'statusaction'=>$statusaction,        
         ]);
     }
@@ -205,7 +205,7 @@ class LUPDashboardController extends Controller
 
         $statusaction=lupallstatusactions( $lupparents);        
         
-        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        return view('lup.masterlistactionlup', ['lupparents' => $lupparents,
         'statusaction'=>$statusaction,        
         ]);               
     }
@@ -379,7 +379,7 @@ class LUPDashboardController extends Controller
 
         $statusaction=lupallstatusactions( $lupparents);        
         
-        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        return view('lup.masterlistactionlup', ['lupparents' => $lupparents,
         'statusaction'=>$statusaction,        
         ]);       
     }
@@ -395,7 +395,7 @@ class LUPDashboardController extends Controller
 
         $statusaction=lupallstatusactions( $lupparents);        
         
-        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        return view('lup.masterlistactionlup', ['lupparents' => $lupparents,
         'statusaction'=>$statusaction,        
         ]);
     }
@@ -412,7 +412,7 @@ class LUPDashboardController extends Controller
 
         $statusaction=lupallstatusactions( $lupparents);        
         
-        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        return view('lup.masterlistactionlup', ['lupparents' => $lupparents,
         'statusaction'=>$statusaction,        
         ]);
     }
@@ -428,7 +428,7 @@ class LUPDashboardController extends Controller
 
         $statusaction=lupallstatusactions( $lupparents);        
         
-        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        return view('lup.masterlistactionlup', ['lupparents' => $lupparents,
         'statusaction'=>$statusaction,        
         ]);
     }
@@ -443,7 +443,7 @@ class LUPDashboardController extends Controller
 
         $statusaction=lupallstatusactions( $lupparents);        
         
-        return view('lup.masterlistlup', ['lupparents' => $lupparents,
+        return view('lup.masterlistactionlup', ['lupparents' => $lupparents,
         'statusaction'=>$statusaction,        
         ]);
     }
