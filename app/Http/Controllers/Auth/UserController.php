@@ -222,7 +222,7 @@ class UserController extends Controller
         }
     }           
 
-    public function changepassword(Request $request, $id,User $users)
+    public function changepassword(Request $request, $id,User $user)
     {        
         $request->validate([            
             'password' => ['required', 'confirmed', Password::min(8)
@@ -234,12 +234,16 @@ class UserController extends Controller
                             ],
         ]);
 
-        $users = User::find($id); 
-        $this->authorize('changepassword',$users);  
-        $users->password = Hash::make($request->password);                                     
-        $users->save();  
-        if($users->wasChanged('password')){                            
-            auditusers($users,Auth::user()->username,'Change Password',$users->username,
+        $user = User::find($id); 
+        $this->authorize('changepassword',$user);  
+        if(Hash::check($request->password, $user->password)){
+            return back()->with('error','Failed...You cannot use your old password, Please choose a new one');
+        }
+        $user->password = Hash::make($request->password); 
+        $user->password_change_at = now();                                         
+        $user->save();  
+        if($user->wasChanged('password')){                            
+            auditusers($user,Auth::user()->username,'Change Password',$user->username,
             'users','Password','','' );
         }                              
         return back()->with('success','Password has been changed!');

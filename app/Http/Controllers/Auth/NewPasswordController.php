@@ -61,16 +61,22 @@ class NewPasswordController extends Controller
         $request->only('email', 'password', 'password_confirmation', 'token');
         $iduser = User::where('email',$request->email)->first();
         $cekuser = DB::Table('users')->where('email',$request->email);
-        $listuser=$cekuser->implode('username',', ');           
-        $deltoken = DB::table('password_resets')->where('token',$request->token)->delete();
+        $listuser=$cekuser->implode('username',', ');   
+        
         
         if ($cekuser->count() >1){
             return back()->with('error','You cannot use password reset because there are '.$cekuser->count().' users that using same email ('.$listuser.')');
         }
         $user = User::find($iduser->id); 
+        if(Hash::check($request->password, $user->password)){
+            return back()->with('error','Failed...You cannot use your old password, Please choose a new one');
+        }
         $user->password = Hash::make($request->password);             
-        $user->last_seen = null;                               
+        $user->last_seen = null;  
+        $user->password_change_at = now();                             
         $user->save();  
+
+        $deltoken = DB::table('password_resets')->where('token',$request->token)->delete();
         
         return redirect('/login')->with('success','Password has been changed!');   
     

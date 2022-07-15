@@ -30,6 +30,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function create()
     {
+        
         return view('auth.login');
     }      
 
@@ -93,7 +94,7 @@ class AuthenticatedSessionController extends Controller
         if ($cektime > 5){        
             $deltoken = DB::table('mfalogins')->where('token',$token)->delete();
             return redirect('/login')->with('error','Failed...This Link has Expired !!');
-        }
+        }           
         
         return view('auth.mfa',[
             'token'=>$token,

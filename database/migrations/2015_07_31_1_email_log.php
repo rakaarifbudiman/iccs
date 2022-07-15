@@ -23,6 +23,7 @@ class EmailLog extends Migration
             $table->text('body');
             $table->text('headers')->nullable();
             $table->text('attachments')->nullable();
+            $table->datetime('read_at')->nullable();     
         });
     }
 

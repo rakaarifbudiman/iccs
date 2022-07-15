@@ -18,8 +18,46 @@
   
   <nav class="header-nav ms-auto">
     <ul class="d-flex align-items-center">            
-
       <li class="nav-item dropdown">
+            @php
+              $emaillog = DB::table('email_log')->get();
+            @endphp
+        <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+          <i class="bi bi-bell"></i>
+          <span class="badge bg-primary badge-number">{{$emaillog->count()}}</span>
+        </a><!-- End Notification Icon -->
+
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+          <li class="dropdown-header">
+            You have {{$emaillog->count()}} new notifications
+            <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+          </li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+              @forelse ($emaillog as $log)
+                <li class="notification-item">
+                  <i class="bi bi-exclamation-circle text-warning"></i>
+                  <a href="#" data-bs-toggle="modal" data-bs-target="#modalheadernotification{{ $log->id }}">
+                    <h4>{{$log->subject}}</h4>                    
+                    <p>{{getDiffFromMinute($log->date)}}</p>
+                  </a>
+                </li>                            
+              @empty            
+              @endforelse
+          <li>
+            <hr class="dropdown-divider">
+          </li>          
+          <li class="dropdown-footer">
+            <a href="/listnotification">Show all notifications</a>
+          </li>
+
+        </ul><!-- End Notification Dropdown Items -->
+
+      </li><!-- End Notification Nav -->
+
+
+      <li class="nav-item dropdown"> {{-- Online User --}}
             @php
               $onlineusers = DB::table('users')->where('last_seen','<>',null)->orderBy('last_seen', 'desc')->get();
             @endphp
@@ -61,6 +99,7 @@
           </ul><!-- End Messages Dropdown Items -->
 
       </li><!-- End Messages Nav -->
+
 
       <li class="nav-link nav-profile d-flex align-items-center pe-0" id="jam" >
       </li>   

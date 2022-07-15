@@ -30,35 +30,29 @@
                     <th scope="col">Current Condition</th>
                     <th scope="col">Proposed Change</th>
                     <th scope="col">Reason for Change</th>
-                    <th scope="col">Inisiator</th>               
-                    
-                    
-                    
+                    <th scope="col">Inisiator</th>                
                 </tr>
               </thead>
               <tbody>
-
-                @foreach ($lupparents as $index =>$lupparent)            
-                
-                <tr>
-                    <th scope="row">{{ $index +1 }}</th>
-                    <td>                     
-                        <a href="/lup/{{Crypt::encryptString($lupparent->lup_id)}}/edit" class="btn btn-sm btn-primary edit" title="Edit LUP"
-                          ><i class="ri-edit-2-fill"></i></a>
-                        <a href="#" class="btn btn-sm bg-secondary text-light print" title="print LUP"
-                          onclick="window.open('/lup/{{Crypt::encryptString($lupparent->lup_id)}}/printlup','_blank').focus"><i class="ri-printer-fill"></i></a>
-                    </td>
-                    <td>{{ $lupparent->lupstatus }}</td>  
-                    <td>{{ $lupparent->lup_code }}</td>
-                    <td>{{ $lupparent->nolup }}</td>    
-                    <td class="setwidth"><textarea  readonly>{{ $lupparent->documentname }}</textarea></td>
-                    <td class="setwidth"><textarea  readonly>{!! $lupparent->lup_current !!}</textarea></td>
-                    <td class="setwidth"><textarea  readonly>{!! $lupparent->lup_proposed !!}</textarea></td>
-                    <td class="setwidth"><textarea  readonly>{!! $lupparent->lup_reason !!}</textarea></td>     
-                    <td>{{ $lupparent->inisiator }}</td>                 
-                  </tr>                         
-              
-                  @endforeach
+                @foreach ($lupparents as $index =>$lupparent)                 
+                  <tr>
+                      <th scope="row">{{ $index +1 }}</th>
+                      <td>                     
+                          <a href="/lup/{{Crypt::encryptString($lupparent->id)}}/edit" class="btn btn-sm btn-primary edit" title="Edit LUP"
+                            ><i class="ri-edit-2-fill"></i></a>
+                          <a href="#" class="btn btn-sm bg-secondary text-light print" title="print LUP"
+                            onclick="window.open('/lup/{{Crypt::encryptString($lupparent->id)}}/printlup','_blank').focus"><i class="ri-printer-fill"></i></a>
+                      </td>
+                      <td>{{ $lupparent->lupstatus }}</td>  
+                      <td>{{ $lupparent->lup_code }}</td>
+                      <td>{{ $lupparent->nolup }}</td>    
+                      <td class="setwidth"><textarea  readonly>{{ $lupparent->documentname }}</textarea></td>
+                      <td class="setwidth"><textarea  readonly>{!! $lupparent->lup_current !!}</textarea></td>
+                      <td class="setwidth"><textarea  readonly>{!! $lupparent->lup_proposed !!}</textarea></td>
+                      <td class="setwidth"><textarea  readonly>{!! $lupparent->lup_reason !!}</textarea></td>     
+                      <td>{{ $lupparent->inisiator }}</td>                 
+                  </tr>             
+                @endforeach
                   </tbody>
                 </table>        
           </div>

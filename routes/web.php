@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\ICCS\GradeController;
+use App\Http\Controllers\ICCS\EmailLogController;
 use App\Http\Controllers\ICCS\DashboardController;
 use App\Http\Controllers\ICCS\DepartmentController;
 use App\Http\Controllers\ICCS\MailSettingController;
@@ -34,7 +35,9 @@ require __DIR__.'/rdms.php';
     Route::get('/', [DashboardController::class, 'index']); 
     Route::get('/dashboard', [DashboardController::class, 'index']); 
     Route::get('/users-profile/{id}/edit/{tab}', [UserController::class, 'editpassword']);    
-    Route::put('/users-profile/{id}/changepassword', [UserController::class, 'changepassword']);         
+    Route::put('/users-profile/{id}/changepassword', [UserController::class, 'changepassword']);   
+    Route::get('/listnotification', [EmailLogController::class, 'index']); 
+    Route::POST('/readnotification', [EmailLogController::class, 'readnotification']);         
  });
 
  
@@ -43,8 +46,7 @@ require __DIR__.'/rdms.php';
     Route::view('/phpversion', view: 'phpversion');   
     Route::POST('/tcodeiccs', [DashboardController::class, 'tcode']);    
     Route::get('/users-profile/{id}/edit', [UserController::class, 'edit']);    
-    Route::put('/users-profile/update/{id}', [UserController::class, 'update']);  
-   
+    Route::put('/users-profile/update/{id}', [UserController::class, 'update']);   
 });    
 
 /* route group that only active reviewer can access*/
@@ -68,7 +70,7 @@ Route::group(['middleware' => 'reviewer'], function() {
 });
 
 /* route group that only active approver can access*/
-Route::group(['middleware' => 'approver'], function() {
+Route::group(['middleware' => ['approver']], function() {
     Route::get('/mail/setting/edit', [MailSettingController::class, 'edit']);
     Route::put('/mail/setting/update', [MailSettingController::class, 'update']);
 });

@@ -336,4 +336,6 @@ class DashboardController extends Controller
             }
             return back()->with('warning','The following data or shortcut does not exist..');  
     }
+
+
 }
