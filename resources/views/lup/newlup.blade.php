@@ -1,19 +1,20 @@
-@extends('layouts.main')
+@extends('layouts.admin.master')
 @section('title', 'New LUP')
+@push('css')
+<link rel="stylesheet" type="text/css" href="{{ asset('/assets/css/select2.css') }}">
+@endpush
 @section('content')
 <div class="pagetitle">
-    {{-- <h1>Review LUP</h1> --}}    
-    <nav style="--bs-breadcrumb-divider: '| ';">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/"><i class="ri-home-3-line"></i></a></li>
-        <li class="breadcrumb-item"><a href="/lup/masterlist">Master List LUP | </a></li>      
-        <li class="breadcrumb-item active">
-          <a href="#" onclick="event.preventDefault(); document.getElementById('submit-newlup').submit();" title="Save">
-            <i class="ri-save-3-fill" ></i>
-          </a>
-        </li>
-      </ol>     
-    </nav> 
+  @component('components.breadcrumb')
+    @slot('breadcrumb_title')
+      <h3>New LUP</h3>
+    @endslot            
+          <li class="breadcrumb-item"><a href="/lup/masterlist">Master List LUP</a></li>
+    @slot('bookmark')      
+      <li><a href="#" data-container="body" data-bs-toggle="popover" data-placement="top" title="Save" data-original-title="Save" 
+        onclick="event.preventDefault(); document.getElementById('submit-newlup').submit();"><i data-feather="save"></i></a></li>          
+    @endslot
+@endcomponent
   <section class="section profile mt-2">
     <div class="row">      
         <div class="col-sm">  
@@ -35,14 +36,37 @@
                           <label for="documentname">Title</label>
                         </div>
                       </div>     
-                      <div class="row">
-                            <div class="col-md-4 mb-2">                         
-                              <div class="form-input input-sm">
-                                <a href="#" class="btn btn-primary text-white edit" data-bs-toggle="modal" data-bs-target="#modaleditluptype" title="Select Change Related"><i class="ri-edit-2-fill"></i> Select Change Related to</a>                                                                                                                                                           
-                                @include('lup.modal.add.luptype')
-                              </div>
-                            </div>                            
-                      </div>  
+                      <div class="select2-drpdwn">
+                        <div class="mb-5">
+                          <label class="col-form-label" for="lup_type">Change Related to</label>                      
+                              <select class="js-example-basic-multiple col-sm-12" id="lup_type" name="lup_type[]" multiple="multiple" style="width: 175%">
+                                @foreach ($listtypes as $listype)
+                                  <option value="{{$listype->luptype}}"                                    
+                                    >{{$listype->luptype}}
+                                  </option>                                                  
+                                @endforeach
+                              </select>  
+                              @error('lup_type')
+                            <div class="text-danger">{{ $message }}</div>
+                          @enderror                                                                                         
+                        </div>     
+                      </div>             
+                      <div class="select2-drpdwn">
+                        <div class="mb-5">
+                          <label class="col-form-label" for="lup_type">Change Sub Category</label>                      
+                              <select class="js-example-basic-multiple col-sm-12" id="lup_subtype" name="lup_subtype[]" multiple="multiple" style="width: 175%">
+                                @foreach ($listtypes as $listype)
+                                  <optgroup label ="{{$listype->luptype}}">
+                                      @foreach ($listsubtypes->where('code',$listype->code) as $listsubtype)
+                                        <option value="{{$listsubtype->luptype}} "                                          
+                                          >{{$listsubtype->luptype}} 
+                                        </option>                                                  
+                                      @endforeach
+                                  </optgroup>
+                                @endforeach    
+                              </select>                                                                                          
+                        </div>     
+                      </div>                 
                       <div class="col-md-12 mb-2">
                         <div class="form-floating input-sm mt-2">
                           <input type="text" class="form-control text-small" name="lup_type_others" id="lup_type_others" placeholder="If Others (Specify)" autocomplete="off" value="{{old('lup_type_others')}}">
@@ -84,7 +108,7 @@
                                     </div>     
                             </div>
                         <div class="row">
-                          <div class="col-sm-4 mb-2">         
+                          <div class="col-sm-6 mb-2">         
                             <label class="form-check-label mb-2" id="lup_current" name="lup_current">Current Condition :</label>               
                             <div class="form-floating">
                                 <label for="lup_current">Current Condition</label>
@@ -97,7 +121,7 @@
                               
                             </div>
                           </div>
-                          <div class="col-sm-4 mb-2">         
+                          <div class="col-sm-6 mb-2">         
                             <label class="form-check-label mb-2" id="lup_proposed" name="lup_proposed">Proposed :</label>               
                             <div class="form-floating">
                                 <label for="lup_proposed">Proposed</label>
@@ -106,11 +130,11 @@
                                   </textarea><!-- End TinyMCE Editor -->         
                               @error('lup_proposed')
                                 <div class="text-danger">{{ $message }}</div>
-                              @enderror                  
+                              @enderror         
                               
                             </div>
                           </div>
-                          <div class="col-sm-4 mb-2">         
+                          <div class="col-sm-12 mb-2">         
                             <label class="form-check-label mb-2" id="lup_reason" name="lup_reason">Change Reason :</label>               
                             <div class="form-floating">
                                 <label for="lup_reason">Change Reason</label>
@@ -137,5 +161,8 @@
   </section>
 </div><!-- End Page Title -->
 
-
+@push('scripts')
+<script src="{{ asset('/assets/js/select2/select2.full.min.js') }}"></script>
+<script src="{{ asset('/assets/js/select2/select2-custom.js') }}"></script>
+@endpush
 @stop

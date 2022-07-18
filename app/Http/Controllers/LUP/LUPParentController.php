@@ -46,8 +46,10 @@ class LUPParentController extends Controller
     //show masterlist lup
     public function index()
     {          
-        $lupparents = LUPParent::all();           
-        
+        $lupparents = DB::table('lup_parents')
+                ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code')                    
+                ->orderBy('lup_parents.id','desc')->get(); 
+       
         return view('lup.masterlistlup', ['lupparents' => $lupparents,
           
         ]);
@@ -96,15 +98,16 @@ class LUPParentController extends Controller
         //save process
         $store = LUPParent::create(array_merge($data1,$data2,$data3,$data4));
         $encrypted = Crypt::encryptString($store->id);     
-        activity()->causedBy(Auth::user()->id)->performedOn($store)->event('created')->log('create LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$store->code.'</a>');   
+        activity()->causedBy(Auth::user()->id)->performedOn($store)->event('created')->log('create LUP <a href='.env('APP_URL').'/lup/'.$encrypted.'/edit>'.$store->code.'</a>');   
         return redirect('/lup/'.$encrypted.'/edit')->with('success','LUP has been created with following code : '.$store->code);           
     }
 
     //show from LUP
     public function edit($id)
     {
+        
         $decrypted = Crypt::decryptString($id);         
-        $lupparent=LUPParent::find($decrypted);                          
+        $lupparent=LUPParent::find($decrypted);                                
         $luptypes = explode(';',$lupparent->lup_type);
         $lupsubtypes = explode(';',$lupparent->lup_subtype);        
         $listtypes = DB::table('lup_types')->get();    

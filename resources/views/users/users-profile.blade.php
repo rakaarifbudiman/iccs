@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.admin.master')
 
 @section('title', 'User Profile ICCS')
 

@@ -1,4 +1,3 @@
-
 <div class="tab-pane fade history pt-0" id="history"> <!-- history Form -->
     @if($lupparent->lupstatus=="OPEN" OR $lupparent->lupstatus=="CLOSED") 
     @else 

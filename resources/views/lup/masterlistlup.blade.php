@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.admin.master')
 
 @section('title', 'List LUP ICCS')
 
@@ -38,10 +38,10 @@
                   <tr>
                       <th scope="row">{{ $index +1 }}</th>
                       <td>                     
-                          <a href="/lup/{{Crypt::encryptString($lupparent->id)}}/edit" class="btn btn-sm btn-primary edit" title="Edit LUP"
+                          <a href="/lup/{{Crypt::encryptString($lupparent->lup_id)}}/edit" class="btn btn-sm btn-primary edit" title="Edit LUP"
                             ><i class="ri-edit-2-fill"></i></a>
                           <a href="#" class="btn btn-sm bg-secondary text-light print" title="print LUP"
-                            onclick="window.open('/lup/{{Crypt::encryptString($lupparent->id)}}/printlup','_blank').focus"><i class="ri-printer-fill"></i></a>
+                            onclick="window.open('/lup/{{Crypt::encryptString($lupparent->lup_id)}}/printlup','_blank').focus"><i class="ri-printer-fill"></i></a>
                       </td>
                       <td>{{ $lupparent->lupstatus }}</td>  
                       <td>{{ $lupparent->lup_code }}</td>

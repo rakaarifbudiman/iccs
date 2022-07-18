@@ -29,6 +29,25 @@ require __DIR__.'/auth.php';
 require __DIR__.'/flp.php';
 require __DIR__.'/lup.php';
 require __DIR__.'/rdms.php';
+Route::view('/test1',view: 'welcome');
+require __DIR__.'/admin_web.php';
+
+
+Route::get('/test1', function () {
+    return redirect()->route('index');
+})->name('/test1');
+
+Route::view('sample-page', 'admin.pages.sample-page')->name('sample-page');
+
+Route::prefix('dashboard')->group(function () {
+    Route::view('/test1', 'admin.dashboard.default')->name('index');
+    Route::view('default', 'admin.dashboard.default')->name('dashboard.index');
+});
+
+Route::view('default-layout', 'multiple.default-layout')->name('default-layout');
+Route::view('compact-layout', 'multiple.compact-layout')->name('compact-layout');
+Route::view('modern-layout', 'multiple.modern-layout')->name('modern-layout');
+
 
  /* route group that only auth user can access,  inactive user can access*/
  Route::group(['middleware' => 'auth'], function() {         

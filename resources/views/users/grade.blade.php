@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts_old.main')
 
 @section('title', 'Grade ICCS')
 
