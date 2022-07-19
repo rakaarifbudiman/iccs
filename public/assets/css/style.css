@@ -243,6 +243,30 @@ input:focus {
     -webkit-transform: none;
             transform: none; } }
 
+@-webkit-keyframes moveInSetting {
+              0% {
+                -webkit-transform-origin: center;
+                        transform-origin: center;
+                -webkit-transform: rotate(45deg);
+                        transform: rotate(45deg); }
+              to {
+                -webkit-transform-origin: center;
+                        transform-origin: center;
+                -webkit-transform: none;
+                        transform: none; } }
+            
+@keyframes moveInSetting {
+              0% {
+                -webkit-transform-origin: center;
+                        transform-origin: center;
+                -webkit-transform: rotate(45deg);
+                        transform: rotate(45deg); }
+              to {
+                -webkit-transform-origin: center;
+                        transform-origin: center;
+                -webkit-transform: none;
+                        transform: none; } }            
+
 .setting-primary, .setting-secondary, .setting-white {
   width: 32px;
   height: 32px;
@@ -259,8 +283,12 @@ input:focus {
   .setting-primary svg, .setting-secondary svg, .setting-white svg {
     width: 15px;
     stroke-width: 2.5px;
-    -webkit-animation: rotateInSetting 1.5s ease infinite;
-            animation: rotateInSetting 1.5s ease infinite; }
+    -webkit-animation: rotateInSetting 1.5s ease infinite alternate;
+            animation: rotateInSetting 1.5s ease infinite alternate; }
+.color-settings{
+  -webkit-animation: moveInSetting 5.0s ease infinite;
+            animation: moveInSetting 5.0s ease infinite; 
+}
 
 .setting-primary {
   background-color: rgba(36, 105, 92, 0.1); }
@@ -319,8 +347,8 @@ input:focus {
     width: 15px;
     color: #24695c;
     stroke-width: 2.5px;
-    -webkit-animation: rotateInSetting 1.5s ease infinite;
-            animation: rotateInSetting 1.5s ease infinite; }
+    -webkit-animation: rotateInSetting 1.5s ease infinite alternate;
+            animation: rotateInSetting 1.5s ease infinite alternate; }
 
 .typography h1, .typography .h1,
 .typography h2, .typography .h2,

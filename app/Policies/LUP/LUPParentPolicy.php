@@ -33,7 +33,7 @@ class LUPParentPolicy
                 ? Response::allow()
                     : Response::deny('Failed... You are not authorized update this data');       
         }else{
-            return ($lup->lupstatus=="CREATE" || $lup->lupstatus=="ON PROCESS" || $lup->lupstatus=="ON REVIEW" || $lup->lupstatus=="ON APPROVAL") 
+            return ($lup->lupstatus=="CREATE" || $lup->lupstatus=="ON PROCESS" || $lup->lupstatus=="ON REVIEW" || $lup->lupstatus=="ON APPROVAL" || $lup->lupstatus=="APPROVED") 
             && ($user->username == $lup->inisiator || $user->username == $lup->leader || $user->username == $lup->regulatory_reviewer || 
             $user->username == $lup->regulatory_approver || $user->level >1 || $disposisi)
                 ? Response::allow()

@@ -284,7 +284,9 @@ class DashboardController extends Controller
         $search = Str::upper($request->tcode);
         $length = Str::length($search);
         $first = Str::upper(Str::substr($search, 0, 1));
-        
+        if(!$search){
+            return back()->with('error','Please give me correct order...');
+        }
             
             if(FLPParent::where('code',$search)->exists()){             //search FLP by code       
                 $flp = FLPParent::where('code',$search)->first()->id;

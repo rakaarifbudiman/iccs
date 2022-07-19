@@ -21,7 +21,7 @@
 
 
 <!-- Vendor CSS Files -->  
-{{-- <link href="assets_old/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet"> --}}
+{{-- <link href="assets_old/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet"> --}} 
 <link href="/assets_old/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
 <link href="/assets_old/vendor/remixicon/remixicon.min.css" rel="stylesheet">
 <link href="/assets_old/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">

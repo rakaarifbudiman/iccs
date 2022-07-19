@@ -5,14 +5,14 @@
                 {{$lupparent->lupstatus=="APPROVED" ? : 'hidden'}}>
                 Add Action Plan<i class="ri-add-fill"></i>
             </a>                           
-            <a href="#" class="btn btn-sm btn-success text-white" data-bs-toggle="modal" data-bs-target="#modaladdnotif{{ $lupparent->id }}" title="Add Notification" 
+            {{-- <a href="#" class="btn btn-sm btn-success text-white" data-bs-toggle="modal" data-bs-target="#modaladdnotif{{ $lupparent->id }}" title="Add Notification" 
                 {{$lupparent->lupstatus=="APPROVED" ? : 'hidden'}}>
                 Add Notification<i class="ri-add-fill"></i>
             </a>                           
             <a href="#" class="btn btn-sm btn-warning text-white" data-bs-toggle="modal" data-bs-target="#modaldeletenotif{{ $lupparent->id }}" title="Delete Notification" 
               {{$lupparent->lupstatus=="APPROVED" ? : 'hidden'}}>
                 Delete Notification<i class="ri-delete-bin-2-fill"></i>
-            </a>
+            </a> --}}
             @can('sendnotif',$lupparent)
               <a href="/lup/action/{{Crypt::encryptString($lupparent->id)}}/sendnotif" onclick="return confirm('Send notif to all PIC Action ?');" class="btn btn-sm btn-primary text-white"  title="Send Mail to All PIC Action" 
                 {{$lupparent->lupstatus=="APPROVED" ? : 'hidden'}}>
@@ -113,14 +113,22 @@
           </div>
         </div>      
       </div>    
-      <div class="row">
-        <div class="col-md-12 mb-2">
-          <div class="form-control">
-            <label for="action_notifier"> Proposed Change Notify To </label>  
-            <textarea class="form-control text-small" type="email" list="listuser listuser2" id="action_notifier" name="action_notifier" multiple="multiple" placeholder="Select user to notify with button Add Notification and delete user with button Delete Notification..." value="{{ old('action_notifier') }}" disabled>{{$lupparent->action_notifier}}</textarea>
-          </div>
-        </div> 
-      </div>  
+      <div class="select2-drpdwn">
+        <div class="mb-5">
+          <label class="col-form-label" for="lup_type">Proposed Change Notify To</label>                      
+              <select class="js-example-placeholder-multiple col-sm-12" id="action_notifier" name="action_notifier[]" multiple="multiple" style="width: 175%">                
+                      @foreach ($listusers as $listuser)
+                        <option value="{{$listuser->email}} "
+                          @foreach ($lupnotifier as $notifier)
+                            {{($listuser->email==$notifier) ? 'selected' : ''}}
+                          @endforeach
+                          >{{$listuser->name}}
+                        </option>                                                  
+                      @endforeach   
+              </select>                                                                                          
+        </div>     
+      </div>             
+      
   </div>           <!-- End Action Plan Form --> 
 
 

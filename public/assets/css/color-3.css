@@ -22245,6 +22245,12 @@ body.dark-sidebar .main-navbar ul.nav-pills {
             background-color: #e0707b; }
       .customizer-contain .customizer-body .color-layout[data-attr="color-8"] div {
               background-color: #f0588d; }
+              .customizer-contain .customizer-body .color-layout[data-attr="color-9"] div {
+                background-color: #716F81; }
+              .customizer-contain .customizer-body .color-layout[data-attr="color-10"] div {
+                background-color: #9E7777; }   
+            .customizer-contain .customizer-body .color-layout[data-attr="color-11"] div {
+            background-color: #383e56; }             
     .customizer-contain .customizer-body > li .body .body ul {
       background-color: #f6f7fb; }
     .customizer-contain .customizer-body .dark > li {

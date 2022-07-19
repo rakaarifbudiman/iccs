@@ -10,10 +10,15 @@ setTimeout(function(){
             $(".js-example-basic-multiple").select2({
                 minimumResultsForSearch: 5
             });
+            // Multi Select
+            $("#action-notifier").select2({
+                minimumResultsForSearch: 5,
+                placeholder: "Select User Email"
+            });
 
             // With Placeholder
             $(".js-example-placeholder-multiple").select2({
-                placeholder: "Select Your Name"
+                placeholder: "Select Users"
             });
 
             //Limited Numbers

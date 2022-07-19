@@ -28,8 +28,7 @@
                     <th scope="col">Due Date Action</th>
                     <th scope="col">Status Action</th>
                     <th style="width: 1px !important;">Title</th>                    
-                    <th scope="col">Proposed Change</th>      
-                    
+                    <th scope="col">Proposed Change</th>          
                     
                 </tr>
               </thead>

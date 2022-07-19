@@ -112,14 +112,14 @@
         @php
           $id= Crypt::encryptString(Auth::user()->id);
         @endphp
-        <a class="nav-link collapsed" href="/users-profile/{{$id}}/edit">
+        <a class="nav-link collapsed" href="/users-profile/{{Crypt::encryptString(Auth::user()->id)}}/edit">
           <i class="bi bi-person"></i>
           <span>Profile</span>
         </a>
       </li><!-- End Profile Page Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="/users-profile/{{$id}}/edit/changepassword">
+        <a class="nav-link collapsed" href="/users-profile/{{Crypt::encryptString(Auth::user()->id)}}/edit/changepassword">
           <i class="bi bi-person-lines-fill"></i>
           <span>Change Password</span>
         </a>

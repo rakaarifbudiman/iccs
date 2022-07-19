@@ -15,8 +15,8 @@ use App\Http\Controllers\FLP\FLPDashboardController;
  Route::group(['middleware' => 'active'], function() {     
         
     /* FLP route */
-    Route::get('/flp', [FLPParentController::class, 'index']);
-    Route::get('/newflp', [FLPParentController::class, 'create']);
+    Route::get('/flp/masterlist', [FLPParentController::class, 'index']);
+    Route::get('/flp/new', [FLPParentController::class, 'create']);
     Route::put('/postflp', [FLPParentController::class, 'store']);
     Route::get('/flp/{id}/edit', [FLPParentController::class, 'edit']);
     Route::put('/flp/{id}/update', [FLPParentController::class, 'update']);    

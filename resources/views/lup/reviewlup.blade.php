@@ -14,26 +14,28 @@
         <li class="breadcrumb-item"><a href="/lup/masterlist">Master List LUP</a></li>
         
         <li class="breadcrumb-item active ">Code : {{ $lupparent->code }}</li>
-      <li class="breadcrumb-item active ">                  
-          <a href="#" data-bs-toggle="dropdown">Status : {{ $lupparent->lupstatus }}
-            <span class="badge bg-info badge-number">?</span>
-          </a><!-- End Messages Icon -->        
-            <ul class="dropdown-menu dropdown-menu-arrow messages">                
-              <li class="badge bg-dark badge-number">
-                CREATE      : LUP created and waiting for leader approval<br>
-                ON PROCESS  : LUP being review by QSE <br>
-                ON REVIEW   : LUP being review by Related Departments <br>
-                ON APPROVAL : LUP being review by QCJM <br>
-                APPROVED    : LUP has been approved , received No LUP, and waiting for fill action plan <br>
-                OPEN        : LUP has been confirmed by QCJM and waiting PIC action to close their action <br>
-                ON CANCEL   : LUP has been request for cancellation and being review by QSE <br>    
-                ON CANCEL APPROVAL   : LUP has been request for cancellation and being review by QCJM <br>     
-                ON CLOSING   : LUP has been request for closing and being review by QCJM <br>    
-                CLOSED   : LUP has been CLOSED, no need further action <br>  
-                CANCEL   : LUP has been CANCEL, no need further action <br> 
-                            
-              </li>                
-            </ul><!-- End Messages Dropdown Items -->         
+      <li class="breadcrumb-item">    Status : {{ $lupparent->lupstatus }} 
+        {{-- <ul class="card-body dropdown-basic">       
+            <ul class="dropdown">
+              <a class="breadcrumb-item" >
+                Status : {{ $lupparent->lupstatus }} <span><i class="icofont icofont-arrow-down"></i></span>
+              </a>
+              <li class="dropdown-content">
+                <a href="#">CREATE      : LUP created and waiting for leader approval</a>
+                <a href="#">ON PROCESS  : LUP being review by QSE </a>
+                <a href="#">ON REVIEW   : LUP being review by Related Departments </a>
+                <a href="#">ON APPROVAL : LUP being review by QCJM </a>
+                <a href="#">APPROVED    : LUP has been approved , received No LUP, and waiting for fill action plan  </a>
+                <a href="#">OPEN        : LUP has been confirmed by QCJM and waiting PIC action to close their action </a>
+                <a href="#">ON CANCEL   : LUP has been request for cancellation and being review by QSE </a>
+                <a href="#">ON CANCEL APPROVAL   : LUP has been request for cancellation and being review by QCJM</a>
+                <a href="#">ON CLOSING   : LUP has been request for closing and being review by QCJM </a>
+                <a href="#">CLOSED   : LUP has been CLOSED, no need further action </a>
+                <a href="#">CANCEL   : LUP has been CANCEL, no need further action</a>
+              </li>
+            </ul>   
+        </ul>     --}}
+           
       </li>
   <li class="breadcrumb-item active">No. LUP : {{ $lupparent->nolup }}</li>
   <li class="breadcrumb-item active">Rev : {{ $lupparent->revision }}</li>
@@ -70,7 +72,7 @@
               </li>    
               <li>
                 <a href="#" title="Download Tutorial" onclick="window.open('/lup/downloadpanduan','_blank').focus"
-                data-placement="top" data-original-title="Download Tutorial"><i data-feather="info"></i>            
+                data-placement="top" data-original-title="Download Tutorial"><i data-feather="help-circle"></i>            
                 </a>          
               </li>            
               
@@ -80,37 +82,37 @@
     <form id="submit-form" action="/lup/{{ $lupparent->id }}/update" method="POST" class="hidden">
       @csrf    
       @method('Put')
-  <section class="section profile ">  
-          <div class="card">
+  <section class="section profile">  
+          <div class="card  mt-0">
             <div class="card-body">                               
                   <ul class="nav nav-tabs mt-0" id="LUPMenu">  
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#initiation" role="tab" aria-controls="initiation">
-                        <i class="icofont icofont-ui-home"></i>Change Initiation</a>
+                        <i data-feather="home"></i> Change Initiation</a>
                     </li>   
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#categorization" role="tab" aria-controls="categorization" >
-                        <i class="icofont icofont-list"></i>Change Categorization</a>
+                        <i data-feather="command"></i> Change Categorization</a>
                     </li> 
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#attachments" role="tab" aria-controls="attachments">
-                        <i class="icofont icofont-attachment"></i>Attachments</a>
+                        <i data-feather="paperclip"></i> Attachments</a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#departments" role="tab" aria-controls="departments">
-                        <i class="icofont icofont-company"></i>Related Departments</a>
+                        <i data-feather="users"></i> Related Departments</a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#approval" role="tab" aria-controls="approval">
-                        <i class="icofont icofont-ui-check"></i>Approvals</a>
+                        <i data-feather="user-check"></i> Approvals</a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#action" role="tab" aria-controls="action">
-                        <i class="icofont icofont-people"></i>Action Plan</a>
+                        <i data-feather="activity"></i> Action Plan</a>
                     </li>   
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#history" role="tab" aria-controls="history">
-                        <i class="icofont icofont-read-book"></i>History</a>
+                        <i data-feather="archive"></i> History</a>
                     </li>  
                   </ul>            
                   <div class="tab-content pt-3">

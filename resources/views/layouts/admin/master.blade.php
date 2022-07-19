@@ -9,7 +9,7 @@
     <meta name="author" content="pixelstrap">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{asset('assets_old/img/logoiccsnew.svg')}}" type="image/x-icon">
-    <link rel="shortcut icon" href="{{asset('assets/images/favicon.png')}}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{asset('assets_old/img/logoiccsnew.svg')}}" type="image/x-icon">
     <title>ICCS - @yield('title','Page Title')</title>
     
     <!-- Google font-->
@@ -45,7 +45,7 @@
         </div>
         <!-- footer start-->
         <footer class="footer">
-          <div class="container-fluid">
+          <div class="container-fluid" style="height: 1px !important">
             <div class="row">
               <div class="col-md-6 footer-copyright mx-2">
                 <p class="pull-center mb-0">Copyright {{date('Y')}}-{{date('Y', strtotime('+1 year'))}} © {{ env('APP_NAME') }} All rights reserved.</p>

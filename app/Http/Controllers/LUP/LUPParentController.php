@@ -109,7 +109,8 @@ class LUPParentController extends Controller
         $decrypted = Crypt::decryptString($id);         
         $lupparent=LUPParent::find($decrypted);                                
         $luptypes = explode(';',$lupparent->lup_type);
-        $lupsubtypes = explode(';',$lupparent->lup_subtype);        
+        $lupsubtypes = explode(';',$lupparent->lup_subtype);   
+        $lupnotifier = explode(';',$lupparent->action_notifier);     
         $listtypes = DB::table('lup_types')->get();    
         $listsubtypes = DB::table('lup_subtypes')->get();         
         $listusers = User::where([['active',1]])->get();
@@ -124,6 +125,7 @@ class LUPParentController extends Controller
             'id'=>$id,
             'lupparent'=>$lupparent,   
             'listactionclose'=>$listactionclose,  
+            'lupnotifier'=>$lupnotifier,
             'listtypes'=>$listtypes,     
             'luptypes'=>$luptypes,   
             'listsubtypes'=>$listsubtypes,     
@@ -159,7 +161,7 @@ class LUPParentController extends Controller
         }
         $data3= array('lup_type'=>collect($request->input('lup_type'))->implode(';'));    
         $data4= array('lup_subtype'=>collect($request->input('lup_subtype'))->implode(';'));   
-        
+        $data5= array('action_notifier'=>collect($request->input('action_notifier'))->implode(';'));  
         //categorization
         if($request->boolean('patient_impact')==true){
             $categorization = array('categorization'=>'Critical');
@@ -178,9 +180,9 @@ class LUPParentController extends Controller
         }            
         
         if($lupparent->adjustments==0){
-            $lupparent->update(array_merge($data1,$data2,$data3,$data4,$categorization));       
+            $lupparent->update(array_merge($data1,$data2,$data3,$data4,$data5,$categorization));       
         }else{
-            $lupparent->update(array_merge($data1,$data2,$data3,$data4));       
+            $lupparent->update(array_merge($data1,$data2,$data3,$data4,$data5));       
         }        
                        
         //check audit change     

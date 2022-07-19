@@ -105,15 +105,18 @@
 
     }
 
+    
+    
 // toggle sidebar
 $nav = $('.main-nav');
 $header = $('.page-main-header');
 $toggle_nav_top = $('#sidebar-toggle');
-$toggle_nav_top.click(function() {
-  $this = $(this);
-  $nav = $('.main-nav');
-  $nav.toggleClass('close_icon');
-  $header.toggleClass('close_icon');
+$toggle_nav_top.click(function() {   
+  $this = $(this);  
+    $nav = $('.main-nav');
+    $nav.toggleClass('close_icon');
+    $header.toggleClass('close_icon'); 
+  
 });
 
 $( window ).resize(function() {
