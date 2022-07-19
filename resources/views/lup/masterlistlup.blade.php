@@ -5,13 +5,11 @@
 @section('content')
 
 <div class="pagetitle">
-  <h1>List LUP ICCS</h1>
-  <nav>
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/"><i class="ri-home-3-line"></i></a></li>
-      <li class="breadcrumb-item active">List LUP ICCS</li>
-    </ol>
-  </nav>
+  @component('components.breadcrumb')
+		@slot('breadcrumb_title')
+			<h3>List LUP ICCS</h3>
+		@endslot       
+  @endcomponent
 </div><!-- End Page Title  -->
   <section class="section dashboard">
   <div class="row">
@@ -46,14 +44,14 @@
                       <td>{{ $lupparent->lupstatus }}</td>  
                       <td>{{ $lupparent->lup_code }}</td>
                       <td>{{ $lupparent->nolup }}</td>    
-                      <td class="setwidth"><textarea  readonly>{{ $lupparent->documentname }}</textarea></td>
-                      <td class="setwidth"><textarea  readonly>{!! $lupparent->lup_current !!}</textarea></td>
-                      <td class="setwidth"><textarea  readonly>{!! $lupparent->lup_proposed !!}</textarea></td>
-                      <td class="setwidth"><textarea  readonly>{!! $lupparent->lup_reason !!}</textarea></td>     
+                      <td class="setwidth">{{ $lupparent->documentname }}</td>
+                      <td class="setwidth">{!! $lupparent->lup_current !!}</td>
+                      <td class="setwidth">{!! $lupparent->lup_proposed !!}</td>
+                      <td class="setwidth">{!! $lupparent->lup_reason !!}</td>     
                       <td>{{ $lupparent->inisiator }}</td>                 
                   </tr>             
                 @endforeach
-                  </tbody>
+                  </tbody>                  
                 </table>        
           </div>
         </div>

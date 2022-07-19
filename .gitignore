@@ -6,4 +6,4 @@ vendor/
 public/assets_old
 public/qrcode
 database/seeders/MailSettingSeeder.php
-public/assets
+

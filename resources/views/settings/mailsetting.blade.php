@@ -1,5 +1,4 @@
-@extends('layouts_old.main')
-
+@extends('layouts.admin.master')
 @section('title', 'Mail Setting')
 
 @section('content')

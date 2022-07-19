@@ -56,7 +56,7 @@
 			<tbody>
 				<tr style="height: 18px; border-style: none;">
 					<td style="width: 10%; height: 18px; border-style: none; vertical-align: top;" >
-						<img style="height: 90px; margin-top: 15px;" src="assets/img/logo-sgh.PNG" />	
+						<img style="height: 90px; margin-top: 15px;" src="assets_old/img/logo-sgh.PNG" />	
 					</td>
 					<td style="width: 100%; height: 36px; border-style: none; vertical-align: bottom;">
 						<h1> Change Control #{{ $lup->code }}<br>No : {{ $lup->nolup }}							

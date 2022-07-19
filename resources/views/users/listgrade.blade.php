@@ -1,4 +1,4 @@
-@extends('layouts_old.main')
+@extends('layouts.admin.master')
 
 @section('title', 'List Grade ICCS')
 
@@ -23,7 +23,7 @@
             <tr>
                 <th scope="col"> No. </th>
                 <th scope="col">Operation</th>
-                <th scope="col"Grade</th>               
+                <th scope="col">Grade</th>               
                 
             </tr>
           </thead>

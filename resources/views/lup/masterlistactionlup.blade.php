@@ -1,17 +1,15 @@
-@extends('layouts_old.main')
+@extends('layouts.admin.master')
 
 @section('title', 'List LUP ICCS')
 
 @section('content')
 
 <div class="pagetitle">
-  <h1>List LUP ICCS</h1>
-  <nav>
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/"><i class="ri-home-3-line"></i></a></li>
-      <li class="breadcrumb-item active">List LUP ICCS</li>
-    </ol>
-  </nav>
+  @component('components.breadcrumb')
+		@slot('breadcrumb_title')
+			<h3>List Action LUP ICCS</h3>
+		@endslot       
+  @endcomponent
 </div><!-- End Page Title  -->
   <section class="section dashboard">
   <div class="row">
@@ -30,9 +28,7 @@
                     <th scope="col">Due Date Action</th>
                     <th scope="col">Status Action</th>
                     <th style="width: 1px !important;">Title</th>                    
-                    <th scope="col">Proposed Change</th>
-                                
-                    
+                    <th scope="col">Proposed Change</th>      
                     
                     
                 </tr>
@@ -51,7 +47,7 @@
                     </td>
                     <td>{{ $lupparent->lupstatus }}</td>                    
                     <td>{{ $lupparent->nolup }}</td>                     
-                    <td class="setwidth"><textarea  readonly>{{ $lupparent->action }}</textarea></td>  
+                    <td class="setwidth">{{ $lupparent->action }}</td>  
                     <td>{{ $lupparent->pic_action }}</td>                      
                     <td>@date($lupparent->duedate_action,'d-M-y')</td> 
                       @if ($statusaction[$index]=='OVERDUE')
@@ -63,8 +59,8 @@
                       @else
                         <td >{{ $statusaction[$index] }}</td>
                       @endif         
-                    <td class="setwidth"><textarea  readonly>{{ $lupparent->documentname }}</textarea></td>                    
-                    <td class="setwidth"><textarea  readonly>{!! $lupparent->lup_proposed !!}</textarea></td>                                   
+                    <td class="setwidth">{{ $lupparent->documentname }}</td>                    
+                    <td class="setwidth">{!! $lupparent->lup_proposed !!}</td>                                   
                   </tr>             
               
                   @endforeach
