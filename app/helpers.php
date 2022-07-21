@@ -60,7 +60,7 @@ function auditlups($lupparents,$change_by,$activity,$recordid,$table,$field,$bef
     ]); 
 }
 
-function lupallstatusactions( $lupparents){
+function lupallstatusactions($lupparents){
     $date1 = strtotime(now());    
     $count=$lupparents->count();
     if(!$count){

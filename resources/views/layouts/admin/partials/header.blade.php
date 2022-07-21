@@ -1,10 +1,10 @@
 <div class="page-main-header">
   <div class="main-header-right row m-0">
     <div class="main-header-left">
-      <div class="logo-wrapper"><a href="/"><img class="img-fluid" src="{{asset('assets/images/logo/logoiccs-light.png')}}" alt="{{ env('APP_NAME') }}" style="height: 35px"></a>
+      <div class="logo-wrapper"><a href="/dashboard"><img class="img-fluid" src="{{asset('assets/images/logo/logoiccs-light.png')}}" alt="{{ env('APP_NAME') }}" style="height: 35px"></a>
         <span class="mt-3 f-14 f-w-600 text-black">{{ env('APP_NAME') }}</span>
       </div>
-      <div class="dark-logo-wrapper"><a href="/"><img class="img-fluid" src="{{asset('assets/images/logo/logoiccs-dark.png')}}" alt="{{ env('APP_NAME') }}" style="height: 35px"></a>{{ env('APP_NAME') }}</div>
+      <div class="dark-logo-wrapper"><a href="/dashboard"><img class="img-fluid" src="{{asset('assets/images/logo/logoiccs-dark.png')}}" alt="{{ env('APP_NAME') }}" style="height: 35px"></a>{{ env('APP_NAME') }}</div>
       <div class="toggle-sidebar"><i class="status_toggle middle" data-feather="grid" id="sidebar-toggle">    </i></div>
     </div>
     <div class="left-menu-header col">
@@ -25,10 +25,11 @@
       <ul class="nav-menus">
         <li><a class="text-dark" href="#!" onclick="javascript:toggleFullScreen()"><i data-feather="maximize"></i></a></li>        
         <li class="onhover-dropdown">
-          @php
-              $emaillog = DB::table('email_log')->get();
+            @php
+              $emaillog = DB::table('email_log')->where('to','LIKE','%'.Auth::user()->email.'%')
+                    ->orWhere('cc','LIKE','%'.Auth::user()->email.'%')->orderBy('date','desc')->get();
             @endphp
-          <div class="notification-box"><i data-feather="bell"></i><span class="dot-animated"></span></div>
+          <div class="notification-box"><i data-feather="bell"></i><span class="{{$emaillog->count()>0 ? 'dot-animated' :''}}"></span></div>
           <ul class="notification-dropdown onhover-show-div">
             <li>
               <p class="f-w-700 mb-0">You have {{$emaillog->count()}} Notifications<span class="pull-right badge badge-primary badge-pill">{{$emaillog->count()}}</span></p>

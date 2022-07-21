@@ -16,7 +16,8 @@
                     <th scope="col">Status Action</th>             
                     <th scope="col">PIC Action</th>
                     <th scope="col">Department</th>
-                    <th scope="col">Sign Date</th>                   
+                    <th scope="col">Sign Date</th>  
+                    <th scope="col">Sign Type</th>                   
                       
                                    
                 </tr>
@@ -50,7 +51,7 @@
             </thead>            
               <tbody>
                 
-                @forelse ($flpactions as $index =>$flpaction)            
+                @forelse ($flp->lupaction as $index =>$flpaction)            
                       <tr>
                         <th>{{ $index +1 }} </th>
                 
@@ -69,18 +70,15 @@
 
                       <td>{{ $flpaction->action }}</td>                    
                       <td>@date($flpaction->duedate_action,'d-M-y')</td>
-                      @if ($statusaction[$i]=='OVERDUE')
-                        <td class="bg-danger text-white">{{ $statusaction[$i] }}</td>
-                      @elseif ($statusaction[$i]=='CLOSED')
-                        <td class="bg-success text-white">{{ $statusaction[$i] }}</td>
-                      @elseif ($statusaction[$i]=='ON EXTENSION')
-                        <td class="bg-primary text-white">{{ $statusaction[$i] }}</td>
-                      @else
-                        <td >{{ $statusaction[$i] }}</td>
-                      @endif
-                      <td>{{ $flpaction->pic_action }}</td>                    
-                      <td>{{ $flpaction->pic_dept }}</td>
-                      <td>@date($flpaction->signdate_action,'d-M-y')</td>                   
+                      <td class="{{$flpaction->statusaction=='OVERDUE' ? "bg-danger text-white" : 
+                        ($flpaction->statusaction=='CLOSED' ? "bg-success text-white" : 
+                        ($flpaction->statusaction=='ON EXTENSION' ? "bg-primary text-white" :
+                        ""))
+                      }}">{{ $flpaction->statusaction }}</td>  
+                      <td>{{ $flpaction->pic_action }}</td>                                                
+                      <td>{{(!$flpaction->pic_action || !$flpaction->pic->department) ? '' : $flpaction->pic->department}}</td>            
+                      <td>@date($flpaction->signdate_action,'d-M-y')</td>    
+                      <td>{{$flpaction->sign_type}}</td>                 
                       
                    
                   </tr>  

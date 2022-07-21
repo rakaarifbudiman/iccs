@@ -115,6 +115,13 @@ return new class extends Migration
             $table->boolean('adjustments')->nullable()->default(0);  
             $table->datetime('deleted_at')->nullable();           
             $table->timestamps();
+            //flp
+            $table->longText('ingredients')->nullable();
+            $table->string('dosageform')->nullable();
+            $table->string('bussinessunit')->nullable();            
+            $table->string('packaging')->nullable();
+            $table->string('regno')->nullable();
+            $table->string('het')->nullable();
         });
     }
 

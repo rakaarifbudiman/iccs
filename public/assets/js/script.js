@@ -27,6 +27,8 @@
     });
 })(jQuery);
 
+
+
 $('.loader-wrapper').fadeOut('slow', function() {
     $(this).remove();
 });
@@ -37,6 +39,7 @@ $(window).on('scroll', function() {
     } else {
         $('.tap-top').fadeOut();
     }
+    
 });
 
 

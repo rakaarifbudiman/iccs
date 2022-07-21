@@ -17,7 +17,7 @@ use App\Http\Controllers\FLP\FLPDashboardController;
     /* FLP route */
     Route::get('/flp/masterlist', [FLPParentController::class, 'index']);
     Route::get('/flp/new', [FLPParentController::class, 'create']);
-    Route::put('/postflp', [FLPParentController::class, 'store']);
+    Route::put('/flp/store', [FLPParentController::class, 'store']);
     Route::get('/flp/{id}/edit', [FLPParentController::class, 'edit']);
     Route::put('/flp/{id}/update', [FLPParentController::class, 'update']);    
     Route::POST('uploadattflp/{id}', [FLPParentController::class, 'upload']);
@@ -34,7 +34,7 @@ use App\Http\Controllers\FLP\FLPDashboardController;
 
     /* FLP Action route */
     Route::get('/flpaction', [FLPActionController::class, 'index']);
-    Route::get('/newflpaction', [FLPActionController::class, 'create']);
+    Route::get('/flp/action/new', [FLPActionController::class, 'create']);
     Route::put('/flpaction/store', [FLPActionController::class, 'store']);
     Route::get('/flpaction/{id}/edit', [FLPActionController::class, 'edit']);
     Route::put('/flpaction/{id}/update', [FLPActionController::class, 'update']);

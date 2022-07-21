@@ -3,36 +3,38 @@
 @section('title', 'Dashboard')
 @section('content')
 <div class="pagetitle">
-  <h1>Dashboard</h1>
-  <nav>
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/">Home</a></li>
-      <li class="breadcrumb-item active">Dashboard</li>
-    </ol>
-  </nav>
+  <h3 class="font-dark">Welcome Back, {{Auth::user()->name}} <i class="fa fa-heart font-danger"></i></h3>
+    <p>Welcome to the {{env('APP_NAME')}} Family ! We are glad that you are visite this dashboard. we will be happy to help you accelerate your business.</p>
+  @component('components.breadcrumb')
+		@slot('breadcrumb_title')
+    
+		@endslot       
+  @endcomponent
 </div><!-- End Page Title -->
-<section class="section dashboard">
-  <div class="row">
-
-    <!-- Left side columns -->
-    <div class="col-xxl-8">
-      <div class="row">
-        @include('dashboard.lup')
-        @include('dashboard.lupd')
-        @include('dashboard.flp')
-        @include('dashboard.chart')
-      </div>
-    </div><!-- End Left side columns -->
-   
-    <!-- Right side columns -->
-    <div class="col-lg-4">  
-      @include('dashboard.right_chart')
-    </div>
+<div class="card-body text-center p-t-0">
   
-  </div>
-</section>          
+  {{-- <button class="btn btn-light">Update</button> --}}
+</div>
+        <!-- Left side columns -->
+        <div class="col-8">
+          
+            {{-- @include('dashboard.lup')
+            @include('dashboard.lupd')
+            @include('dashboard.flp')
+            @include('dashboard.chart') --}}
+         
+        </div><!-- End Left side columns -->
+      
+        <!-- Right side columns -->
+        <div class="col-4">  
+          {{-- @include('dashboard.right_chart') --}}
+        </div>
+      
+      
+    
+      
 <div class="scroll-left">
-  <p>{{$quotes}}</p>  
+  <p>{!!$quotes!!}</p>  
 </div>  
 
 

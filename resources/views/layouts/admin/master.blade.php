@@ -21,6 +21,19 @@
     @includeIf('layouts.admin.partials.css')
   </head>
   <body>
+            <div class="preloader">        
+              <div class="loading">           
+                <h5 class="text-center text-danger" ><div class="spinner-border" role="status"></div>
+                    Please Wait...</div></h5>   
+              </div>
+            </div> 
+          <!-- == Prevent user view page source == -->  
+          @php 
+            for($i=0;$i<1000000;$i++){
+                echo "\n";
+            } 
+          @endphp
+  <!-- == End Prevent user view page source == -->  
     <!-- Loader starts-->
     <div class="loader-wrapper">
       <div class="theme-loader"></div>
@@ -59,6 +72,7 @@
       </div>
     </div>
     <!-- latest jquery-->
+    
     @includeIf('layouts.admin.partials.js')
   </body>
 </html>

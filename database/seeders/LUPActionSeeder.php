@@ -34,25 +34,40 @@ class LUPActionSeeder extends Seeder
         FROM old_iccs.old_lupactions";
         $result = DB::select(DB::raw($sqlquery));
 
+        //seed old flpactions data
+        $sqlqueryflp = "INSERT INTO iccs_be.lup_actions (code, noaction,action, pic_action, duedate_action, 
+        signdate_action, evidence_filename, evidence_uploader, dateupload_evidence, evidence_approver, 
+        dateapproved_evidence, pic_extension,signdate_extension, deletion_flag, duedate_status, old_duedate, 
+        cancel_duedate_notes,notes, extension_count)
+        SELECT nodokumenflp, NoAction, Action, WinID, DueDate, SignDate, FolderFileBC, UploaderBC, DateUploadBC, 
+        ApproverBC, DateApproveBC, PICPerpanjangan, SignDatePerpanjangan, DeletionFlag, DueDateStatus, DueDate2, 
+        AlasanCancel, Catatan, PerpanjanganKe
+        FROM old_iccs.old_flpactions";
+        $resultflp = DB::select(DB::raw($sqlqueryflp));
+
         //change old evidence filepath        
-        $count=LUPAction::all()->count();
+        $lupactions=LUPAction::all();
         
-        for($i = 1; $i <= $count; $i++){        
-        $lupactions = LUPAction::find($i);
-        $oldlup = DB::table('old_iccs.old_lupparents')->where('NoDokumenLUP',$lupactions->code)->first();
-        $lupactions->extension_notes = $oldlup->AlasanPerpanjangan;
-        $lupactions->approver_extension = $oldlup->ApproverPerpanjangan;
-        $lupactions->dateapproved_extension = $oldlup->DateApprovedPerpanjangan;
-        $oldevidence_filename = $lupactions->evidence_filename;
-            if($oldevidence_filename=="" || $oldevidence_filename==null){                
-                $lupactions->evidence_filename = null;
-            }else{
-                $replace1 = str_replace("\\","/",$oldevidence_filename);
-                $replace2 = str_replace("//Sghdc-iccs/1-ICCS","public",$replace1);  
-                $lupactions->evidence_filename = $replace2;
-            
-            }    
-        $lupactions->save();
+        foreach($lupactions as $lupaction){      
+        
+            if(DB::table('old_iccs.old_lupparents')->where('NoDokumenLUP',$lupaction->code)->first()){
+                $oldlup = DB::table('old_iccs.old_lupparents')->where('NoDokumenLUP',$lupaction->code)->first();
+            }elseif(DB::table('old_iccs.old_flpparents')->where('NoDokumenFLP',$lupaction->code)->first()){
+                $oldlup = DB::table('old_iccs.old_flpparents')->where('NoDokumenFLP',$lupaction->code)->first();
+            }        
+            $lupaction->extension_notes = $oldlup->AlasanPerpanjangan;
+            $lupaction->approver_extension = $oldlup->ApproverPerpanjangan;
+            $lupaction->dateapproved_extension = $oldlup->DateApprovedPerpanjangan;
+            $oldevidence_filename = $lupaction->evidence_filename;
+                if($oldevidence_filename=="" || $oldevidence_filename==null){                
+                    $lupaction->evidence_filename = null;
+                }else{
+                    $replace1 = str_replace("\\","/",$oldevidence_filename);
+                    $replace2 = str_replace("//Sghdc-iccs/1-ICCS","public",$replace1);  
+                    $lupaction->evidence_filename = $replace2;
+                
+                }    
+            $lupaction->save();
         }
     }
 }

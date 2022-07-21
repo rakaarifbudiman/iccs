@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,7 +30,9 @@ class AppServiceProvider extends ServiceProvider
         
         date_default_timezone_set('Asia/Jakarta');
         view()->share('public_path','http://localhost:8000/');    
-        
+        DB::whenQueryingForLongerThan(500, function (Connection $connection) {
+            auditusers('',Auth::user()->username,'slow query','','','','','');
+        });
         
     }
 }

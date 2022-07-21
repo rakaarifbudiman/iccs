@@ -12,9 +12,11 @@
           <li class="breadcrumb-item"><a href="/lup/masterlist">Master List LUP</a></li>
     @slot('bookmark')      
       <li><a href="#" data-container="body" data-bs-toggle="popover" data-placement="top" title="Save" data-original-title="Save" 
-        onclick="event.preventDefault(); document.getElementById('submit-newlup').submit();"><i data-feather="save"></i></a></li>          
+        onclick="event.preventDefault(); document.getElementById('submit-newlup').submit();"><i data-feather="save"></i></a></li>     
+      <li><a href="#" data-container="body" data-bs-toggle="popover" data-placement="top" title="Clear Form" data-original-title="Clear Form" 
+          onclick="event.preventDefault(); document.getElementById('submit-newlup').reset();"><i data-feather="delete"></i></a></li>              
     @endslot
-@endcomponent
+  @endcomponent
   <section class="section profile mt-2">
     <div class="row">      
         <div class="col-sm">  

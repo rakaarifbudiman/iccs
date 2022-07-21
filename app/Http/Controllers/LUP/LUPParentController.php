@@ -46,27 +46,13 @@ class LUPParentController extends Controller
     //show masterlist lup
     public function index()
     {          
-        $lupparents = DB::table('lup_parents')
+        $lupparents = DB::table('lup_parents')->where('code','LIKE','L%')
                 ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code')                    
                 ->orderBy('lup_parents.id','desc')->get(); 
        
         return view('lup.masterlistlup', ['lupparents' => $lupparents,
           
         ]);
-
-            /* $lupparents = cache()->remember('masterlistlup',300,function(){
-                 return DB::table('lup_parents')
-                ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
-                ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*')                     
-                ->orderBy('lup_parents.id','desc')
-                ->get();         
-            });         
-            
-        $statusaction=lupallstatusactions( $lupparents); 
-        
-	    return view('lup.masterlistlup', ['lupparents' => $lupparents,
-        'statusaction'=>$statusaction,  
-        ]); */
     }
 
     //show form new lup
@@ -83,31 +69,30 @@ class LUPParentController extends Controller
     public function store(StoreLUPParentRequest $request)
     {           
         
-        $lupparent = LUPParent::first();         
+        $lupparent = LUPParent::where('code','LIKE','L%')->first();         
         if($lupparent==null){
-            $newcode='L'.date('y').'00001';
+            $newcodelup='L'.date('y').'00001';
         }else{
-            $newcode = $lupparent->newcode;
+            $newcodelup = $lupparent->newcodelup;
         }
        
         $data1 = $request->except(['_token','_method']);         
-        $data2 = array('code'=>$newcode,'inisiator'=>Auth::user()->username,'lupstatus'=>'CREATE',
+        $data2 = array('code'=>$newcodelup,'inisiator'=>Auth::user()->username,'lupstatus'=>'CREATE',
         'year'=> date('y'),'date_input' => now());     
         $data3= array('lup_type'=>collect($request->input('lup_type'))->implode(';'));  
         $data4= array('lup_subtype'=>collect($request->input('lup_subtype'))->implode(';'));  
         //save process
         $store = LUPParent::create(array_merge($data1,$data2,$data3,$data4));
         $encrypted = Crypt::encryptString($store->id);     
-        activity()->causedBy(Auth::user()->id)->performedOn($store)->event('created')->log('create LUP <a href='.env('APP_URL').'/lup/'.$encrypted.'/edit>'.$store->code.'</a>');   
+        activity()->causedBy(Auth::user()->id)->performedOn($store)->event('created')->log('create LUP <a href='.env('APP_URL').'/lup/'.$encrypted.'/edit'.$store->code.'</a>');   
         return redirect('/lup/'.$encrypted.'/edit')->with('success','LUP has been created with following code : '.$store->code);           
     }
 
     //show from LUP
     public function edit($id)
-    {
-        
+    {        
         $decrypted = Crypt::decryptString($id);         
-        $lupparent=LUPParent::find($decrypted);                                
+        $lupparent=LUPParent::find($decrypted);                              
         $luptypes = explode(';',$lupparent->lup_type);
         $lupsubtypes = explode(';',$lupparent->lup_subtype);   
         $lupnotifier = explode(';',$lupparent->action_notifier);     
@@ -195,7 +180,7 @@ class LUPParentController extends Controller
                     }
                 }
             }            
-            activity()->causedBy(Auth::user()->id)->performedOn($lupparent)->event('edited')->log('edited LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lupparent->code.'</a>');   
+            activity()->causedBy(Auth::user()->id)->performedOn($lupparent)->event('edited')->log('edited LUP <a href="'.env('APP_URL').'/lup/'.$id.'/edit">'.$lupparent->code.'</a>');   
             return back()->with('success','Data was Saved !');
         }else{
            
@@ -219,7 +204,7 @@ class LUPParentController extends Controller
         if($lupparent->wasChanged()==TRUE){                  
                         auditlups($lupparent,Auth::user()->username,'Audit Change',$lupparent->code,
                         'lup_parents','categorization',$oldcategorization,$lupparent->categorization);   
-            activity()->causedBy(Auth::user()->id)->performedOn($lupparent)->event('edited')->log('edited Categorization LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lupparent->code.'</a>');              
+            activity()->causedBy(Auth::user()->id)->performedOn($lupparent)->event('edited')->log('edited Categorization LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lupparent->code.'</a>');              
             return back()->with('success','Data was Saved !');
         }else{
             return back()->with('info','Nothing Changed!');            
@@ -333,7 +318,7 @@ class LUPParentController extends Controller
     Mail::to($emailto)  
         ->cc(env('MAIL_TO_TESTING'))      
         ->send(new LUPNotifToQC($mailData,$lup));     
-        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>');    
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>');    
         return back()->with('success','Sign Leader success...');
 
     }
@@ -352,7 +337,7 @@ class LUPParentController extends Controller
         $lup->leader =$request->leader;             
         $lup->save();        
 
-        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('Edit Leader LUP  <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>');  
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('Edit Leader LUP  <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>');  
         return back();
     }      
 
@@ -372,7 +357,7 @@ class LUPParentController extends Controller
             'lup_parents','datesign_leader',$old_datesign_leader,null );                      
             $lup->save();        
             
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Cancel Sign Leader LUP  <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Cancel Sign Leader LUP  <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
             return back()->with('success','Cancel Sign Leader success...');
 
     }
@@ -415,7 +400,7 @@ class LUPParentController extends Controller
     Mail::to($emailto)        
         ->send(new LUPNotifToQC($mailData,$lup));   
 
-        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('notif')->log('Submit LUP to Regulatory : <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('notif')->log('Submit LUP to Regulatory : <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
         return back()->with('success','Success...LUP has been submitted to Regulatory Reviewer');
     }
 
@@ -453,7 +438,7 @@ class LUPParentController extends Controller
     Mail::to($emailto)        
         ->send(new LUPNotifToQC($mailData,$lup)); 
         
-        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign Regulatory LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign Regulatory LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
         return back()->with('success','Sign Regulatory success...');
     }
 
@@ -473,7 +458,7 @@ class LUPParentController extends Controller
             'lup_parents','datesign_regulatory_reviewer',$old_datesign_regulatory_reviewer,null );                      
             $lup->save();        
         
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Cancel Sign Regulatory LUP  <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Cancel Sign Regulatory LUP  <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
             return back()->with('success','Cancel Sign Regulatory Reviewer success...');
     }
 
@@ -492,7 +477,7 @@ class LUPParentController extends Controller
         $lup->regulatory_approver =$request->regulatory_approver;             
         $lup->save();       
         
-        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('Update Regulatory Approver LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('Update Regulatory Approver LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
         return back();
     }
 
@@ -510,7 +495,7 @@ class LUPParentController extends Controller
         $lup->save();
         
         
-        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign Regulatory LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign Regulatory LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
         return back()->with('success','Sign Regulatory success...');
     }
 
@@ -530,7 +515,7 @@ class LUPParentController extends Controller
             'lup_parents','datesign_regulatory_approver',$old_datesign_regulatory_approver,null );                      
             $lup->save();
                   
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Cancel Sign Regulatory LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Cancel Sign Regulatory LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
             return back()->with('success','Cancel Sign Regulatory Approver success...');
     }
 
@@ -559,7 +544,7 @@ class LUPParentController extends Controller
                     }                
             }            
 
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited external party LUP  <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited external party LUP  <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
             return back()->with('success','Data was Saved !');
         }else{
            
@@ -604,7 +589,7 @@ class LUPParentController extends Controller
     Mail::to($emailto)        
         ->send(new LUPNotifToQC($mailData,$lup));             
         
-        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign Reviewer LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign Reviewer LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
         return back()->with('Success','LUP has been submitted to next process...');         
        
     }    
@@ -623,7 +608,7 @@ class LUPParentController extends Controller
         $lup->datesubmit_approver =now();   
         $lup->save();
         
-        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign Reviewer QCJM LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign Reviewer QCJM LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
         return back()->with('Success','LUP has been submitted to next process...');         
        
     }    
@@ -752,7 +737,7 @@ class LUPParentController extends Controller
             ->cc(env('MAIL_TO_TESTING'))
             ->send(new LUPNotifHasApproved($mailData,$lup));  
             
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Approved LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>');  
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Approved LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>');  
            return back()->with('success','LUP approved success');
    }
 
@@ -885,7 +870,7 @@ class LUPParentController extends Controller
             ->cc(env('MAIL_TO_TESTING'))
             ->send(new LUPNotifHasConfirmed($mailData,$lup,$lupactions));    
 
-        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Confirmed LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Confirmed LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
         return back()->with('success','Success...LUP has been confirmed');
    }
 
@@ -1078,7 +1063,7 @@ class LUPParentController extends Controller
                 ->cc(env('MAIL_TO_TESTING'))       
                 ->send(new LUPRequestCancel($mailData,$lup));               
 
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Request Cancel LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Request Cancel LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
             return back()->with('success','Success...Request Cancellation has been submitted');           
         
     }
@@ -1118,7 +1103,7 @@ class LUPParentController extends Controller
             Mail::to($emailto)           
                 ->send(new LUPRequestCancel($mailData,$lup)); 
             
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Review Cancel LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Review Cancel LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
             return back()->with('success','Success...Cancellation has been submitted');       
         
     }
@@ -1162,7 +1147,7 @@ class LUPParentController extends Controller
             Mail::to($emailto)           
                 ->send(new LUPHasCancel($mailData,$lup)); 
             
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Approved Cancel LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Approved Cancel LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
             return back()->with('success','Success...LUP has been Cancel');        
     }
     //Request Closing LUP
@@ -1201,7 +1186,7 @@ class LUPParentController extends Controller
             Mail::to($emailto)           
                 ->send(new LUPRequestClosing($mailData,$lup)); 
             
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Request Closing LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Request Closing LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
             return back()->with('success','Success...Closing has been submitted');      
     }
     //Approved Closing LUP
@@ -1273,7 +1258,7 @@ class LUPParentController extends Controller
                 ->cc(env('MAIL_TO_TESTING'))       
                 ->send(new LUPHasRollback($mailData,$lup)); 
             
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Rollback LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Rollback LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
             return back()->with('success','Success...LUP Has been Rollback to ON REVIEW');      
     }
 
@@ -1303,7 +1288,7 @@ class LUPParentController extends Controller
             }
         }                  
         
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited Reviewer QCJM LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited Reviewer QCJM LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
             return back();      
     }
 
@@ -1332,7 +1317,7 @@ class LUPParentController extends Controller
                 }
             }
         }                   
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited Approver LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>'); 
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited Approver LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
             return back();      
     }
 
@@ -1361,7 +1346,7 @@ class LUPParentController extends Controller
                 }
             }
         }    
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited Confirmer LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>');                
+            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited Confirmer LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>');                
             return back();      
     }
 }

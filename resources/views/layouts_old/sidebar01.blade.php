@@ -20,7 +20,7 @@
             </a>
           </li>
           <li>
-            <a href="/newflp">
+            <a href="/flp/new">
               <i class="bi bi-circle"></i><span>Create</span>
             </a>
           </li>          

@@ -19,7 +19,7 @@
             
               <tbody>
     
-                @foreach ($flpfiles as $index =>$flpfile)            
+                @foreach ($flp->lupfile->where('is_evidence',false) as $index =>$flpfile)            
                 
                 <tr>
                     <th scope="row">{{ $index +1 }}</th>

@@ -22,16 +22,16 @@ class LUPActionStatusSeeder extends Seeder
         
 
 //change old status action        
-        $count=LUPAction::all()->count();
+$lupactions=LUPAction::all();
         
-        for($i = 1; $i <= $count; $i++){        
-        $lupactions = LUPAction::find($i);
-        $lup = LUPParent::where('code',$lupactions->code)->first()->lupstatus;
+        foreach($lupactions as $lupaction){       
         
-            if($lup=="OPEN" AND $lupactions->duedate_status==1 AND $lupactions->deletion_flag==0){
+        $lup = LUPParent::where('code',$lupaction->code)->first()->lupstatus;
+        
+            if($lup=="OPEN" AND $lupaction->duedate_status==1 AND $lupaction->deletion_flag==0){
                 
-                if ($lupactions->evidence_filename){
-                    if ($lupactions->evidence_approver){
+                if ($lupaction->evidence_filename){
+                    if ($lupaction->evidence_approver){
                         $statusaction = "CLOSED";                    
                     }else{
                         $statusaction = "OPEN" ;
@@ -40,12 +40,12 @@ class LUPActionStatusSeeder extends Seeder
                     $statusaction = "OPEN" ;
                 }
             }
-            if($lup=="OPEN" AND $lupactions->duedate_status==0 AND $lupactions->deletion_flag==0){              
+            if($lup=="OPEN" AND $lupaction->duedate_status==0 AND $lupaction->deletion_flag==0){              
                 
                     $statusaction = "ON EXTENSION" ;
                 
             }
-            if($lup=="OPEN" AND $lupactions->duedate_status==1 AND $lupactions->deletion_flag==1){              
+            if($lup=="OPEN" AND $lupaction->duedate_status==1 AND $lupaction->deletion_flag==1){              
                 
                 $statusaction = "CANCEL" ;
             
@@ -61,16 +61,16 @@ class LUPActionStatusSeeder extends Seeder
                
             }  
         
-        if(!$lupactions->signdate_action){
-            $lupactions->created_at = \Carbon\Carbon::now(); 
+        if(!$lupaction->signdate_action){
+            $lupaction->created_at = \Carbon\Carbon::now(); 
         }else{
-            $lupactions->sign_type='User';
-            $lupactions->created_at = $lupactions->signdate_action; 
+            $lupaction->sign_type='User';
+            $lupaction->created_at = $lupaction->signdate_action; 
         }
                
-        $lupactions->actionstatus = $statusaction;
+        $lupaction->actionstatus = $statusaction;
 
-        $lupactions->save();
+        $lupaction->save();
         }
     }
 }

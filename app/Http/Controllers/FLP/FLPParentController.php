@@ -4,28 +4,29 @@ namespace App\Http\Controllers\FLP;
 
 use PDF;
 use Mail;
-use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\FLP\FLPAction;
-use App\Models\FLP\FLPParent;
 use App\Models\FLP\FLPFile;
-use App\Mail\FLP\FLPNotifToLeader;
-use App\Mail\FLP\FLPNotifToApprover;
-use App\Mail\FLP\FLPNotifToReviewer;
-use App\Mail\FLP\FLPNotifHasApproved;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rules\DatabaseRule;
+use App\Models\LUP\LUPAction;
+use App\Models\LUP\LUPParent;
 use Illuminate\Validation\Rule;
+use App\Mail\FLP\FLPNotifToLeader;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Mail\FLP\FLPNotifToApprover;
+use App\Mail\FLP\FLPNotifToReviewer;
+use Illuminate\Support\Facades\Auth;
+use App\Mail\FLP\FLPNotifHasApproved;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\ServiceProvider;
 Use IlluminateDatabase\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\FLP\StoreFLPRequest;
+use Illuminate\Validation\Rules\DatabaseRule;
 
 
 class FLPParentController extends Controller
@@ -35,36 +36,16 @@ class FLPParentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    
-    
-
     public function index()
     {
-        $date1 = strtotime(now());
-        $flpparents = DB::table('flpparents')
-            ->leftjoin('flpactions', 'flpparents.code', '=', 'flpactions.code')            
-            ->select('flpparents.*','flpparents.id as flp_id', 'flpparents.code as flp_code','flpactions.*')                     
-            ->orderBy('flpparents.id','desc')
-            ->get(); 
-          
-        $count=$flpparents->count();
-        if(!$count){
-            $statusaction="";
-        }else{
-            for ($i=0; $i < $count ; $i++) {
-                // get status action                
-                    $date2 = strtotime($flpparents[$i]->duedate_action,null);
-                    $datediff =round(($date2-$date1)/(60*60*24),0);
-                    
-                    if($datediff<8 AND !$flpparents[$i]->dateapproved_evidence AND $flpparents[$i]->noflp){
-                            $statusaction[] = "OVERDUE";
-                    }else{
-                        $statusaction []= $flpparents[$i]->actionstatus;
-                    }                            
-                  
-            }
-        }
-        
+        $date1 = strtotime(now());        
+        $flpparents = DB::table('lup_parents')
+                ->leftjoin('lup_actions', 'lup_parents.code', '=', 'lup_actions.code')            
+                ->select('lup_parents.*','lup_parents.id as lup_id', 'lup_parents.code as lup_code','lup_actions.*') 
+                ->where('lup_parents.code','LIKE','F%')                    
+                ->orderBy('lup_parents.id','desc')
+                ->get();
+        $statusaction=lupallstatusactions($flpparents);      
         
 	    return view('flp.masterlistflp', ['flpparents' => $flpparents,
         'statusaction'=>$statusaction,
@@ -77,16 +58,9 @@ class FLPParentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {
-        
-        $flpparents = DB::table('flpparents')
-            ->join('flpactions', 'flpparents.code', '=', 'flpactions.code')            
-            ->select('flpparents.*', 'flpactions.*')
-            ->get();
-        
-            return view('flp.newflp',['flpparents' => $flpparents]);
-        
-           
+    {        
+        $flpparents = LUPParent::all();
+        return view('flp.newflp',['flpparents' => $flpparents]);           
     }
 
     /**
@@ -95,50 +69,27 @@ class FLPParentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreFLPRequest $request)
     {
-       
-        $request->validate([
-            'documentname' => ['required'],
-            'ingredients' => ['required'],
-            'dosageform' => ['required'],            
-            'packaging' => ['required'],
-            'regno' => ['required'],
-            'het' => ['required'],
-            'launch' => ['required','after:tomorrow']
-            
-        ]);
-        
-        //get code           
-        $lastid = FLPParent::where('year',date('y'))->max('code');
-        $lastno = intval(substr($lastid,-5));
-        
-        if($lastno==0 or $lastno==NULL){
-            $newid = 1;
+        $flpparent = LUPParent::where('code','LIKE','F%')->first();         
+        if($flpparent==null){
+            $newcodeflp='F'.date('y').'00001';
         }else{
-            $newid = abs($lastno+1);
-        }        
-        $code = "F". date('y'). sprintf("%05s", $newid);        
+            $newcodeflp = $flpparent->newcodeflp;
+        }       
+        $data1 = $request->validated();        
+        $data2 = array('code'=>$newcodeflp,
+                'inisiator'=>Auth::user()->username,
+                'lupstatus'=>'CREATE',
+                'year'=> date('y'),
+                'notes' => $request->notes,
+                'date_input' => now());    
+       
         //save process
-        $store = FLPParent::create([
-            'year'=> date('y'),     
-            'code' => $code,
-            'documentname' => $request->documentname,        
-            'ingredients' => $request->ingredients,
-            'dosageform' => $request->dosageform,
-            'bussinessunit' => $request->bussinessunit,
-            'packaging' => $request->packaging,
-            'inisiator' => Auth::user()->username,
-            'regno' => $request->regno,
-            'het' => $request->het,
-            'launch' => $request->launch,
-            'notes' => $request->notes,
-            'flpstatus'=> "CREATE",
-            "date_input" =>  \Carbon\Carbon::now(), 
-        ]);
-        $encrypted = Crypt::encryptString($store->id);
-        
-        return redirect('/flp/'.$encrypted.'/edit')->with('success','FLP has been created with following code : '.$code);           
+        $store = LUPParent::create(array_merge($data1,$data2));        
+        return back(); 
+        activity()->causedBy(Auth::user()->id)->performedOn($store)->event('created')->log('create FLP <a href="'.env('APP_URL').'/flp/'.$store->hashid.'/edit">'.$store->code.'</a>');   
+        return redirect('/flp/'.$store->hashid.'/edit')->with('success','FLP has been created with following code : '.$store->code);    
         
     }
 
@@ -150,114 +101,23 @@ class FLPParentController extends Controller
      */
     public function edit($id)
     {       
-
         //get data
         $date1 = strtotime(\Carbon\Carbon::now());
         $decrypted = Crypt::decryptString($id);
         //get data flpparent
-        $flp = DB::table('flpparents')->where('flpparents.id',$decrypted)
-                ->leftjoin('users as A', 'A.username','=','flpparents.inisiator')
-                ->leftjoin('users as B', 'B.username','=','flpparents.leader')
-                ->leftjoin('users as C', 'C.username','=','flpparents.reviewer')
-                ->leftjoin('users as D', 'D.username','=','flpparents.approver')
-                ->select('flpparents.*','A.department as deptinisiator','A.email as emailinisiator',
-                'B.department as deptleader','B.email as emailleader','C.department as deptreviewer',
-                'C.email as emailreviewer','D.department as deptapprover','D.email as emailapprover')
-                ->first();          
-        
-                //get data action
-                $flpactions = DB::table('flpactions')
-                ->leftjoin('users', 'users.username', '=', 'flpactions.pic_action')
-                ->select('flpactions.*','users.department as pic_dept','flpactions.id as action_id','users.*')
-                ->where('code',$flp->code)
-                ->get();
-        
-                $flpfiles = flpfile::where('code',$flp->code)
-                ->get();
-               
-        
-
-                
-        
-        //get data user active for datalist
-        $listusers = User::where([['active',1]])         
-        ->get();
+        $flp = LUPParent::find($decrypted);
+        $listusers = User::where([['active',1]])->get();
+        $listactionclose = LUPAction::where('code',$flp->code)->where('actionstatus','CLOSED')->get();
         $listapprovers = $listusers->where('level',3);
-        $listleaders = $listusers->where('department',$flp->deptinisiator);
-       
-        //get audittrail data       
-        $auditflps = DB::table('audits')
-                    ->leftjoin('users', 'users.id', '=', 'audits.user_id')
-                    ->select('audits.*','users.username')
-                    ->where('tags',$flp->code)->orderBy('created_at','desc')->get();
-        
-        
-        //check completeness 
-        if (!$flp->datesign_inisiator  || !$flp->datesign_leader){
-            $inisiatorcomplete="Incomplete";
-        }else{
-            $inisiatorcomplete="Complete";
-        }        
-        $count = $flpactions->count();         
-        $countactionincomplete = $flpactions->where('signdate_action',null)->count();       
-        
-        
-        if($count>0 && $countactionincomplete==0){
-            $actioncomplete = "Complete";            
-        }else{
-            $actioncomplete = "Incomplete";
-        }
-        
-        if($inisiatorcomplete=="Complete" && $actioncomplete == "Complete"){
-            $btnsubmitreviewer = "";
-        }else{
-            $btnsubmitreviewer = "hidden";
-        }
-
-
-        
-            
-            for ($i=0; $i < $count ; $i++) {                                              
-                // get status action      
-                $date2 = strtotime($flpactions[$i]->duedate_action);
-                $datediff =round(($date2-$date1)/(60*60*24),0);
-            
-                if($datediff<8 AND !$flpactions[$i]->dateapproved_evidence AND $flp->noflp){
-                        $statusaction[] = "OVERDUE";
-                }else{
-                    $statusaction[] = $flpactions[$i]->actionstatus;
-     
-                }  
-            }
-                
-            if(!$count){               
-                    $statusaction="";
-                   
-            }
+        $listleaders = $listusers->where('department',$flp->inisiators->department)->where('grade_level','>',1);        
                     
-            return view('flp.reviewflp',['flp'=>$flp,                    
-            'flpactions'=>$flpactions,                    
-            'actioncomplete'=>$actioncomplete,
-            'inisiatorcomplete'=>$inisiatorcomplete,
-            'btnsubmitreviewer'=>$btnsubmitreviewer,                                                       
+            return view('flp.reviewflp',['flp'=>$flp,                                                         
             'listusers'=>$listusers,
             'listleaders'=>$listleaders,
-            'listapprovers'=>$listapprovers,
-            'i'=>$i,                   
-            'statusaction'=>$statusaction,
-            'flpfiles'=>$flpfiles,                   
-            'auditflps'=>$auditflps,
+            'listapprovers'=>$listapprovers,            
             ]);
             
-}
-                        
-                    
-                 
-                        
-            
-                  
-                                    
-                
+    }    
         
 
     /**
@@ -267,33 +127,17 @@ class FLPParentController extends Controller
      * @param  \App\Models\FLPParent  $fLPParent
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(StoreFLPRequest $request, $id)
     {
         $flp = FLPParent::find($id);
         //get old value
-        $olddocumentname = $flp->documentname;
-        $oldingredients = $flp->ingredients;
-        $olddosageform = $flp->dosageform;
-        $oldregno = $flp->regno;
-        $oldpackaging = $flp->packaging;
-        $oldhet = $flp->het;
-        $oldbussinessunit = $flp->bussinessunit;
-        $oldlaunch = $flp->launch;
-        $oldnotes = $flp->notes;
-        $this->authorize('flpstatus_approved', $flp);
-
-        //validation
-        $request->validate([
-            'documentname' => ['required'],
-            'ingredients' => ['required'],
-            'dosageform' => ['required'],
-            
-            'packaging' => ['required'],
-            'regno' => ['required'],
-            'het' => ['required'],
-            'launch' => ['required','after:tomorrow']
-            
-        ]);
+        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_parents'),['updated_at']);        
+           
+        //get old value 
+        foreach($fields as $field){
+            $old[$field]= $flp->$field;
+        }                
+        $this->authorize('flpstatus_approved', $flp);        
         //get value to update
         $flp->documentname = $request->documentname;
         $flp->ingredients = $request->ingredients;

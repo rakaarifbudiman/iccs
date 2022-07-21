@@ -70,7 +70,7 @@ class RelatedDepartmentController extends Controller
                 Mail::to($emailto)        
                     ->send(new LUPNotifToQC($mailData,$lup));  
 
-                activity()->causedBy(Auth::user()->id)->performedOn($relateddepartment)->event('notif')->log('send notif LUP to '.$relateddepartment->user->name .'-<a href='.env('APP_URL').'/lup/'.Crypt::encryptString($relateddepartment->lupparent->id).'/edit>'.$relateddepartment->code.'</a>');
+                activity()->causedBy(Auth::user()->id)->performedOn($relateddepartment)->event('notif')->log('send notif LUP to '.$relateddepartment->user->name .'-<a href='.env('APP_URL').'/lup/'.Crypt::encryptString($relateddepartment->lupparent->id).'/edit'.$relateddepartment->code.'</a>');
                 return back()->with('Success','Success...LUP Has been submitted to related department');
         }
     }
@@ -94,7 +94,7 @@ class RelatedDepartmentController extends Controller
         $relateddepartment->signdate = now(); 
         $relateddepartment->save();       
 
-        activity()->causedBy(Auth::user()->id)->performedOn($relateddepartment)->event('sign')->log('sign LUP <a href='.env('APP_URL').'/lup/'.Crypt::encryptString($relateddepartment->lupparent->id).'/edit>'.$relateddepartment->code.'</a>');
+        activity()->causedBy(Auth::user()->id)->performedOn($relateddepartment)->event('sign')->log('sign LUP <a href='.env('APP_URL').'/lup/'.Crypt::encryptString($relateddepartment->lupparent->id).'/edit'.$relateddepartment->code.'</a>');
         return back()->with('success','Sign '.$relateddepartment->department.' -> Success...');        
     }
 
@@ -135,7 +135,7 @@ class RelatedDepartmentController extends Controller
         auditlups($relateddepartment,Auth::user()->username,'Notif for Inisiator to Revise LUP',$relateddepartment->code,
                 'related_departments','note','',$request->note);
         
-        activity()->causedBy(Auth::user()->id)->performedOn($relateddepartment)->event('notif')->log('send notif LUP to '.$lup->inisiators->name .'-<a href='.env('APP_URL').'/lup/'.Crypt::encryptString($lup->id).'/edit>'.$relateddepartment->code.'</a>');
+        activity()->causedBy(Auth::user()->id)->performedOn($relateddepartment)->event('notif')->log('send notif LUP to '.$lup->inisiators->name .'-<a href='.env('APP_URL').'/lup/'.Crypt::encryptString($lup->id).'/edit'.$relateddepartment->code.'</a>');
         return back()->with('success','Success...Send Notif to Inisiator');        
     }
 
@@ -205,7 +205,7 @@ class RelatedDepartmentController extends Controller
         Mail::to($emailto)          
             ->send(new LUPDepartmentNotif($mailData,$lup,$relateddepartments));    
         
-        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('notif')->log('send notif to Related Department LUP  <a href='.env('APP_URL').'/lup/'.$id.'/edit>'.$lup->code.'</a>');
+        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('notif')->log('send notif to Related Department LUP  <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>');
         return back()->with('success','Success...Notification has been sent...');        
     }
 }

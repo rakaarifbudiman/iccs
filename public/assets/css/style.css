@@ -30972,3 +30972,112 @@ span.twitter-typeahead .tt-suggestion {
 /**=====================
     60. RTL CSS Ends
 ==========================**/
+
+/* old custom css */
+
+.preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background-color: #fff
+}
+
+.preloader .loading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font: 14px;
+  font-family: "Open Sans", sans-serif;
+  color: #444;
+  animation-name: preloader;
+  animation-duration: 5s
+}
+
+.bounceball {
+  position: relative;
+  display: inline-block;
+  height: 37px;
+  width: 15px
+}
+
+.bounceball::before {
+  position: absolute;
+  content: '';
+  display: block;
+  top: 0;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #fbae17;
+  transform-origin: 50%;
+  animation: bounce .1s alternate infinite ease
+}
+
+
+.setwidth{
+  max-width: 250px;    
+  white-space: wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;  
+}
+td,.setwidth{
+  max-width: 250px;    
+  white-space: wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;  
+}
+
+@keyframes bounce {
+  0% {
+      top: 30px;
+      height: 5px;
+      border-radius: 60px 60px 20px 20px;
+      transform: scaleX(2)
+  }
+
+  35% {
+      height: 15pxt;
+      border-radius: 50%;
+      transform: scaleX(1)
+  }
+
+  100% {
+      top: 0
+  }
+}
+
+
+.scroll-left {
+height: 50px;	
+overflow: hidden;
+position: relative; 
+color: rgb(255, 0, 157); 
+}
+.scroll-left p {
+position: absolute;
+width: 100%;
+height: 100%;
+margin: 0;
+line-height: 50px;
+text-align: center;
+/* Starting position */
+transform:translateX(100%);
+/* Apply animation to this element */
+animation: scroll-left 30s linear infinite;
+}
+/* Move it (define the animation) */
+@keyframes scroll-left {
+0%   {
+transform: translateX(100%); 		
+}
+100% {
+transform: translateX(-100%); 
+  }
+}
+
+
+/* End old custom css */

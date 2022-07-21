@@ -111,11 +111,18 @@ class LUPParent extends Model
     {
         return $this->hasOne(User::class,'username','approver_closing');
     }
-    public function GetNewCodeAttribute()
+    public function GetNewCodeLUPAttribute()
     {
-        $lastid = $this->where('year',date('y'))->max('code');
+        $lastid = $this->where('year',date('y'))->where('code','LIKE','L%')->max('code');
         $lastno = intval(substr($lastid,-5));             
         $code = "L". date('y'). sprintf("%05s", ($lastno==0 or $lastno==NULL) ? 1 : abs($lastno+1));    
+       return $code;
+    }
+    public function GetNewCodeFLPAttribute()
+    {
+        $lastid = $this->where('year',date('y'))->where('code','LIKE','F%')->max('code');
+        $lastno = intval(substr($lastid,-5));             
+        $code = "F". date('y'). sprintf("%05s", ($lastno==0 or $lastno==NULL) ? 1 : abs($lastno+1));    
        return $code;
     }
     public function GetNewNoLUPAttribute()
@@ -124,6 +131,14 @@ class LUPParent extends Model
         ->where('year',date('y'))->max('nolup');
         $lastno = intval(substr($lastid,-4));             
         $code = "LUP-". date('y')."-". sprintf("%04s", ($lastno==0 or $lastno==NULL) ? 1 : abs($lastno+1));    
+       return $code;
+    }
+    public function GetNewNoFLPAttribute()
+    {       
+        $lastid = $this->where('nolup','like','FLP-%')
+        ->where('year',date('y'))->max('nolup');
+        $lastno = intval(substr($lastid,-4));             
+        $code = "FLP-". date('y')."-". sprintf("%04s", ($lastno==0 or $lastno==NULL) ? 1 : abs($lastno+1));    
        return $code;
     }
     public function GetHashIDAttribute()

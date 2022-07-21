@@ -29,6 +29,8 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        
+        
         //activity
         $lastActivity = Activity::latest()->take(10)->get();
         
@@ -149,7 +151,7 @@ class DashboardController extends Controller
 
 
         //flp
-                $flpsubordinate = DB::table('flpparents')->where('leader',Auth::user()->username)
+                /* $flpsubordinate = DB::table('flpparents')->where('leader',Auth::user()->username)
                                                     ->where('datesign_leader',null)
                                                     ->count();
         $flponprocess = DB::table('flpparents')->where('inisiator',Auth::user()->username)
@@ -230,9 +232,9 @@ class DashboardController extends Controller
         $allflp_open = DB::table('flpparents')->where('flpstatus','OPEN')->count();
         $allflp_closed = DB::table('flpparents')->where('flpstatus','CLOSED')->count();
         $allflp_cancel = DB::table('flpparents')->where('flpstatus','CANCEL')->count();
-        $maxflp =max($allflp_create,$allflp_onprocess,$allflp_onreview,$allflp_onapproval,$allflp_open,$allflp_closed,$allflp_cancel);                                            
+        $maxflp =max($allflp_create,$allflp_onprocess,$allflp_onreview,$allflp_onapproval,$allflp_open,$allflp_closed,$allflp_cancel);   */                                          
         
-        return view('dashboard',['flpsubordinate'=>$flpsubordinate,
+        return view('dashboard',[/* 'flpsubordinate'=>$flpsubordinate,
                                 'flponprocess'=>$flponprocess,
                                 'flpactionreview'=>$flpactionreview,
                                 'myflpactionopen'=>$myflpactionopen,
@@ -248,7 +250,7 @@ class DashboardController extends Controller
                                 'allflp_open'=>$allflp_open,
                                 'allflp_closed'=>$allflp_closed,
                                 'allflp_cancel'=>$allflp_cancel,
-                                'maxflp'=>$maxflp,
+                                'maxflp'=>$maxflp, */
                                 'mylupdisposisi'=>$mylupdisposisi,
                                 'mylupregulatory_review'=>$mylupregulatory_review,
                                 'mylupregulatory_approval'=>$mylupregulatory_approval,
@@ -287,39 +289,12 @@ class DashboardController extends Controller
         if(!$search){
             return back()->with('error','Please give me correct order...');
         }
-            
-            if(FLPParent::where('code',$search)->exists()){             //search FLP by code       
-                $flp = FLPParent::where('code',$search)->first()->id;
-                $id = Crypt::encryptString($flp);                
-                return redirect('/flp/'.$id.'/edit');
-            }elseif(FLPParent::where('noflp',$search)->exists()){       //search FLP by no flp             
-                $flp = FLPParent::where('noflp',$search)->first()->id;
-                $id = Crypt::encryptString($flp);                
-                return redirect('/flp/'.$id.'/edit');
-            }elseif(MasterPart::where('rdms_part',$search)->exists()){  //search Part by Part No
-                $masterpart = MasterPart::where('rdms_part',$search)->first()->id;
-                $id = Crypt::encryptString($masterpart);                
-                return redirect('/masterpart/'.$id.'/edit');
-            }elseif(MasterPart::where('sap_desc','Like','%'.$search.'%')->exists()){
-                $id = Str::lower($search);                            
-                return redirect('/masterpart/query/'.$id);
-            }elseif(LUPParent::where('code',$search)->exists()){       //search LUP by code           
-                $lup = LUPParent::where('code',$search)->first()->id;
-                $id = Crypt::encryptString($lup);                
-                return redirect('/lup/'.$id.'/edit');
-            }
-            elseif(LUPParent::where('nolup',$search)->exists()){       //search LUP by no LUP           
-                $lup = LUPParent::where('nolup',$search)->first()->id;
-                $id = Crypt::encryptString($lup);                
-                return redirect('/lup/'.$id.'/edit');
-            }
-
             //shortcut menu
             if($search=="FLP03"){
                 return redirect('/flp');
             }        
             if($search=="FLP01"){
-                return redirect('/newflp');
+                return redirect('/flp/new');
             }
             if($search=="LUP03"){
                 return redirect('/lup/masterlist');
@@ -336,6 +311,31 @@ class DashboardController extends Controller
             if($search=="OUT"){
                 return redirect('/logout');
             }
+
+            if($first=="L" && LUPParent::where('code',$search)->exists()){       //search LUP by code           
+                $lup = LUPParent::where('code',$search)->first()->id;
+                $id = Crypt::encryptString($lup);                
+                return redirect('/lup/'.$id.'/edit');
+            }elseif($first=="L" && LUPParent::where('nolup',$search)->exists()){       //search LUP by no LUP           
+                $lup = LUPParent::where('nolup',$search)->first()->id;
+                $id = Crypt::encryptString($lup);                
+                return redirect('/lup/'.$id.'/edit');
+            }elseif($first=="F" && LUPParent::where('code',$search)->exists()){       //search FLP by code           
+                $lup = LUPParent::where('code',$search)->first()->id;
+                $id = Crypt::encryptString($lup);                
+                return redirect('/flp/'.$id.'/edit');
+            }elseif($first=="F" && LUPParent::where('nolup',$search)->exists()){       //search FLP by no LUP           
+                $lup = LUPParent::where('nolup',$search)->first()->id;
+                $id = Crypt::encryptString($lup);                
+                return redirect('/flp/'.$id.'/edit');
+            }elseif(MasterPart::where('rdms_part',$search)->exists()){  //search Part by Part No
+                    $masterpart = MasterPart::where('rdms_part',$search)->first()->id;
+                    $id = Crypt::encryptString($masterpart);                
+                    return redirect('/masterpart/'.$id.'/edit');
+            }elseif(MasterPart::where('sap_desc','Like','%'.$search.'%')->exists()){
+                    $id = Str::lower($search);                            
+                    return redirect('/masterpart/query/'.$id);
+            }            
             return back()->with('warning','The following data or shortcut does not exist..');  
     }
 

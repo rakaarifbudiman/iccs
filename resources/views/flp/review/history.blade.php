@@ -21,7 +21,7 @@
             
               <tbody>
     
-                @forelse ($auditflps as $index =>$auditflp)           
+                @forelse ($flp->auditlup as $index =>$auditflp)           
                 
                 <tr>
                     <th scope="row">{{ $index +1 }}</th> 

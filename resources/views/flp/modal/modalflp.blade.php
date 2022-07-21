@@ -45,7 +45,7 @@
           <input class="form-control form-control-sm" type="text" id="modalhidecode" name="modalhidecode" placeholder="Type to edit action..." value="{{ $flpaction->code }}" hidden>
           <input class="form-control form-control-sm" type="text" id="modalhidesigndate" name="modalhidesigndate" placeholder="Type to edit action..." value="{{ $flpaction->signdate_action }}" hidden>
           <input class="form-control form-control-sm" type="text" id="modalhidepicaction" name="modalhidepicaction" placeholder="Type to edit action..." value="{{ $flpaction->pic_action }}" hidden>
-          <input class="form-control form-control-sm" type="text" id="modalhidestatusaction" name="modalhidestatusaction" placeholder="Type to edit action..." value="{{ $statusaction[$i] }}" hidden>
+          <input class="form-control form-control-sm" type="text" id="modalhidestatusaction" name="modalhidestatusaction" placeholder="Type to edit action..." value="{{ $flpaction->statusaction }}" hidden>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>

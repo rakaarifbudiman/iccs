@@ -31,7 +31,7 @@
 <link href="/assets_old/css/jquery-editable.min.css" rel="stylesheet"/>
 
 <!-- Template Main CSS File -->
-<link href="/assets_old/css/style.min.css" rel="stylesheet"> 
+{{-- <link href="/assets_old/css/style.min.css" rel="stylesheet">  --}}
 
   <!-- Template Jquery File -->
 <script src="/assets_old/js/jquery.min.js"></script>

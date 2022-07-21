@@ -14,7 +14,7 @@
         <li class="breadcrumb-item"><a href="/lup/masterlist">Master List LUP</a></li>
         
         <li class="breadcrumb-item active ">Code : {{ $lupparent->code }}</li>
-      <li class="breadcrumb-item">    Status : {{ $lupparent->lupstatus }} 
+      <li class="breadcrumb-item">    Status : {{ $lupparent->lupstatus }}</li> 
         {{-- <ul class="card-body dropdown-basic">       
             <ul class="dropdown">
               <a class="breadcrumb-item" >
@@ -36,7 +36,7 @@
             </ul>   
         </ul>     --}}
            
-      </li>
+      
   <li class="breadcrumb-item active">No. LUP : {{ $lupparent->nolup }}</li>
   <li class="breadcrumb-item active">Rev : {{ $lupparent->revision }}</li>
   <li class="breadcrumb-item active">Created Date: @date($lupparent->date_input,'d-M-Y')</li>
@@ -82,37 +82,37 @@
     <form id="submit-form" action="/lup/{{ $lupparent->id }}/update" method="POST" class="hidden">
       @csrf    
       @method('Put')
-  <section class="section profile">  
-          <div class="card  mt-0">
+  
+          <div class="card">
             <div class="card-body">                               
                   <ul class="nav nav-tabs mt-0" id="LUPMenu">  
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#initiation" role="tab" aria-controls="initiation">
-                        <i data-feather="home"></i> Change Initiation</a>
+                        <i class="fa fa-home"></i>Change Initiation</a>
                     </li>   
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#categorization" role="tab" aria-controls="categorization" >
-                        <i data-feather="command"></i> Change Categorization</a>
+                        <i class="fa fa-gavel"></i>Change Categorization</a>
                     </li> 
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#attachments" role="tab" aria-controls="attachments">
-                        <i data-feather="paperclip"></i> Attachments</a>
+                        <i class="fa fa-file"></i>Attachments</a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#departments" role="tab" aria-controls="departments">
-                        <i data-feather="users"></i> Related Departments</a>
+                        <i class="fa fa-users"></i>Related Departments</a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#approval" role="tab" aria-controls="approval">
-                        <i data-feather="user-check"></i> Approvals</a>
+                        <i class="fa fa-check-square-o"></i>Approvals</a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#action" role="tab" aria-controls="action">
-                        <i data-feather="activity"></i> Action Plan</a>
+                        <i class="fa fa-tasks"></i></i>Action Plan</a>
                     </li>   
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#history" role="tab" aria-controls="history">
-                        <i data-feather="archive"></i> History</a>
+                        <i class="fa fa-history"></i>History</a>
                     </li>  
                   </ul>            
                   <div class="tab-content pt-3">
@@ -260,7 +260,7 @@
               
             </div>
           </div>   
-  </section>
+  
 </form> 
 @include('lup.modal.edit.categorization')
 </div><!-- End Page Title -->

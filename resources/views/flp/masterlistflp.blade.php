@@ -47,7 +47,7 @@
                     <th scope="row">{{ $index +1 }}</th>
                     <td>
                       @php                    
-                        $id= Crypt::encryptString($flpparent->flp_id);                       
+                        $id= Crypt::encryptString($flpparent->lup_id);                       
                         $i=$index;
                       @endphp
                       
@@ -56,9 +56,9 @@
                         <a href="#" class="btn btn-sm bg-secondary text-light print" title="print FLP"
                           onclick="window.open('/flp/{{$id}}/printflp','_blank').focus"><i class="ri-printer-fill"></i></a>
                     </td>
-                    <td>{{ $flpparent->flpstatus }}</td>  
-                    <td>{{ $flpparent->flp_code }}</td>
-                    <td>{{ $flpparent->noflp }}</td>                     
+                    <td>{{ $flpparent->lupstatus }}</td>  
+                    <td>{{ $flpparent->lup_code }}</td>
+                    <td>{{ $flpparent->nolup }}</td>                     
                     <td>{{ $flpparent->action }}</td>  
                     <td>{{ $flpparent->pic_action }}</td>                      
                     <td>@date($flpparent->duedate_action,'d-M-y')</td> 

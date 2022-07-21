@@ -24,24 +24,30 @@ class LUPFileSeeder extends Seeder
         FROM old_iccs.old_lupfiles";
         $result = DB::select(DB::raw($sqlquery));
 
+        //seed old flpfiles data
+        $sqlqueryflp = "INSERT INTO iccs_be.lupfiles (code, nofile, document_name, file_path, uploader, date_upload,org_file_name)
+        SELECT nodokumenflp, NoLampiran, NamaLampiran, FolderFile, Uploader, DateUpload, NoLampiran
+        FROM old_iccs.old_flpfiles";
+        $resultflp = DB::select(DB::raw($sqlqueryflp));
+
         //change old filepath        
-        $count=LUPFile::all()->count();
+        $lupfiles=LUPFile::all();
         
-        for($i = 1; $i <= $count; $i++){        
-        $lupfiles = LUPFile::find($i);
-        $old_filepath = $lupfiles->file_path;
+        foreach($lupfiles as $lupfile){       
+        
+        $old_filepath = $lupfile->file_path;
         $replace1 = str_replace("\\","/",$old_filepath);
         $replace2 = str_replace("//Sghdc-iccs/1-ICCS","public",$replace1);  
-        if (!$lupfiles->file_path){
+        if (!$lupfile->file_path){
             $new_org_file_name=null;
         }else{
-            $new_org_file_name= $lupfiles->nofile.".".substr($replace2, strpos($replace2, ".") + 1);
+            $new_org_file_name= $lupfile->nofile.".".substr($replace2, strpos($replace2, ".") + 1);
         }
         
         
-        $lupfiles->org_file_name = $new_org_file_name;   
-        $lupfiles->file_path = $replace2;
-        $lupfiles->save();
+        $lupfile->org_file_name = $new_org_file_name;   
+        $lupfile->file_path = $replace2;
+        $lupfile->save();
         }
 
     }
