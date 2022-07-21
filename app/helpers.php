@@ -46,6 +46,33 @@ function auditflps($flpparents,$change_by,$activity,$recordid,$table,$field,$bef
     ]); 
 }
 
+function getoldvalues($connection,$table,$data){
+    $fields = array_diff(Schema::Connection($connection)->getColumnListing($table),['updated_at']);
+    //get old value 
+    foreach($fields as $field){
+        $old[$field]= $data->$field;
+    }     
+    return ['fields'=>$fields,'old'=>$old,'table'=>$table];
+}
+function startaudit($data,$fields,$old,$table,$luptype,$activity,$activitytype){  
+    
+    if($data->wasChanged()==TRUE){
+        foreach($fields as $field){
+            if($data->wasChanged($field)){
+                if($old[$field]!=$data->$field ){                        
+                    auditlups($data,Auth::user()->username,$activity,$data->code,
+                    $table, $field ,$old[$field],$data->$field);
+                }
+            }
+        }                    
+        activity()->causedBy(Auth::user()->id)->performedOn($data)->event($activitytype)->log($activity.' '. $luptype .' ' .$data->code);   
+        return back()->with('success','Data was Saved !')->withInput(['messages'=>'success']);
+    }else{
+        return back()->with('info','Nothing Changed!');            
+    }        
+}
+
+
 function auditlups($lupparents,$change_by,$activity,$recordid,$table,$field,$before,$after){      
     
     DB::table('iccs_be.auditlups')->insert([  

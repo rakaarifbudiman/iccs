@@ -18,7 +18,10 @@ class IsActive
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function handle(Request $request, Closure $next)
-    {
+    {       
+        if(Auth::check()==false) {
+            return redirect('/')->with('warning','Please Login First');
+        }
             $date1 = strtotime(Auth::user()->password_change_at);
             $date2 = strtotime(\Carbon\Carbon::now());
             $diff = round(($date2-$date1)/(60),0);            

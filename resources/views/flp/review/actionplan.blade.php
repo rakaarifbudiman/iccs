@@ -1,8 +1,6 @@
 <div class="tab-pane fade actionplans pt-0" id="actionplans"> <!-- Action Plans Form -->
-  @if($flp->flpstatus=="CREATE" OR $flp->flpstatus=="ON PROCESS") 
-    <a href="#" class="btn btn-sm btn-success add" data-bs-toggle="modal" data-bs-target="#modaladdaction" title="Add Action Plan"><i class=" ri-add-fill">Add Action</i></a>  
-  @else
-  
+  @if($flp->lupstatus=="CREATE" OR $flp->lupstatus=="ON PROCESS") 
+    <a href="#" class="btn btn-sm btn-success add" data-bs-toggle="modal" data-bs-target="#modaladdaction" title="Add Action Plan"><i class=" ri-add-fill">Add Action Plan</i></a>  
   @endif  
   <div class="row">
         <div class="table-responsive text-nowrap">
@@ -20,34 +18,7 @@
                     <th scope="col">Sign Type</th>                   
                       
                                    
-                </tr>
-                <tr>
-                                                           
-                  <th></th>
-                  @if (auth()->user()->level==1)
-                    <th class="text-center">User</th>
-                    <th></th>
-                    <th></th>
-                  @elseif (auth()->user()->level==2)
-                    <th class="text-center">User</th>
-                    <th class="text-center">Reviewer</th>
-                    <th></th>
-                  @elseif (auth()->user()->level==3)
-                    <th class="text-center">User</th>
-                    <th class="text-center">Reviewer</th>
-                    <th class="text-center">Approver</th>
-                  @endif
-                                      
-                  <th></th>                    
-                  <th></th>
-                  <th></th>                    
-                  <th></th>
-                  <th></th>
-                  <th></th>
-                  
-                  
-                                                           
-                </tr>    
+                </tr>                
             </thead>            
               <tbody>
                 

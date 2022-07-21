@@ -285,7 +285,7 @@ input:focus {
     stroke-width: 2.5px;
     -webkit-animation: rotateInSetting 1.5s ease infinite alternate;
             animation: rotateInSetting 1.5s ease infinite alternate; }
-.color-settings{
+.color-settings{  
   -webkit-animation: moveInSetting 5.0s ease infinite;
             animation: moveInSetting 5.0s ease infinite; 
 }
@@ -4484,18 +4484,18 @@ table tbody .border-bottom-warning td {
           color: #2b2b2b; }
       .page-main-header .main-header-right .nav-right ul li:last-child {
         margin-right: 0; }
-      .page-main-header .main-header-right .nav-right ul li .mode .mode-moon, .page-main-header .main-header-right .nav-right ul li .mode .mode-sun {
+      .page-main-header .main-header-right .nav-right ul li .mode .color-mode .mode-moon, .page-main-header .main-header-right .nav-right ul li .mode .color-mode .mode-sun {
         position: absolute;
         top: 0;
         left: 0; }
-      .page-main-header .main-header-right .nav-right ul li .mode .mode-sun {
+      .page-main-header .main-header-right .nav-right ul li .mode .color-mode .mode-sun {
         opacity: 0;
         visibility: hidden;
         z-index: 1; }
-        .page-main-header .main-header-right .nav-right ul li .mode .mode-sun.show {
+        .page-main-header .main-header-right .nav-right ul li .mode .color-mode .mode-sun.show {
           opacity: 1;
           visibility: visible; }
-      .page-main-header .main-header-right .nav-right ul li .mode i {
+      .page-main-header .main-header-right .nav-right ul li .mode .color-mode i {
         vertical-align: middle;
         font-size: 18px; }
       .page-main-header .main-header-right .nav-right .onhover-show-div li {
@@ -22016,7 +22016,7 @@ body.dark-sidebar .main-navbar ul.nav-pills {
 .customizer-links {
   position: fixed;
   right: 00px;
-  top: 40%;
+  top: 10%;
   background-color: #fff;
   border-radius: 8px;
   z-index: 3;
@@ -22035,7 +22035,7 @@ body.dark-sidebar .main-navbar ul.nav-pills {
     position: relative; }
     .customizer-links .nav-link .settings i {
       color: #24695c;
-      font-size: 24px;
+      font-size: 12px;
       padding: 15px 17px;
       display: inline-block;
       cursor: pointer;

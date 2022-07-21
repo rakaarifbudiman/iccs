@@ -67,7 +67,7 @@ class RelatedDepartmentController extends Controller
                     ];                             
                 $emailto = $relateddepartment->user->email;
                 
-                Mail::to($emailto)        
+                Mail::to(env('MAIL_TO_TESTING'))        
                     ->send(new LUPNotifToQC($mailData,$lup));  
 
                 activity()->causedBy(Auth::user()->id)->performedOn($relateddepartment)->event('notif')->log('send notif LUP to '.$relateddepartment->user->name .'-<a href='.env('APP_URL').'/lup/'.Crypt::encryptString($relateddepartment->lupparent->id).'/edit'.$relateddepartment->code.'</a>');
@@ -129,7 +129,7 @@ class RelatedDepartmentController extends Controller
             ];                             
             $emailto = $lup->inisiators->email;
             
-            Mail::to($emailto)        
+            Mail::to(env('MAIL_TO_TESTING'))        
                 ->send(new LUPRequestRevise($mailData,$lup));  
 
         auditlups($relateddepartment,Auth::user()->username,'Notif for Inisiator to Revise LUP',$relateddepartment->code,
@@ -202,7 +202,7 @@ class RelatedDepartmentController extends Controller
         ];                    
 
         $emailto = $email;          
-        Mail::to($emailto)          
+        Mail::to(env('MAIL_TO_TESTING'))          
             ->send(new LUPDepartmentNotif($mailData,$lup,$relateddepartments));    
         
         activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('notif')->log('send notif to Related Department LUP  <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>');

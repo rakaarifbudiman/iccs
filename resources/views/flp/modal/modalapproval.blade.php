@@ -60,6 +60,34 @@
   </div>
 </div> 
 
+<!-- Modal Sign Leader-->
+<div class="modal fade" id="modalsignleader{{ $flp->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Sign Leader</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" name="frm_edit" id="frm_edit" class="form-horizontal" action="/flp/{{ Crypt::encryptString($flp->id) }}/signleader">
+        @csrf
+        @method('put')
+      <div class="modal-body">                  
+        <div class="row mb-3">
+          <label for="note_leader" class="col-sm col-form-label col-form-label-sm">Notes</label>
+          <div class="col-sm-10">
+            <textarea class="form-control" placeholder="Notes" name="note_leader" id="note_leader" style="height: 100px;" required></textarea>                                                   
+          </div>                                 
+        </div>                                
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+        <button type="submit" class="btn btn-primary" name="saveeditapprover">Sign</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div> 
+
 <!-- Modal Edit Leader-->
 <div class="modal fade" id="modaleditleader{{ $flp->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">

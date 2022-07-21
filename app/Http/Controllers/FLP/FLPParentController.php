@@ -5,9 +5,10 @@ namespace App\Http\Controllers\FLP;
 use PDF;
 use Mail;
 use App\Models\User;
-use App\Models\FLP\FLPFile;
+use App\Models\LUP\LUPFile;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\FLP\FLPParent;
 use App\Models\LUP\LUPAction;
 use App\Models\LUP\LUPParent;
 use Illuminate\Validation\Rule;
@@ -21,13 +22,13 @@ use App\Mail\FLP\FLPNotifHasApproved;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\ServiceProvider;
 Use IlluminateDatabase\Eloquent\ModelNotFoundException;
+use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\FLP\StoreFLPRequest;
 use Illuminate\Validation\Rules\DatabaseRule;
-
+use Illuminate\Support\Facades\Schema;
 
 class FLPParentController extends Controller
 {
@@ -106,6 +107,7 @@ class FLPParentController extends Controller
         $decrypted = Crypt::decryptString($id);
         //get data flpparent
         $flp = LUPParent::find($decrypted);
+        
         $listusers = User::where([['active',1]])->get();
         $listactionclose = LUPAction::where('code',$flp->code)->where('actionstatus','CLOSED')->get();
         $listapprovers = $listusers->where('level',3);
@@ -129,37 +131,18 @@ class FLPParentController extends Controller
      */
     public function update(StoreFLPRequest $request, $id)
     {
-        $flp = FLPParent::find($id);
-        //get old value
-        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_parents'),['updated_at']);        
-           
-        //get old value 
-        foreach($fields as $field){
-            $old[$field]= $flp->$field;
-        }                
-        $this->authorize('flpstatus_approved', $flp);        
-        //get value to update
-        $flp->documentname = $request->documentname;
-        $flp->ingredients = $request->ingredients;
-        $flp->dosageform = $request->dosageform;
-        $flp->regno = $request->regno;
-        $flp->packaging = $request->packaging;
-        $flp->het = $request->het;
-        $flp->bussinessunit = $request->bussinessunit;
-        $flp->launch = $request->launch." 00:00:00";
-        $flp->notes = $request->notes;
-        $flp->save();
-        $check = $flp->wasChanged(); 
+        $flp = LUPParent::find($id);    
+        //get old value     
+        $old = getoldvalues('mysql','lup_parents',$flp);        
+        $this->authorize('update', $flp);   
 
-        if($check==TRUE){
-            
-            return back()->with('success','Data edited successfully!');
-        }else{
-            return back()->with('info','Nothing Changed!');
-            
-        }
-            
-   
+        //get value to update        
+        $data1 = $request->validated();  
+        $data2 = array('duedate_start'=>$request->duedate_start . ' 00:00:00');      
+        $flp->update(array_merge($data1,$data2));
+        //start audit change     
+        startaudit($flp,$old['fields'],$old['old'],$old['table'],'FLP','Audit Change','edited');       
+        return back();   
     }
 
 
@@ -167,14 +150,14 @@ class FLPParentController extends Controller
     {
         
         //get data flpparent
-        $flp = flpparent::find($id);
+        $flp = LUPParent::find($id);
         $paths = DB::table('iccsfilepaths')
         ->where('description','Lampiran FLP')
         ->first()->filepath;        
-        $id= Crypt::encryptString($flp->id);
-
+        $id= Crypt::encryptString($flp->id);        
+        $this->authorize('update', $flp); 
         //get code attachment
-        $lastid = FLPFile::where('code',$flp->code)->max('nofile');
+        $lastid = LUPFile::where('code',$flp->code)->max('nofile');
         $lastno = intval(substr($lastid,-2));
         
         if($lastid==0 or $lastid==NULL){
@@ -195,19 +178,18 @@ class FLPParentController extends Controller
            $path = $request->file('attachment_file')->storeAs($paths,$code.'.'.$ext);
     
            
-            $save = FLPFile::create([
+            $save = LUPFile::create([
             'code' => $flp->code,    
             'nofile'=>$code,
             'org_file_name'=>$name,
             'document_name'=>$request->modaltxtadddocname, 
             'uploader'=>Auth::user()->username,
             'date_upload'=> \Carbon\Carbon::now(),  
-            'file_path' => $path,
-            
+            'file_path' => $path,        
             
         ]); 
            
-        return redirect('/flp/'.$id.'/edit')->with('info', 'File Has been uploaded successfully');       
+        return back()->with('info', 'File Has been uploaded successfully');       
            
     }
 
@@ -217,7 +199,7 @@ class FLPParentController extends Controller
     {
         
         $decrypted = Crypt::decryptString($id);        
-        $file = FLPFile::find($decrypted);
+        $file = LUPFile::find($decrypted);
         $paths = '/app/'.$file->file_path;  
         $url = storage_path($paths);       
         
@@ -229,20 +211,20 @@ class FLPParentController extends Controller
     public function reupload(Request $request,$id)
     {
         //get data flpparent
-        $flp = flpparent::where('code',$request->modalhidecodeflp)->first()->id;
-        $code = $request->modalhidecodeflp;
+        $flp = LUPParent::where('code',$request->modalhidecodeflp)->first();
+        $code = $request->modalhidecodeflp;        
+        $this->authorize('update', $flp); 
         $paths = DB::table('iccsfilepaths')
         ->where('description','Lampiran FLP')
         ->first()->filepath;       
-        $id= Crypt::encryptString($flp);
+        $id= Crypt::encryptString($flp->id);
         
         //get code attachment
         $file_id = $request->modalhidefileid;
-        $file = FLPFile::find($file_id);
-        $oldname = $file->org_file_name;  
-        
+        $file = LUPFile::find($file_id);        
+        $old = getoldvalues('mysql','lupfiles',$file); 
         //get code attachment
-        $lastid = FLPFile::where('code',$code)->max('nofile');
+        $lastid = LUPFile::where('code',$code)->max('nofile');
         $lastno = intval(substr($lastid,-2));
         
         if($lastid==0 or $lastid==NULL){
@@ -269,183 +251,149 @@ class FLPParentController extends Controller
         $file->file_path = $path;        
         $file->save();
          
-                                          
-        return redirect('/flp/'.$id.'/edit')->with('info', 'File Has been uploaded successfully');       
+        //check audit change     
+        startaudit($file,$old['fields'],$old['old'],$old['table'],'LUP','Reupload Attachment FLP ','edited');                                     
+        return back()->with('info', 'File Has been uploaded successfully'); 
            
     }
 
     //delete attachment FLP
-    public function destroy_attachment(FLPFile $file,$id)
+    public function destroy_attachment(LUPFile $file,$id)
     {
         $decrypted = Crypt::decryptString($id);
-        $file = FLPFile::find($decrypted);
+        $file = LUPFile::find($decrypted);     
+        $lupparent = LUPParent::where('code',$file->code)->first();
+        $this->authorize('update', $lupparent);    
+        auditlups($file,Auth::user()->username,'Delete Attachment',$file->code,
+                        'lupfiles','all fields',$file->documentname . ' | '.$file->uploader,'' );
         $file->delete();        
         return back()->with('success','Attachment has been deleted!');
     }
 
     //sign inisiator
-    public function signinisiator($id, FLPParent $flp)
+    public function signinisiator($id, LUPParent $flp)
     {
         $decrypted = Crypt::decryptString($id);
         //get data flp
-        $flp = FLPParent::find($decrypted); 
-        $this->authorize('signflpstatus_user', $flp);
-        $this->authorize('signinisiator', $flp);
-        
-        $leader = User::where('username',$flp->inisiator)->first()->leader;  
-        $nameleader = User::where('username',$leader)->first()->name;                  
-        $emailleader = User::where('username',$leader)->first()->email;             
+        $flp = LUPParent::find($decrypted);         
+        $this->authorize('signinisiatorflp', $flp);  
 
             $flp->datesign_inisiator =\Carbon\Carbon::now();    
             if (!$flp->datesign_leader || !$flp->leader){
-                $flp->leader =$leader;
+                $flp->leader =$flp->inisiators->leader;
             }                    
-            $flp->save();
+            $flp->save();          
             
-            
-             //Send Notif to Leader   
-                $urlsign = '<a href="'.env('APP_URL').'/flp/'.$id.'/signleader"'.' style="
-                background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
-                inline-block;text-decoration: none;"'.'>Sign Here</a>';
-                $urlflp = '<a href="'.env('APP_URL').'/flp/'.$id.'/edit/details"'.' style="
+             //Send Notif to Leader                   
+                $urlflp = '<a href="'.env('APP_URL').'/flp/'.$id.'/edit"'.' style="
                 background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
                 inline-block;text-decoration: none;"'.'>Go to FLP</a>';    
-                $flplaunch = date('d-M-Y',strtotime($flp->launch));            
+                $flplaunch = date('d-M-Y',strtotime($flp->duedate_start));            
                 $mailData = [
                     'code' => $flp->code,
-                    'productname' => $flp->documentname,
-                    'ingredient' => $flp->ingredients,
-                    'urlsign'=>$urlsign,
+                    'documentname' => $flp->documentname,
+                    'ingredient' => $flp->ingredients,                    
                     'urlflp'=>$urlflp,
                     'flplaunch'=>$flplaunch,
-                    'nameleader'=>$nameleader,
+                    'name'=>$flp->leaders->name,
                 ];    
-                $emailto = $emailleader;         
-                Mail::to($emailto)   //$emailleader         
+                $emailto = $flp->leaders->email;         
+                Mail::to(env('MAIL_TO_TESTING'))  
                 ->send(new FLPNotifToLeader($mailData,$flp));                
-                
 
-            return redirect('/flp/'.$id.'/edit')->with('success','Sign Inisiator success...');
+            return back()->with('success','Sign Inisiator success...');
 
     }
 
     //cancel sign inisiator
-    public function cancelsigninisiator($id, FLPParent $flp)
+    public function cancelsigninisiator($id, LUPParent $flp)
     {
         
         $decrypted = Crypt::decryptString($id);
         
         //get data flp
-        $flp = FLPParent::find($decrypted); 
-        $this->authorize('signflpstatus_user', $flp);
-        $this->authorize('signinisiator', $flp);
-
-        $old_datesign_inisiator= $flp->datesign_inisiator;           
-                  
-                                    
-        
+        $flp = LUPParent::find($decrypted); 
+        $this->authorize('cancelsigninisiator', $flp);
+        $old = getoldvalues('mysql','lup_parents',$flp); 
+        $old_datesign_inisiator= $flp->datesign_inisiator;         
             $flp->datesign_inisiator =null;                        
             $flp->save();
-            
-            return redirect('/flp/'.$id.'/edit')->with('success','Cancel Sign Inisiator success...');
+        //check audit change     
+        startaudit($flp,$old['fields'],$old['old'],$old['table'],'FLP','Cancel Sign Inisiator FLP ','rollback');      
+            return back()->with('success','Cancel Sign Inisiator success...');
 
     }
 
     //sign leader
-    public function signleader($id, FLPParent $flp)
-    {
-        
+    public function signleader($id, LUPParent $flp, Request $request)
+    {        
         $decrypted = Crypt::decryptString($id);
         //get data flp
-        $flp = FLPParent::find($decrypted);
-        $this->authorize('signflpstatus_user', $flp);
-        $this->authorize('signleader_complete', $flp);
-        $this->authorize('signleader', $flp);
-
-        $old_datesign_leader= $flp->datesign_leader;            
+        $flp = LUPParent::find($decrypted);       
+        $this->authorize('signleaderflp', $flp); 
                
         $flp->datesign_leader =\Carbon\Carbon::now();  
-        if ($flp->flpstatus == "CREATE"){
-            $flp->flpstatus = "ON PROCESS";
-            
-        }         
-        $flp->save();
-
-        
-        return redirect('/flp/'.$id.'/edit')->with('success','Sign Leader success...');
-
+        if ($flp->lupstatus == "CREATE"){
+            $flp->lupstatus = "ON PROCESS";            
+        }        
+        $flp->note_leader = $request->note_leader; 
+        $flp->save();        
+        activity()->causedBy(Auth::user()->id)->performedOn($flp)->event('sign')->log('Sign LUP <a href="'.env('APP_URL').'/flp/'.$id.'/edit">'.$flp->code.'</a>');  
+        return back()->with('success','Sign Leader success...');
     }
        
        
 
     //cancel sign leader
-    public function cancelsignleader($id, FLPParent $flp)
+    public function cancelsignleader($id, LUPParent $flp)
     {
         
         $decrypted = Crypt::decryptString($id);
         //get data flp
-        $flp = FLPParent::find($decrypted); 
-        $this->authorize('signflpstatus_user', $flp);
+        $flp = LUPParent::find($decrypted); 
         $this->authorize('cancelsignleader', $flp);
-
-        $old_datesign_leader= $flp->datesign_leader;           
-                   
-                                    
+        $old = getoldvalues('mysql','lup_parents',$flp);   
+        $old_datesign_leader= $flp->datesign_leader .' | ' . $flp->note_leader;                                  
         
-            $flp->datesign_leader =null;                        
+            $flp->datesign_leader =null;  
+            $flp->note_leader =null;                               
             $flp->save();
-            
-            return redirect('/flp/'.$id.'/edit')->with('success','Cancel Sign Leader success...');
+            //check audit change     
+            startaudit($flp,$old['fields'],$old['old'],$old['table'],'FLP','Cancel Sign Leader FLP','rollback');      
+        return back()->with('success','Cancel Sign Leader success...');
 
     }
 
     //update leader
     public function updateleader(Request $request,$id)
-    {
-                
+    {                
         //get data flp        
-        $flp = FLPParent::where('flpparents.id',$id)
-        ->leftjoin('users as A', 'A.username','=','flpparents.inisiator')
-        ->leftjoin('users as B', 'B.username','=','flpparents.leader')
-        ->leftjoin('users as C', 'C.username','=','flpparents.reviewer')
-        ->leftjoin('users as D', 'D.username','=','flpparents.approver')
-        ->select('flpparents.*','A.department as deptinisiator','A.email as emailinisiator',
-        'B.department as deptleader','B.email as emailleader','C.department as deptreviewer',
-        'C.email as emailreviewer','D.department as deptapprover','D.email as emailapprover')
-        ->first();     
-
-        $this->authorize('signflpstatus_user', $flp);
-        $this->authorize('updateleader', $flp);     
-                 
-       
-        $oldleader = $flp->leader;      
-        
+        $flp = lupParent::find($id);     
+        $old = getoldvalues('mysql','lup_parents',$flp); 
+        $this->authorize('updateleader', $flp);        
         $listusers = User::where([['active',1]])         
         ->get();
         $listapprovers = $listusers->where('level',3);
-        $listleaders = $listusers->where('department',$flp->deptinisiator);
+        $listleaders = $listusers->where('department',$flp->inisiators->department);
         $request->validate([
-            'modaltxteditleader' => ['required','exists:users,username,active,1,department,'.$flp->deptinisiator],           
+            'modaltxteditleader' => ['required','exists:users,username,active,1,department,'.$flp->inisiators->department],           
                
         ]);
         $newleader = str::lower($request->modaltxteditleader);
         $flp->leader= $newleader;                   
         $flp->save();
-        
-        $id = Crypt::encryptString($flp->id);
-        return redirect('/flp/'.$id.'/edit');   
-            
-              
+        //check audit change     
+        startaudit($flp,$old['fields'],$old['old'],$old['table'],'FLP','Edit Leader','edited');  
+        return back();           
 
     }
 
     //submit to reviewer
     public function submittoreviewer($id, FLPParent $flp)
-    {
-        
+    {        
         $decrypted = Crypt::decryptString($id);
         //get data flp
-        $flp = FLPParent::find($decrypted);              
+        $flp = LUPParent::find($decrypted);            
        
         $reviewers = DB::table('users')->where('level',2)->where('active',1)->get(); 
         
@@ -459,7 +407,7 @@ class FLPParentController extends Controller
        
                           
                 $flp->datesubmit_reviewer =\Carbon\Carbon::now();    
-                $flp->flpstatus="ON REVIEW";                   
+                $flp->lupstatus="ON REVIEW";                   
                 $flp->save(); 
 
             $emailreviewers = DB::table('users')
@@ -479,12 +427,12 @@ class FLPParentController extends Controller
                 'flplaunch'=>$flplaunch,                    
             ];             
             $emailto = $emailreviewers;
-            Mail::to($emailto)   //$emailreviewers->implode('email',',')         
+            Mail::to(env('MAIL_TO_TESTING'))   //$emailreviewers->implode('email',',')         
             ->send(new FLPNotifToReviewer($mailData,$flp));  
                 
                 
                 
-                return redirect('/flp/'.$id.'/edit')->with('success','Submit to Reviewer success...');
+                return back()->with('success','Submit to Reviewer success...');
             
 
              
@@ -496,20 +444,20 @@ class FLPParentController extends Controller
         
         $decrypted = Crypt::decryptString($id);
         //get data flp
-        $flp = FLPParent::find($decrypted);  
+        $flp = LUPParent::find($decrypted);  
         $this->authorize('flpstatus_onreview', $flp); 
         $this->authorize('signreviewer', $flp);            
        
         
         
         if(!$flp->approver){
-           return redirect('/flp/'.$id.'/edit')->with('error','Please choose approver first...');           
+           return back()->with('error','Please choose approver first...');           
         }
                                     
                
             $flp->datesubmit_approver =\Carbon\Carbon::now();    
             $flp->reviewer= Auth::user()->username;
-            $flp->flpstatus= "ON APPROVAL";                   
+            $flp->lupstatus= "ON APPROVAL";                   
             $flp->save();
             
             $emailapprover = DB::table('users')->where('username',$flp->approver)->first()->email;  
@@ -530,10 +478,10 @@ class FLPParentController extends Controller
                 'nameapprover'=>$nameapprover,                  
             ];        
             $emailto = $emailapprover;     
-            Mail::to($emailto)   //$emailapprover         
+            Mail::to(env('MAIL_TO_TESTING'))   //$emailapprover         
             ->send(new FLPNotifToApprover($mailData,$flp));  
 
-            return redirect('/flp/'.$id.'/edit')->with('success','Submit to Approver success...');
+            return back()->with('success','Submit to Approver success...');
         
     }
     
@@ -544,7 +492,7 @@ class FLPParentController extends Controller
         
         // $decrypted = Crypt::decryptString($id);
         //get data flp
-        $flp = FLPParent::find($id);  
+        $flp = LUPParent::find($id);  
         $this->authorize('flpstatus_approved', $flp);
         $this->authorize('updateapprover', $flp);     
                  
@@ -560,7 +508,7 @@ class FLPParentController extends Controller
         $flp->save();
         
         $id = Crypt::encryptString($flp->id);
-        return redirect('/flp/'.$id.'/edit');      
+        return back();      
             
               
 
@@ -571,7 +519,7 @@ class FLPParentController extends Controller
     {
         
         //get data flp       
-        $flp = FLPParent::where('flpparents.id',$id)
+        $flp = LUPParent::where('flpparents.id',$id)
                 ->leftjoin('users as A', 'A.username','=','flpparents.inisiator')
                 ->leftjoin('users as B', 'B.username','=','flpparents.leader')
                 ->leftjoin('users as C', 'C.username','=','flpparents.reviewer')
@@ -595,7 +543,7 @@ class FLPParentController extends Controller
         }
 
         //get new flp no      
-        $lastid = FLPParent::where('noflp','like','FLP-%')
+        $lastid = LUPParent::where('noflp','like','FLP-%')
                 ->where('year',date('y'))->max('noflp');
         $lastno = intval(substr($lastid,-4));
         
@@ -618,7 +566,7 @@ class FLPParentController extends Controller
             $flp->noflp = $noflp;
             $flp->approved=1;
             $flp->notes2= $request->modaltxteditnotes;  
-            $flp->flpstatus = "OPEN";                 
+            $flp->lupstatus = "OPEN";                 
             $flp->save();        
             
             //if already have No FLP 
@@ -633,7 +581,7 @@ class FLPParentController extends Controller
             $flp->approved=1;
             $flp->revision =$newrev;
             $flp->notes2= $request->modaltxteditnotes;   
-            $flp->flpstatus = "OPEN";                
+            $flp->lupstatus = "OPEN";                
             $flp->save();    
             
         }
@@ -710,12 +658,12 @@ class FLPParentController extends Controller
                        
            ];        
            $emailto = $flp->emailinisiator.','.$flp->emailpicaction.$emailapprover ;     
-           Mail::to($emailto)   //$flp->emailinisiator.','.$flp->emailpicaction.$emailapprover        
+           Mail::to(env('MAIL_TO_TESTING'))   //$flp->emailinisiator.','.$flp->emailpicaction.$emailapprover        
            ->send(new FLPNotifHasApproved($mailData,$flp));   
          
         $id = Crypt::encryptString($flp->id);     
              
-           return redirect('/flp/'.$id.'/edit')->with('success','FLP approved success');
+           return back()->with('success','FLP approved success');
 
    }         
 

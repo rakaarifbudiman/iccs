@@ -9,29 +9,30 @@
           <table class="table datatable w-auto small" id="FLPTable">
             <thead>    
                 <tr>
-                    <th scope="col"> No. </th>                    
-                    <th scope="col">Date Changed</th>  
-                    <th scope="col">Change By.</th>             
-                    <th scope="col">Activity</th>  
-                    <th class="col-sm">Before Value</th>
-                    <th scope="col">After Value</th>   
-                    <th scope="col">From Models</th>                              
+                  <th scope="col"> No. </th>                    
+                  <th scope="col">Date Changed</th>  
+                  <th scope="col">Change By.</th>             
+                  <th scope="col">Activity</th>                      
+                  <th class="col-sm">Before Value</th>
+                  <th scope="col">After Value</th> 
+                  <th scope="col">Field</th>
+                  <th scope="col">Table</th>                                
                 </tr>
             </thead>
             
               <tbody>
     
-                @forelse ($flp->auditlup as $index =>$auditflp)           
+                @forelse ($flp->auditlup as $index =>$auditlup)           
                 
                 <tr>
                     <th scope="row">{{ $index +1 }}</th> 
-                    <td>{{ date('d-M-Y H:m:s',strtotime($auditflp->created_at)) }}</td>         
-                    <td>{{ $auditflp->username }}</td>                    
-                    <td>{{ $auditflp->event }}</td>
-                    <td class="setwidth">{{ $auditflp->old_values }}</td>
-                    <td class="setwidth">{{ $auditflp->new_values }}</td>
-                    <td>{{ $auditflp->auditable_type }}</td>                                  
-                                                         
+                    <td>@date($auditlup->created_at,'d-M-y H:i')</td>         
+                    <td>{{ $auditlup->change_by }}</td>                    
+                    <td>{{ $auditlup->activity }}</td>
+                    <td class="setwidth">{!! $auditlup->beforevalue!!}</td>
+                    <td class="setwidth">{!! $auditlup->aftervalue !!}</td>     
+                    <td>{{ $auditlup->sourcefield }}</td>
+                    <td>{{ $auditlup->sourcetable }}</td>                                              
                                         
                 </tr>   
                 @empty             

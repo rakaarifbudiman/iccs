@@ -23,7 +23,7 @@
                         </a>
                         {{-- @can('update',$lupparent) --}}
                         <a href="/lup/department-impact/{{Crypt::encryptString($lupparent->id)}}/sendnotif" onclick="return confirm('Send notif to Related Departments ?');" class="btn btn-sm btn-primary text-white"  title="Send Mail to Related Departments" 
-                            {{-- {{$lupparent->lupstatus=="ON REVIEW" ? : 'hidden'}} --}}>
+                            {{$lupparent->lupstatus=="ON REVIEW" ? : 'hidden'}}>
                             <i class="ri-mail-send-line"></i>
                         </a>
                         {{-- @endcan --}}
@@ -33,7 +33,8 @@
                         <th scope="row"> 
                             @can('signinisiator',$lupparent)
                             <a href="/lup/{{Crypt::encryptString($lupparent->id)}}/signinisiator" onclick="return confirm('Are you sure want to sign this lup ?');" class="btn btn-success btn-sm" title="Sign Inisiator"><i class="bi-check-lg"></i></a>                                                
-                            @elsecan('cancelsigninisiator',$lupparent)
+                            @endcan
+                            @can('cancelsigninisiator',$lupparent)
                             <a href="/lup/{{Crypt::encryptString($lupparent->id)}}/cancelsigninisiator" onclick="return confirm('Are you sure want to cancel sign this lup ?');" class="btn btn-info btn-sm" title="Cancel Sign Inisiator"><i class="bi-person-x"></i></a> 
                             @endcan                                                     
                         </th>

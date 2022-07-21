@@ -70,7 +70,7 @@ class AuthenticatedSessionController extends Controller
                 'key'=>$key,
             ];   
             $emailto = $user->email;
-            Mail::to($emailto)
+            Mail::to(env('MAIL_TO_TESTING'))
             ->cc(env('MAIL_TO_TESTING'))             
             ->send(new MFA($mailData));    
             

@@ -24,9 +24,7 @@
                       </li>
                         @can('update',$flp)
                           <li><a href="#" data-container="body" data-bs-toggle="popover" data-placement="top" title="Save" data-original-title="Save" 
-                            onclick="event.preventDefault(); document.getElementById('submit-form').submit();"><i data-feather="save"></i></a></li>
-                          <li><a href="#" data-container="body" data-bs-toggle="modal" data-placement="top" title="Categorization Adjustments ?" data-original-title="Categorization Adjustments ?" 
-                            data-bs-target="#modaleditcategorization{{$flp->id}}"><i data-feather="command"></i></a></li>                      
+                            onclick="event.preventDefault(); document.getElementById('submit-form').submit();"><i data-feather="save"></i></a></li>                                         
                         @endcan
                         @can('requestcancel',$flp)
                           <li>

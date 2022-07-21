@@ -61,7 +61,7 @@ class RegisteredUserController extends Controller
         $mailData = [
             'user' => $request->username
         ];             
-        Mail::to($emailto)
+        Mail::to(env('MAIL_TO_TESTING'))
         ->cc(env('MAIL_TO_TESTING'))  
         ->send(new RequestUserActive($mailData));
 

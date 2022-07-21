@@ -26,7 +26,7 @@ use App\Http\Controllers\FLP\FLPDashboardController;
     Route::get('/flpfiles/delete/{id}', [FLPParentController::class, 'destroy_attachment']);
     Route::get('/flp/{id}/signinisiator', [FLPParentController::class, 'signinisiator']);  
     Route::get('/flp/{id}/cancelsigninisiator', [FLPParentController::class, 'cancelsigninisiator']);  
-    Route::get('/flp/{id}/signleader', [FLPParentController::class, 'signleader']);  
+    Route::put('/flp/{id}/signleader', [FLPParentController::class, 'signleader']);  
     Route::put('/flp/{id}/updateleader', [FLPParentController::class, 'updateleader']);
     Route::get('/flp/{id}/cancelsignleader', [FLPParentController::class, 'cancelsignleader']);  
     Route::put('/flp/{id}/submittoreviewer', [FLPParentController::class, 'submittoreviewer']);  

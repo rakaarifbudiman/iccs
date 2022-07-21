@@ -34,7 +34,7 @@
                           </th>
                           <th scope="row">Inisiator</th>                                               
                           <td>{{ $flp->inisiator }}</td>                    
-                          <td>{{ $flp->deptinisiator }}</td>
+                          <td>{{ !$flp->inisiator ? '' : $flp->inisiators->department }}</td>
                           <td>@date($flp->datesign_inisiator,'d-M-y')</td> 
                     </tr>
                     <tr>
@@ -43,7 +43,7 @@
                             @else
                                 @if (!$flp->datesign_leader)
                                     <a href="#" class="btn btn-sm btn-primary edit" data-bs-toggle="modal" data-bs-target="#modaleditleader{{ $flp->id }}" title="Edit leader"><i class="ri-edit-2-fill"></i></a>                   
-                                    <a href="/flp/{{$id}}/signleader" onclick="return confirm('Are you sure want to sign this FLP ?');" class="btn btn-success btn-sm" title="Sign leader"><i class="bi-check-lg"></i></a>   
+                                    <a href="#" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalsignleader{{ $flp->id }}" title="Sign Leader"><i class="bi-check-lg"></i></a>                   
                                 @else
                                     <a href="/flp/{{$id}}/cancelsignleader" onclick="return confirm('Are you sure want to cancel sign this FLP ?');" class="btn btn-info btn-sm" title="Cancel Sign leader"><i class="bi-person-x"></i></a>                                                             
                                 @endif
@@ -51,8 +51,9 @@
                         </th>
                         <th scope="row">Leader</th>                                               
                         <td>{{ $flp->leader }}</td>                    
-                        <td>{{ $flp->deptleader }}</td>
+                        <td>{{ !$flp->leader ? '' : $flp->leaders->department }}</td>
                         <td>@date($flp->datesign_leader,'d-M-y')</td> 
+                        <td class="setwidth">{{ $flp->note_leader }}</td>
                     </tr>
                     <tr>
                         <th scope="row">
@@ -82,9 +83,9 @@
                         </th>
                         <th scope="row">Reviewer</th>                                               
                         <td>{{ $flp->reviewer }}</td>                    
-                        <td>{{ $flp->deptreviewer }}</td>
+                        <td>{{ !$flp->reviewer ? '' : $flp->reviewers->department }}</td>
                         <td>@date($flp->datesubmit_approver,'d-M-y')</td> 
-                        <td class="w-25">{{ $flp->notes1 }}</td>
+                        <td class="setwidth">{{ $flp->note_reviewer }}</td>
                     </tr>
                     <tr>
                         <th scope="row">
@@ -93,9 +94,9 @@
                         </th>
                         <th scope="row">Approver</th>                                               
                         <td>{{ $flp->approver }}</td>                    
-                        <td>{{ $flp->deptapprover }}</td>
+                        <td>{{ !$flp->approver ? '' : $flp->approvers->department }}</td>
                         <td>@date($flp->dateapproved,'d-M-y')</td>
-                        <td class="w-25">{{ $flp->notes2 }}</td> 
+                        <td class="setwidth">{{ $flp->approver }}</td> 
                     </tr>
                           
                                                        

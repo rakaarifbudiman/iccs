@@ -1,23 +1,45 @@
 if(localStorage.getItem("color")== null){
-
+    $("#color" ).attr("href", "/assets/css/color-11.css" );
 }else{
     $("#color" ).attr("href", "/assets/css/"+localStorage.getItem("color")+".css" );
 }
-    
+ 
 if(localStorage.getItem("dark") == null){
 
 }else{
     $("body").attr("class", "dark-only");
+    $('.mode i').removeClass("fa-moon-o").addClass("fa-lightbulb-o");
 }
     
 
-$('<div class="customizer-links"> <div class="nav flex-column nac-pills" id="c-pills-tab" role="tablist" aria-orientation="vertical"> <a class="nav-link" id="c-pills-home-tab" data-bs-toggle="pill" href="#layout-type" hidden> <div class="settings"><i class="icofont icofont-laptop-alt" hidden></i></div><span>Check Layout</span> </a> <a class="nav-link" id="c-pills-home-tab" data-bs-toggle="pill" href="#c-pills-home"> <div class="settings" hidden><i class="icofont icofont-ui-settings"></i></div><span>Sidebar Type</span> </a> <a class="nav-link" id="c-pills-home-tab1" data-bs-toggle="pill" href="#c-pills-profile"> <div class="settings color-settings"><i class="icofont icofont-color-bucket"></i></div><span>Color Picker</span> </a> </div><div class="customizer-contain"> <div class="tab-content" id="c-pills-tabContent"> <div class="customizer-header"> <i class="icofont-close icon-close"></i> <h5>Live customizer</h5> <p class="mb-0">Customize &amp; Preview Real Time</p></div><div class="customizer-body custom-scrollbar"> <div class="tab-pane fade show active" id="layout-type"> <ul class="sidebar-type layout-grid layout-types"> </ul> </div><div class="tab-pane fade" id="c-pills-home"> <h6>Layout Type</h6> <ul class="main-layout layout-grid"> <li class="active" data-attr="ltr"> <div class="header bg-light"> <ul> <li></li><li></li><li></li></ul> </div><div class="body"> <ul> <li class="bg-light sidebar"></li><li class="bg-light body"><span class="badge badge-primary">LTR</span></li></ul> </div></li><li data-attr="rtl"> <div class="header bg-light"> <ul> <li></li><li></li><li></li></ul> </div><div class="body"> <ul> <li class="bg-light body"><span class="badge badge-primary">RTL</span></li><li class="bg-light sidebar"></li></ul> </div></li><li class="box-layout px-3" data-attr="ltr"> <div class="header bg-light"> <ul> <li></li><li></li><li></li></ul> </div><div class="body"> <ul> <li class="bg-light sidebar"></li><li class="bg-light body"><span class="badge badge-primary">Box</span></li></ul> </div></li></ul> <h6>Sidebar Typedd</h6> <ul class="sidebar-type layout-grid"> <li data-attr="normal-sidebar"> <div class="header bg-light"> <ul> <li></li><li></li><li></li></ul> </div><div class="body"> <ul> <li class="bg-dark sidebar"></li><li class="bg-light body"></li></ul> </div></li><li data-attr="compact-sidebar"> <div class="header bg-light"> <ul> <li></li><li></li><li></li></ul> </div><div class="body"> <ul> <li class="bg-dark sidebar compact"></li><li class="bg-light body"></li></ul> </div></li></ul> </div><div class="tab-pane fade" id="c-pills-profile"> <h6>Light layout</h6> <ul class="layout-grid customizer-color"> <li class="color-layout" data-attr="color-1" data-primary="#24695c" data-secondary="#ba895d"> <div></div></li><li class="color-layout" data-attr="color-2" data-primary="#d97f3d" data-secondary="#f25f4c"> <div></div></li><li class="color-layout" data-attr="color-3" data-primary="#168eea" data-secondary="#90b4cd"> <div></div></li><li class="color-layout" data-attr="color-4" data-primary="#665ed5" data-secondary="#d1d1e9"> <div></div></li><li class="color-layout" data-attr="color-5" data-primary="#3a9aa8" data-secondary="#984ff3"> <div></div></li><li class="color-layout" data-attr="color-6" data-primary="#7951aa" data-secondary="#72757D"><div></div></li><li class="color-layout" data-attr="color-7" data-primary="#e0707b" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-8" data-primary="#f0588d" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-9" data-primary="#716F81" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-10" data-primary="#9E7777" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-11" data-primary="#383E56" data-secondary="#72757D"> <div></div></li></ul> <h6>Dark Layout</h6> <ul class="layout-grid customizer-color dark"> <li class="color-layout" data-attr="color-1" data-primary="#24695c" data-secondary="#ba895d"> <div></div></li><li class="color-layout" data-attr="color-2" data-primary="#d97f3d" data-secondary="#f25f4c"> <div></div></li><li class="color-layout" data-attr="color-3" data-primary="#168eea" data-secondary="#90b4cd"> <div></div></li><li class="color-layout" data-attr="color-4" data-primary="#665ed5" data-secondary="#d1d1e9"> <div></div></li><li class="color-layout" data-attr="color-5" data-primary="#3a9aa8" data-secondary="#984ff3"> <div></div></li><li class="color-layout" data-attr="color-6" data-primary="#7951aa" data-secondary="#72757D"><div></div></li><li class="color-layout" data-attr="color-7" data-primary="#e0707b" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-8" data-primary="#f0588d" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-9" data-primary="#716F81" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-10" data-primary="#9E7777" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-11" data-primary="#383E56" data-secondary="#72757D"> <div></div></li></ul>').appendTo($('body'));
+$('<div class="customizer-links" id="customizer"> <div class="nav flex-column nac-pills" id="c-pills-tab" role="tablist" aria-orientation="vertical"> <a class="nav-link" id="c-pills-home-tab" data-bs-toggle="pill" href="#layout-type" hidden> <div class="settings"><i class="icofont icofont-laptop-alt" hidden></i></div><span>Check Layout</span> </a> <a class="nav-link" id="c-pills-home-tab" data-bs-toggle="pill" href="#c-pills-home"> <div class="settings" hidden><i class="icofont icofont-ui-settings"></i></div><span>Sidebar Type</span> </a> <a class="nav-link" id="c-pills-home-tab1" data-bs-toggle="pill" href="#c-pills-profile"> <div class="settings color-settings" id="colorsettings"><i class="icofont icofont-color-bucket"></i></div><span>Color Picker</span> </a> </div><div class="customizer-contain"> <div class="tab-content" id="c-pills-tabContent"> <div class="customizer-header"> <i class="icofont-close icon-close"></i> <h5>Live customizer</h5> <p class="mb-0">Customize &amp; Preview Real Time</p></div><div class="customizer-body custom-scrollbar"> <div class="tab-pane fade show active" id="layout-type"> <ul class="sidebar-type layout-grid layout-types"> </ul> </div><div class="tab-pane fade" id="c-pills-home"> <h6>Layout Type</h6> <ul class="main-layout layout-grid"> <li class="active" data-attr="ltr"> <div class="header bg-light"> <ul> <li></li><li></li><li></li></ul> </div><div class="body"> <ul> <li class="bg-light sidebar"></li><li class="bg-light body"><span class="badge badge-primary">LTR</span></li></ul> </div></li><li data-attr="rtl"> <div class="header bg-light"> <ul> <li></li><li></li><li></li></ul> </div><div class="body"> <ul> <li class="bg-light body"><span class="badge badge-primary">RTL</span></li><li class="bg-light sidebar"></li></ul> </div></li><li class="box-layout px-3" data-attr="ltr"> <div class="header bg-light"> <ul> <li></li><li></li><li></li></ul> </div><div class="body"> <ul> <li class="bg-light sidebar"></li><li class="bg-light body"><span class="badge badge-primary">Box</span></li></ul> </div></li></ul> <h6>Sidebar Typedd</h6> <ul class="sidebar-type layout-grid"> <li data-attr="normal-sidebar"> <div class="header bg-light"> <ul> <li></li><li></li><li></li></ul> </div><div class="body"> <ul> <li class="bg-dark sidebar"></li><li class="bg-light body"></li></ul> </div></li><li data-attr="compact-sidebar"> <div class="header bg-light"> <ul> <li></li><li></li><li></li></ul> </div><div class="body"> <ul> <li class="bg-dark sidebar compact"></li><li class="bg-light body"></li></ul> </div></li></ul> </div><div class="tab-pane fade" id="c-pills-profile"> <h6>Light layout</h6> <ul class="layout-grid customizer-color"> <li class="color-layout" data-attr="color-1" data-primary="#24695c" data-secondary="#ba895d"> <div></div></li><li class="color-layout" data-attr="color-2" data-primary="#d97f3d" data-secondary="#f25f4c"> <div></div></li><li class="color-layout" data-attr="color-3" data-primary="#168eea" data-secondary="#90b4cd"> <div></div></li><li class="color-layout" data-attr="color-4" data-primary="#665ed5" data-secondary="#d1d1e9"> <div></div></li><li class="color-layout" data-attr="color-5" data-primary="#3a9aa8" data-secondary="#984ff3"> <div></div></li><li class="color-layout" data-attr="color-6" data-primary="#7951aa" data-secondary="#72757D"><div></div></li><li class="color-layout" data-attr="color-7" data-primary="#e0707b" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-8" data-primary="#f0588d" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-9" data-primary="#716F81" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-10" data-primary="#9E7777" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-11" data-primary="#383E56" data-secondary="#72757D"> <div></div></li></ul> <h6>Dark Layout</h6> <ul class="layout-grid customizer-color dark"> <li class="color-layout" data-attr="color-1" data-primary="#24695c" data-secondary="#ba895d"> <div></div></li><li class="color-layout" data-attr="color-2" data-primary="#d97f3d" data-secondary="#f25f4c"> <div></div></li><li class="color-layout" data-attr="color-3" data-primary="#168eea" data-secondary="#90b4cd"> <div></div></li><li class="color-layout" data-attr="color-4" data-primary="#665ed5" data-secondary="#d1d1e9"> <div></div></li><li class="color-layout" data-attr="color-5" data-primary="#3a9aa8" data-secondary="#984ff3"> <div></div></li><li class="color-layout" data-attr="color-6" data-primary="#7951aa" data-secondary="#72757D"><div></div></li><li class="color-layout" data-attr="color-7" data-primary="#e0707b" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-8" data-primary="#f0588d" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-9" data-primary="#716F81" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-10" data-primary="#9E7777" data-secondary="#72757D"> <div></div></li><li class="color-layout" data-attr="color-11" data-primary="#383E56" data-secondary="#72757D"> <div></div></li></ul>').appendTo($('body'));
 (function() {
 })();
 
 
 //live customizer js
 $(document).ready(function () {
+    if(localStorage.getItem("customizer")== 'hide'){
+        $('#customizer').removeClass('customizer-links');
+        $('#colorsettings').removeClass('settings color-settings');
+        $(".customizer-color li").removeClass('active');
+        $('.color-mode i').removeClass("fa-eye-slash").addClass("fa-tint");
+    }else{
+        $('.color-mode i').removeClass("fa-tint").addClass("fa-eye-slash");
+    } 
+    $("#hidecustomizer").on('click', function() {
+        $('.color-mode i').toggleClass("fa-tint").toggleClass("fa-eye-slash");
+        $('#customizer').toggleClass("customizer-links").toggleClass("");
+        $('#colorsettings').toggleClass("settings color-settings").toggleClass("");
+        
+        if(localStorage.getItem("customizer")== null){            
+            localStorage.setItem("customizer", 'hide')
+        }else{
+            localStorage.removeItem("customizer");
+            
+            location.reload(true);
+        };
+    });
       $(".customizer-color li").on('click', function() {
         $(".customizer-color li").removeClass('active');
         $(this).addClass("active");
@@ -30,6 +52,7 @@ $(document).ready(function () {
         localStorage.removeItem("dark");
         $("#color" ).attr("href", "/assets/css/"+color+".css" );
         $(".dark-only").removeClass('dark-only');
+        $('.mode i').removeClass("fa-lightbulb-o").addClass("fa-moon-o");
         //location.reload(true);
     });
     $(".customizer-color.dark li").on('click', function() {
@@ -37,6 +60,7 @@ $(document).ready(function () {
         $(this).addClass("active");
         $("body").attr("class", "dark-only");
         localStorage.setItem("dark", "dark-only");
+        $('.mode i').removeClass("fa-moon-o").addClass("fa-lightbulb-o");
     });
 
 

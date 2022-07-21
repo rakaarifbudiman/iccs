@@ -48,35 +48,16 @@ class LUPActionController extends Controller
         $decrypted = Crypt::decryptString($id);       
         $lupaction = LUPAction::find($decrypted);      
         $this->authorize('update',$lupaction);          
-        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_actions'),['updated_at']);        
-           
-        //get old value 
-        foreach($fields as $field){
-            $old[$field]= $lupaction->$field;
-        }
+        $old = getoldvalues('mysql','lup_actions',$lupaction);   
         $lupaction->action = $request->action; 
         $lupaction->pic_action = str::lower($request->pic_action);
         $lupaction->duedate_action = $request->duedate_action . ' 00:00:00';                         
-        $lupaction->save();   
-
+        $lupaction->save();  
+         
         //check audit change     
-        if($lupaction->wasChanged()==TRUE){
-            foreach($fields as $field){
-                if($lupaction->wasChanged($field)){
-                    if($old[$field]!=$lupaction->$field ){
-                        auditlups($lupaction,Auth::user()->username,'Audit Change',$lupaction->code,
-                        'lup_actions',$field,$old[$field],$lupaction->$field );
-                    }
-                }
-            }            
-        
-            activity()->causedBy(Auth::user()->id)->performedOn($lupaction)->event('edited')->log('edited Action LUP  '.$lupaction->code.'-'.$lupaction->action); 
-            return back()->with('success','Success... Data was Saved !');
-        }else{  
+        startaudit($lupaction,$old['fields'],$old['old'],$old['table'],'LUP','Edited Action LUP ','edited');  
 
-            return back()->with('info','Nothing Changed!');            
-        }     
-             
+        return back();           
     }
 
     public function destroy($id)
@@ -110,13 +91,13 @@ class LUPActionController extends Controller
         $decrypted = Crypt::decryptString($id);
         $lupaction = LUPAction::find($decrypted);   
         $this->authorize('cancelsign',$lupaction); 
-        auditlups($lupaction,Auth::user()->username,'Cancel Sign Action',$lupaction->code,
-                        'lup_actions','signdate_action',$lupaction->action . ' | '.$lupaction->signdate_action,'' );         
+        $old = getoldvalues('mysql','lup_actions',$lupaction);     
         $lupaction->signdate_action=null;
         $lupaction->sign_type=null;
         $lupaction->save();                
+        //check audit change     
+        startaudit($lupaction,$old['fields'],$old['old'],$old['table'],'LUP','Cancel Sign Action LUP ','rollback'); 
         
-        activity()->causedBy(Auth::user()->id)->performedOn($lupaction)->event('rollback')->log('Cancel Sign Action LUP  '.$lupaction->code.'-'.$lupaction->action);
         return back();               
 
     }
@@ -137,18 +118,13 @@ class LUPActionController extends Controller
     public function uploadevidence(Request $request,$id)
     {
         //get data lupaction
-        $lupactions = LUPAction::find(Crypt::decryptString($id));      
-        $this->authorize('upload',$lupactions);            
+        $lupaction = LUPAction::find(Crypt::decryptString($id));      
+        $this->authorize('upload',$lupaction);            
         $paths = DB::table('iccsfilepaths')
         ->where('description','Bukti Close LUP')
         ->first()->filepath;        
-        $code = 'EVD-'.$lupactions->noaction;        
-        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_actions'),['updated_at']);        
-           
-        //get old value 
-        foreach($fields as $field){
-            $old[$field]= $lupactions->$field;
-        }
+        $code = 'EVD-'.$lupaction->noaction;        
+        $old = getoldvalues('mysql','lup_actions',$lupaction);    
 
         $validatedData = $request->validate([
             'evidence_filename' => 'required|mimes:xls,xlsx,pdf,jpg,png,jpeg,doc,docx,msg,eml|max:1000',    
@@ -156,291 +132,287 @@ class LUPActionController extends Controller
            $name = $request->file('evidence_filename')->getClientOriginalName();
            $ext = pathinfo($name, PATHINFO_EXTENSION);
            $path = $request->file('evidence_filename')->storeAs($paths,$code.'.'.$ext);          
-            $lupactions->evidence_filename = $path;            
-            $lupactions->evidence_uploader = Auth::User()->username;
-            $lupactions->dateupload_evidence = \Carbon\Carbon::now();
-            $lupactions->save(); 
+            $lupaction->evidence_filename = $path;            
+            $lupaction->evidence_uploader = Auth::User()->username;
+            $lupaction->dateupload_evidence = \Carbon\Carbon::now();
+            $lupaction->save(); 
+        //check audit change     
+        startaudit($lupaction,$old['fields'],$old['old'],$old['table'],'LUP','upload evidence Action LUP ','sign');          
 
-            foreach($fields as $field){
-                if($lupactions->wasChanged($field)){
-                    if($old[$field]!=$lupactions->$field ){
-                        auditlups($lupactions,Auth::user()->username,'Upload Closing Evidence-'.$lupactions->action,$lupactions->code,
-                        'lup_actions',$field,$old[$field],$lupactions->$field );
-                    }
-                }
-            }          
-        
-        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('sign')->log('upload evidence Action LUP  '.$lupactions->code.'-'.$lupactions->action);
         return back()->with('info', 'File Has been uploaded successfully');           
     }
 
     //Approved Closing Evidence
-    public function approvedevidence($id, LUPAction $lupactions,Request $request)
+    public function approvedevidence($id, LUPAction $lupaction,Request $request)
     {        
         $decrypted = Crypt::decryptString($id);
         //get data lupaction
-        $lupactions = LUPAction::find($decrypted);          
-        $this->authorize('approvedevidence',$lupactions);                     
-        $cekreferaction = DB::table('lup_actions')->where('code',$lupactions->code)->where('action',$request->referaction)->exists();
-        $referaction=DB::table('lup_actions')->where('code',$lupactions->code)->where('action',$request->referaction)->first();
+        $lupaction = LUPAction::find($decrypted);          
+        $this->authorize('approvedevidence',$lupaction);                     
+        $cekreferaction = DB::table('lup_actions')->where('code',$lupaction->code)->where('action',$request->referaction)->exists();
+        $referaction=DB::table('lup_actions')->where('code',$lupaction->code)->where('action',$request->referaction)->first();
         if($cekreferaction){           
-            $lupactions->evidence_filename = $referaction->evidence_filename;
-            $lupactions->notes = 'Approved Evidence with refer action to  '.$request->referaction;
+            $lupaction->evidence_filename = $referaction->evidence_filename;
+            $lupaction->notes = 'Approved Evidence with refer action to  '.$request->referaction;
         }
-            $lupactions->dateapproved_evidence =\Carbon\Carbon::now();
-            $lupactions->actionstatus='CLOSED';
-            $lupactions->save();            
+            $lupaction->dateapproved_evidence =\Carbon\Carbon::now();
+            $lupaction->actionstatus='CLOSED';
+            $lupaction->save();            
         
-        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('sign')->log('approved Action LUP  '.$lupactions->code.'-'.$lupactions->action);
+        activity()->causedBy(Auth::user()->id)->performedOn($lupaction)->event('sign')->log('approved Action LUP  '.$lupaction->code.'-'.$lupaction->action);
         return back()->with('success','Approved Closing Evidence Success...');       
     }
 
     //Approved Closing Evidence
-    public function rejectevidence($id, LUPAction $lupactions, Request $request)
+    public function rejectevidence($id, LUPAction $lupaction, Request $request)
     {        
         $decrypted = Crypt::decryptString($id);
         //get data lupaction    
-        $lupactions = LUPAction::find($decrypted);        
-        $this->authorize('approvedevidence',$lupactions);            
-            $email_uploader =$lupactions->evidence_uploaders->email;
-            $lupactions->evidence_filename = null;           
-            $lupactions->evidence_uploader = null;
-            $lupactions->dateupload_evidence = null;
-            $lupactions->save();
+        $lupaction = LUPAction::find($decrypted);        
+        $this->authorize('approvedevidence',$lupaction);      
+        $old = getoldvalues('mysql','lup_actions',$lupaction);          
+            $email_uploader =$lupaction->evidence_uploaders->email;
+            $lupaction->evidence_filename = null;           
+            $lupaction->evidence_uploader = null;
+            $lupaction->dateupload_evidence = null;
+            $lupaction->save();
 
             //Send Notif to PIC Action & Uploader
              
-        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lupactions->lupparent->id).'/edit"'.' style="
+        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lupaction->lupparent->id).'/edit"'.' style="
         background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
         inline-block;text-decoration: none;"'.'>Go to LUP</a>';                  
         $mailData = [            
-            'nolup' => $lupactions->lupparent->nolup,
-            'action' => $lupactions->action,    
+            'nolup' => $lupaction->lupparent->nolup,
+            'action' => $lupaction->action,    
             'note'=>$request->note,        
             'urllup'=>$urllup,            
         ];                    
           
-        $emailto = $lupactions->pic->email;  
+        $emailto = $lupaction->pic->email;  
         $emailcc= $email_uploader;       
-        Mail::to($emailto)  
+        Mail::to(env('MAIL_TO_TESTING'))  
             ->cc(env('MAIL_TO_TESTING'))   
-            ->send(new LUPEvidenceHasReject($mailData,$lupactions));    
+            ->send(new LUPEvidenceHasReject($mailData,$lupaction));    
+        //check audit change     
+        startaudit($lupaction,$old['fields'],$old['old'],$old['table'],'LUP','reject evidence Action LUP','rollback');  
         
-        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('rollback')->log('reject evidence Action LUP  '.$lupactions->code.'-'.$lupactions->action);
         return back()->with('success','Reject Closing Evidence Success...');             
        
     }
 
     //Store Due Date Extension
-    public function storeextension($id, LUPAction $lupactions, Request $request)
+    public function storeextension($id, LUPAction $lupaction, Request $request)
     {
         
         $decrypted = Crypt::decryptString($id);
         //get data lupaction        
-        $lupactions = LUPAction::find($decrypted);     
-        $this->authorize('extended',$lupactions);        
+        $lupaction = LUPAction::find($decrypted);     
+        $this->authorize('extended',$lupaction);        
 
         $validatedData = $request->validate([
             'duedate_action' => 'required|after:tomorrow',    
             'extension_notes'=>'min:10',
         ]);    
-            $lupactions->actionstatus='ON EXTENSION';         
-            if(!$lupactions->old_duedate ){
-                $lupactions->old_duedate = $lupactions->duedate_action;
+            $lupaction->actionstatus='ON EXTENSION';         
+            if(!$lupaction->old_duedate ){
+                $lupaction->old_duedate = $lupaction->duedate_action;
             }else{
-                $lupactions->old_duedate2 = $lupactions->duedate_action;
+                $lupaction->old_duedate2 = $lupaction->duedate_action;
             }               
-            $lupactions->duedate_action = $request->duedate_action;  
-            $lupactions->extension_notes = $request->extension_notes;          
-            $lupactions->pic_extension = Auth::User()->username;
-            $lupactions->signdate_extension = \Carbon\Carbon::now();
-            $lupactions->save();  
+            $lupaction->duedate_action = $request->duedate_action;  
+            $lupaction->extension_notes = $request->extension_notes;          
+            $lupaction->pic_extension = Auth::User()->username;
+            $lupaction->signdate_extension = \Carbon\Carbon::now();
+            $lupaction->save();  
 
             //Send Notif to Reviewer
              
-        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lupactions->lupparent->id).'/edit"'.' style="
+        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lupaction->lupparent->id).'/edit"'.' style="
         background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
         inline-block;text-decoration: none;"'.'>Go to LUP</a>';                  
         $mailData = [            
-            'nolup' => $lupactions->lupparent->nolup,
-            'action' => $lupactions->action, 
-            'old_duedate'   =>$lupactions->old_duedate,
-            'duedate'=>$lupactions->duedate_action,
+            'nolup' => $lupaction->lupparent->nolup,
+            'action' => $lupaction->action, 
+            'old_duedate'   =>$lupaction->old_duedate,
+            'duedate'=>$lupaction->duedate_action,
             'note'=>$request->extension_notes, 
-            'pic'=> $lupactions->pic_extension,    
+            'pic'=> $lupaction->pic_extension,    
             'urllup'=>$urllup,            
         ];                    
           
-        $emailto = $lupactions->lupparent->reviewers->email;              
+        $emailto = $lupaction->lupparent->reviewers->email;              
 
-        Mail::to($emailto)     
-            ->send(new LUPActionHasExtension($mailData,$lupactions));    
+        Mail::to(env('MAIL_TO_TESTING'))     
+            ->send(new LUPActionHasExtension($mailData,$lupaction));    
         
-        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('edited')->log('submit extension Action LUP  '.$lupactions->code.'-'.$lupactions->action);    
+        activity()->causedBy(Auth::user()->id)->performedOn($lupaction)->event('edited')->log('submit extension Action LUP  '.$lupaction->code.'-'.$lupaction->action);    
         return back()->with('success','Submit Due Date Extension Success...');             
        
     }
 
     //Review Due Date Extension
-    public function reviewextension($id, LUPAction $lupactions, Request $request)
+    public function reviewextension($id, LUPAction $lupaction, Request $request)
     {
         
         $decrypted = Crypt::decryptString($id);
         //get data lupaction           
-        $lupactions = LUPAction::find($decrypted);       
-        $this->authorize('reviewextended',$lupactions);      
+        $lupaction = LUPAction::find($decrypted);       
+        $this->authorize('reviewextended',$lupaction);      
 
         $validatedData = $request->validate([
             'duedate_action' => 'required|after:tomorrow',            
         ]);    
-            $lupactions->actionstatus='ON EXTENSION APPROVAL';               
-            $lupactions->duedate_action = $request->duedate_action;                     
-            $lupactions->reviewer_extension = Auth::User()->username;
-            $lupactions->datereview_extension = \Carbon\Carbon::now();
-            $lupactions->save();  
+            $lupaction->actionstatus='ON EXTENSION APPROVAL';               
+            $lupaction->duedate_action = $request->duedate_action;                     
+            $lupaction->reviewer_extension = Auth::User()->username;
+            $lupaction->datereview_extension = \Carbon\Carbon::now();
+            $lupaction->save();  
 
             //Send Notif to Approver
              
-        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lupactions->lupparent->id).'/edit"'.' style="
+        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lupaction->lupparent->id).'/edit"'.' style="
         background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
         inline-block;text-decoration: none;"'.'>Go to LUP</a>';                  
         $mailData = [            
-            'nolup' => $lupactions->lupparent->nolup,
-            'action' => $lupactions->action, 
-            'old_duedate'   =>$lupactions->old_duedate,
-            'duedate'=>$lupactions->duedate_action,
+            'nolup' => $lupaction->lupparent->nolup,
+            'action' => $lupaction->action, 
+            'old_duedate'   =>$lupaction->old_duedate,
+            'duedate'=>$lupaction->duedate_action,
             'note'=>$request->extension_notes, 
-            'pic'=> $lupactions->pic_extension,    
+            'pic'=> $lupaction->pic_extension,    
             'urllup'=>$urllup,            
         ];                    
           
-        $emailto = $lupactions->lupparent->approvers->email;              
+        $emailto = $lupaction->lupparent->approvers->email;              
 
-        Mail::to($emailto)     
-            ->send(new LUPActionHasExtension($mailData,$lupactions));    
+        Mail::to(env('MAIL_TO_TESTING'))     
+            ->send(new LUPActionHasExtension($mailData,$lupaction));    
         
-        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('sign')->log('Review extension Action LUP  '.$lupactions->code.'-'.$lupactions->action);    
+        activity()->causedBy(Auth::user()->id)->performedOn($lupaction)->event('sign')->log('Review extension Action LUP  '.$lupaction->code.'-'.$lupaction->action);    
         return back()->with('success','Submit Due Date Extension Success...');       
     }
 
     //Approved Due Date Extension
-    public function approvedextension($id, LUPAction $lupactions, Request $request)
+    public function approvedextension($id, LUPAction $lupaction, Request $request)
     {        
         $decrypted = Crypt::decryptString($id);
         //get data lupaction        
-        $lupactions = LUPAction::find($decrypted);     
-        $this->authorize('approvedextended',$lupactions);         
-        
+        $lupaction = LUPAction::find($decrypted);     
+        $this->authorize('approvedextended',$lupaction);         
+        $old = getoldvalues('mysql','lup_actions',$lupaction);  
         $validatedData = $request->validate([
             'duedate_action' => 'required|after:tomorrow',           
         ]);    
-            $lupactions->actionstatus='OPEN';               
-            $lupactions->duedate_action = $request->duedate_action;   
-            $lupactions->extension_count = $lupactions->extension_count + 1;                   
-            $lupactions->approver_extension = Auth::User()->username;
-            $lupactions->dateapproved_extension = \Carbon\Carbon::now();
-            $lupactions->save();                      
-
-        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('sign')->log('approved extension Action LUP  '.$lupactions->code.'-'.$lupactions->action);
+            $lupaction->actionstatus='OPEN';               
+            $lupaction->duedate_action = $request->duedate_action;   
+            $lupaction->extension_count = $lupaction->extension_count + 1;                   
+            $lupaction->approver_extension = Auth::User()->username;
+            $lupaction->dateapproved_extension = \Carbon\Carbon::now();
+            $lupaction->save();                      
+        //check audit change     
+        startaudit($lupaction,$old['fields'],$old['old'],$old['table'],'LUP','Approved extension Action LUP ','sign');    
+        activity()->causedBy(Auth::user()->id)->performedOn($lupaction)->event('sign')->log('approved extension Action LUP  '.$lupaction->code.'-'.$lupaction->action);
         return back()->with('success','Approved Due Date Extension Success...');        
        
     }
 
     //Reject Due Date Extension
-    public function rejectextension($id, LUPAction $lupactions, Request $request)
+    public function rejectextension($id, LUPAction $lupaction, Request $request)
     {        
         $decrypted = Crypt::decryptString($id);
         //get data lupaction        
-        $lupactions = LUPAction::find($decrypted);
-        $email_extender = $lupactions->pic_extensions->email;        
-        $this->authorize('rejectextended',$lupactions);     
-        
+        $lupaction = LUPAction::find($decrypted);
+        $email_extender = $lupaction->pic_extensions->email;        
+        $this->authorize('rejectextended',$lupaction);     
+        $old = getoldvalues('mysql','lup_actions',$lupaction);  
         $validatedData = $request->validate([
             'cancel_extension_notes' => 'required|min:10',           
         ]);    
-            $lupactions->actionstatus='OPEN';               
-            $lupactions->extension_notes = null;             
-            $lupactions->pic_extension = null;
-            $lupactions->signdate_extension = null;
-            $lupactions->duedate_action = $lupactions->old_duedate;  
-            $lupactions->old_duedate = null; 
-            $lupactions->reviewer_extension = null;
-            $lupactions->datereview_extension = null; 
-            $lupactions->approver_extension = null;
-            $lupactions->dateapproved_extension = null;                             
-            $lupactions->cancel_extension_notes =$request->cancel_extension_notes;       
-            $lupactions->save();      
+            $lupaction->actionstatus='OPEN';               
+            $lupaction->extension_notes = null;             
+            $lupaction->pic_extension = null;
+            $lupaction->signdate_extension = null;
+            $lupaction->duedate_action = $lupaction->old_duedate;  
+            $lupaction->old_duedate = null; 
+            $lupaction->reviewer_extension = null;
+            $lupaction->datereview_extension = null; 
+            $lupaction->approver_extension = null;
+            $lupaction->dateapproved_extension = null;                             
+            $lupaction->cancel_extension_notes =$request->cancel_extension_notes;       
+            $lupaction->save();      
             
             //Send Notif to PIC Action & PIC Extension
              
-        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lupactions->lupparent->id).'/edit"'.' style="
+        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lupaction->lupparent->id).'/edit"'.' style="
         background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
         inline-block;text-decoration: none;"'.'>Go to LUP</a>';                  
         $mailData = [            
-            'nolup' => $lupactions->lupparent->nolup,
-            'action' => $lupactions->action,    
+            'nolup' => $lupaction->lupparent->nolup,
+            'action' => $lupaction->action,    
             'note'=>$request->cancel_extension_notes,        
             'urllup'=>$urllup,            
         ];                    
-        $emailto = $lupactions->pic->email;  
+        $emailto = $lupaction->pic->email;  
         $emailcc = $email_extender;
-        Mail::to($emailto)    
+        Mail::to(env('MAIL_TO_TESTING'))    
             ->cc(env('MAIL_TO_TESTING')) 
-            ->send(new LUPExtensionHasReject($mailData,$lupactions));    
-
-        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('rollback')->log('reject extension Action LUP  '.$lupactions->code.'-'.$lupactions->action);    
+            ->send(new LUPExtensionHasReject($mailData,$lupaction));    
+        //check audit change     
+        startaudit($lupaction,$old['fields'],$old['old'],$old['table'],'LUP','Reject extension Action LUP ','rollback');   
+        activity()->causedBy(Auth::user()->id)->performedOn($lupaction)->event('rollback')->log('reject extension Action LUP  '.$lupaction->code.'-'.$lupaction->action);    
         return back()->with('success','Success...Due Date Extension Has Been Rejected...');        
     }
 
     //request Cancel Action
-    public function requestcancelaction($id, LUPAction $lupactions,Request $request)
+    public function requestcancelaction($id, LUPAction $lupaction,Request $request)
     {        
         $decrypted = Crypt::decryptString($id);
         //get data lupaction
-        $lupactions = LUPAction::find($decrypted);          
-        $this->authorize('requestcancelaction',$lupactions);        
+        $lupaction = LUPAction::find($decrypted);          
+        $this->authorize('requestcancelaction',$lupaction);        
         $validatedData = $request->validate([
             'cancel_duedate_notes' => 'required|min:10',    
         ]);                  
-            $lupactions->cancel_duedate_notes = $request->cancel_duedate_notes .' (by: '.Auth::user()->username .')';   
-            $lupactions->actionstatus='ON CANCEL';         
-            $lupactions->save();         
+            $lupaction->cancel_duedate_notes = $request->cancel_duedate_notes .' (by: '.Auth::user()->username .')';   
+            $lupaction->actionstatus='ON CANCEL';         
+            $lupaction->save();         
             
             //Send Notif to Reviewer
              
-        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lupactions->lupparent->id).'/edit"'.' style="
+        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($lupaction->lupparent->id).'/edit"'.' style="
         background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
         inline-block;text-decoration: none;"'.'>Go to LUP</a>';                  
         $mailData = [            
-            'nolup' => $lupactions->lupparent->nolup,
-            'action' => $lupactions->action,             
+            'nolup' => $lupaction->lupparent->nolup,
+            'action' => $lupaction->action,             
             'note'=>$request->cancel_duedate_notes, 
             'pic'=> Auth::user()->username,    
             'urllup'=>$urllup,            
         ];                    
           
-        $emailto = $lupactions->lupparent->reviewers->email;              
+        $emailto = $lupaction->lupparent->reviewers->email;              
 
-        Mail::to($emailto)     
-            ->send(new LUPActionRequestCancel($mailData,$lupactions));  
+        Mail::to(env('MAIL_TO_TESTING'))     
+            ->send(new LUPActionRequestCancel($mailData,$lupaction));  
             
-        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('rollback')->log('request cancel Action LUP  '.$lupactions->code.'-'.$lupactions->action);
+        activity()->causedBy(Auth::user()->id)->performedOn($lupaction)->event('rollback')->log('request cancel Action LUP  '.$lupaction->code.'-'.$lupaction->action);
         return back()->with('success','Success...Request Cancel Action Has Been Submitted ');       
     }
 
     //Approved Cancel Action
-    public function approvedcancelaction($id, LUPAction $lupactions,Request $request)
+    public function approvedcancelaction($id, LUPAction $lupaction,Request $request)
     {        
         $decrypted = Crypt::decryptString($id);
         //get data lupaction
-        $lupactions = LUPAction::find($decrypted);          
-        $this->authorize('approvedcancelaction',$lupactions);                 
-            $lupactions->notes = 'Approved Cancellation by : '. Auth::user()->username;
-            $lupactions->deleted_at =\Carbon\Carbon::now();
-            $lupactions->actionstatus='CANCEL';
-            $lupactions->save();            
+        $lupaction = LUPAction::find($decrypted);          
+        $this->authorize('approvedcancelaction',$lupaction);                 
+            $lupaction->notes = 'Approved Cancellation by : '. Auth::user()->username;
+            $lupaction->deleted_at =\Carbon\Carbon::now();
+            $lupaction->actionstatus='CANCEL';
+            $lupaction->save();            
         
-        activity()->causedBy(Auth::user()->id)->performedOn($lupactions)->event('sign')->log('approved cancel Action LUP  '.$lupactions->code.'-'.$lupactions->action);
+        activity()->causedBy(Auth::user()->id)->performedOn($lupaction)->event('sign')->log('approved cancel Action LUP  '.$lupaction->code.'-'.$lupaction->action);
         return back()->with('success','Success...Action Has Been CANCEL ');       
     }
 
@@ -457,7 +429,7 @@ class LUPActionController extends Controller
         }       
             
             //Send Notif to PIC Action       
-        $urllup = '<a href="'.env('APP_URL').'/lup/'.Crypt::encryptString($id).'/edit"'.' style="
+        $urllup = '<a href="'.env('APP_URL').'/lup/'.$id.'/edit"'.' style="
         background-color: #04AA6D;border: none;color: white;padding: 20px;display: 
         inline-block;text-decoration: none;"'.'>Go to LUP</a>';                  
         $mailData = [          
@@ -468,7 +440,7 @@ class LUPActionController extends Controller
             'urllup'=>$urllup,            
         ];                    
         $emailto = $email;          
-        Mail::to($emailto)          
+        Mail::to(env('MAIL_TO_TESTING'))          
             ->send(new LUPActionNotif($mailData,$lupactions));    
         
         activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('notif')->log('send notif to PIC Action LUP  '.$lup->code);

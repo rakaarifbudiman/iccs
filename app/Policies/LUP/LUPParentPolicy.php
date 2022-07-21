@@ -50,6 +50,15 @@ class LUPParentPolicy
                 ? Response::allow()
                     : Response::deny('Failed... '.  (($lup->lupstatus=="CREATE" || $lup->lupstatus=="ON PROCESS") ? 'You are not authorized ' :  'LUP status is already '.$lup->lupstatus));                  
     }
+    public function signinisiatorflp(User $user, LUPParent $lup)
+    {        
+        return ($lup->lupstatus=="CREATE" || $lup->lupstatus=="ON PROCESS") 
+            && $lup->documentname<>null && $lup->ingredients<>null && $lup->dosageform<>null
+            && $lup->bussinessunit<>null && $lup->packaging<>null && $lup->regno<>null && $lup->het<>null            
+            && !$lup->datesign_inisiator && $user->username == $lup->inisiator
+                ? Response::allow()
+                    : Response::deny('Failed... '.  (($lup->lupstatus=="CREATE" || $lup->lupstatus=="ON PROCESS") ? 'You are not authorized ' :  'FLP status is already '.$lup->lupstatus));                  
+    }
     public function cancelsigninisiator(User $user, LUPParent $lup)
     {        
         return ($lup->lupstatus=="CREATE" || $lup->lupstatus=="ON PROCESS") 
@@ -66,6 +75,15 @@ class LUPParentPolicy
             && !$lup->datesign_leader && $user->username == $lup->leader
                 ? Response::allow()
                     : Response::deny('Failed... '.  (($lup->lupstatus=="CREATE" || $lup->lupstatus=="ON PROCESS") ? 'You are not authorized ' :  'LUP status is already '.$lup->lupstatus));                  
+    }
+    public function signleaderflp(User $user, LUPParent $lup)
+    {        
+        return ($lup->lupstatus=="CREATE" || $lup->lupstatus=="ON PROCESS") 
+            && $lup->documentname<>null && $lup->ingredients<>null && $lup->dosageform<>null
+            && $lup->bussinessunit<>null && $lup->packaging<>null && $lup->regno<>null && $lup->het<>null            
+            && !$lup->datesign_leader && $user->username == $lup->leader
+                ? Response::allow()
+                    : Response::deny('Failed... '.  (($lup->lupstatus=="CREATE" || $lup->lupstatus=="ON PROCESS") ? 'You are not authorized ' :  'FLP status is already '.$lup->lupstatus));                  
     }
     public function cancelsignleader(User $user, LUPParent $lup)
     {        

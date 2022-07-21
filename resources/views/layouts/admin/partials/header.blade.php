@@ -23,7 +23,7 @@
     </div>
     <div class="nav-right col pull-right right-menu p-0">
       <ul class="nav-menus">
-        <li><a class="text-dark" href="#!" onclick="javascript:toggleFullScreen()"><i data-feather="maximize"></i></a></li>        
+        <li><a class="text-dark" href="#!" onclick="javascript:toggleFullScreen()" title="Full Screen"><i data-feather="maximize"></i></a></li>        
         <li class="onhover-dropdown">
             @php
               $emaillog = DB::table('email_log')->where('to','LIKE','%'.Auth::user()->email.'%')
@@ -52,8 +52,11 @@
           </ul>
         </li>
         <li class="onhover-dropdown">
-            <div class="mode"><i class="fa fa-moon-o"></i></div>
-        </li>
+            <div class="mode" title="Change Dark/Light"><i class="fa fa-moon-o"></i></div>
+        </li>    
+        <li class="onhover-dropdown" id="hidecustomizer">
+          <div class="color-mode" title="Show/Hide Color Customizer"><i class="fa fa-eye-slash"></i></div>
+        </li>    
         <li class="onhover-dropdown">
           @php
           $onlineusers = DB::table('users')->where('last_seen','<>',null)->orderBy('last_seen', 'desc')->get();
@@ -78,7 +81,8 @@
             @endforelse                         
             <li class="text-center"> <a class="f-w-700" href="javascript:void(0)">See All     </a></li>
           </ul>
-        </li>        
+        </li>   
+        
         <li class="onhover-dropdown p-0" id="jam"></li>
         <li class="onhover-dropdown p-0">
           <a href="/logout" class="btn btn-primary-light" type="button"><i data-feather="log-out"></i>Log out</a>

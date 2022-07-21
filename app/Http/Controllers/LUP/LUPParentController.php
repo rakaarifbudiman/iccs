@@ -67,8 +67,7 @@ class LUPParentController extends Controller
 
     // store new lup
     public function store(StoreLUPParentRequest $request)
-    {           
-        
+    {                   
         $lupparent = LUPParent::where('code','LIKE','L%')->first();         
         if($lupparent==null){
             $newcodelup='L'.date('y').'00001';
@@ -92,7 +91,8 @@ class LUPParentController extends Controller
     public function edit($id)
     {        
         $decrypted = Crypt::decryptString($id);         
-        $lupparent=LUPParent::find($decrypted);                              
+        $lupparent=LUPParent::find($decrypted); 
+                   
         $luptypes = explode(';',$lupparent->lup_type);
         $lupsubtypes = explode(';',$lupparent->lup_subtype);   
         $lupnotifier = explode(';',$lupparent->action_notifier);     
@@ -130,12 +130,7 @@ class LUPParentController extends Controller
         
         $lupparent = LUPParent::Find($id);
         $this->authorize('update', $lupparent); 
-        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_parents'),['updated_at']);        
-           
-        //get old value 
-        foreach($fields as $field){
-            $old[$field]= $lupparent->$field;
-        }                
+        $old = getoldvalues('mysql','lup_parents',$lupparent);      
            
         //update data        
         $data1 = $request->except(['_token','_method','code']);       
@@ -171,22 +166,8 @@ class LUPParentController extends Controller
         }        
                        
         //check audit change     
-        if($lupparent->wasChanged()==TRUE){
-            foreach($fields as $field){
-                if($lupparent->wasChanged($field)){
-                    if($old[$field]!=$lupparent->$field ){
-                        auditlups($lupparent,Auth::user()->username,'Audit Change',$lupparent->code,
-                        'lup_parents',$field,$old[$field],$lupparent->$field );
-                    }
-                }
-            }            
-            activity()->causedBy(Auth::user()->id)->performedOn($lupparent)->event('edited')->log('edited LUP <a href="'.env('APP_URL').'/lup/'.$id.'/edit">'.$lupparent->code.'</a>');   
-            return back()->with('success','Data was Saved !');
-        }else{
-           
-
-            return back()->with('info','Nothing Changed!');            
-        }        
+        startaudit($lupparent,$old['fields'],$old['old'],$old['table'],'LUP','Audit Change','edited');     
+        return back();
     }    
 
     //update data LUP
@@ -194,21 +175,15 @@ class LUPParentController extends Controller
     {
         $decrypted = Crypt::decryptString($id);
         $lupparent = LUPParent::Find($decrypted);
-        //$this->authorize('update', $lupparent);           
-        $oldcategorization = $lupparent->categorization; 
+        $this->authorize('update', $lupparent);           
+        $old = getoldvalues('mysql','lup_parents',$lupparent);      
         $lupparent->adjustments=1;
         $lupparent->categorization = $request->categorization;               
-        $lupparent->save();            
+        $lupparent->save();           
           
         //check audit change     
-        if($lupparent->wasChanged()==TRUE){                  
-                        auditlups($lupparent,Auth::user()->username,'Audit Change',$lupparent->code,
-                        'lup_parents','categorization',$oldcategorization,$lupparent->categorization);   
-            activity()->causedBy(Auth::user()->id)->performedOn($lupparent)->event('edited')->log('edited Categorization LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lupparent->code.'</a>');              
-            return back()->with('success','Data was Saved !');
-        }else{
-            return back()->with('info','Nothing Changed!');            
-        }        
+        startaudit($lupparent,$old['fields'],$old['old'],$old['table'],'LUP','Audit Change','edited');     
+        return back();
     }    
 
     //sign inisiator
@@ -243,7 +218,7 @@ class LUPParentController extends Controller
                     'name'=>$lup->leaders->name,
                 ];        
             $emailto = $lup->leaders->email;         
-            Mail::to($emailto)           
+            Mail::to(env('MAIL_TO_TESTING'))           
                 ->send(new LUPNotifToLeader($mailData,$lup));
             return back()->with('success','Sign Inisiator success...');
 
@@ -256,13 +231,12 @@ class LUPParentController extends Controller
         //get data lup
         $lup = LUPParent::find($decrypted);
         $this->authorize('cancelsigninisiator', $lup);
-        $old_datesign_inisiator= $lup->datesign_inisiator;                  
+        $old = getoldvalues('mysql','lup_parents',$lup);             
                                     
-        auditlups($lup,Auth::user()->username,'Cancel Sign Inisiator',$lup->code,
-                        'lup_parents','datesign_inisiator',$old_datesign_inisiator,null );
-
             $lup->datesign_inisiator =null;                        
             $lup->save();
+            //check audit change     
+            startaudit($lup,$old['fields'],$old['old'],$old['table'],'LUP','Cancel Sign Inisiator','rollback');  
             
             return back()->with('success','Cancel Sign Inisiator success...');
 
@@ -315,7 +289,7 @@ class LUPParentController extends Controller
         ];         
     
     
-    Mail::to($emailto)  
+    Mail::to(env('MAIL_TO_TESTING'))  
         ->cc(env('MAIL_TO_TESTING'))      
         ->send(new LUPNotifToQC($mailData,$lup));     
         activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>');    
@@ -329,15 +303,13 @@ class LUPParentController extends Controller
         $decrypted = Crypt::decryptString($id);  
         //get data lup
         $lup = lupParent::find($decrypted ); 
-        $this->authorize('updateleader', $lup);    
-        if($lup->leader!=$request->leader){
-            auditlups($lup,Auth::user()->username,'Edit Leader',$lup->code,
-            'lup_parents','leader',$lup->leader,$request->leader);      
-        }             
+        $old = getoldvalues('mysql','lup_parents',$lup); 
+        $this->authorize('updateleader', $lup);                 
         $lup->leader =$request->leader;             
-        $lup->save();        
+        $lup->save();     
 
-        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('Edit Leader LUP  <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>');  
+        //check audit change     
+        startaudit($lup,$old['fields'],$old['old'],$old['table'],'LUP','Edit Leader','edited');  
         return back();
     }      
 
@@ -348,17 +320,15 @@ class LUPParentController extends Controller
         //get data lup
         $lup = LUPParent::find($decrypted); 
         $this->authorize('cancelsignleader', $lup);
-
-        $old_datesign_leader= $lup->datesign_leader .' | ' . $lup->note_leader;                                       
+        $old = getoldvalues('mysql','lup_parents',$lup);                                   
             
-            $lup->datesign_leader =null;      
-            $lup->note_leader =null;  
-            auditlups($lup,Auth::user()->username,'Cancel Sign Leader',$lup->code,
-            'lup_parents','datesign_leader',$old_datesign_leader,null );                      
-            $lup->save();        
-            
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Cancel Sign Leader LUP  <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
-            return back()->with('success','Cancel Sign Leader success...');
+        $lup->datesign_leader =null;      
+        $lup->note_leader =null;                  
+        $lup->save();           
+           
+        //check audit change     
+        startaudit($lup,$old['fields'],$old['old'],$old['table'],'LUP','Cancel Sign Leader','rollback');  
+        return back()->with('success','Cancel Sign Leader success...');
 
     }
 
@@ -370,10 +340,7 @@ class LUPParentController extends Controller
         //get data lup
         $lup = lupParent::find($decrypted );  
         $this->authorize('updateregulatoryreviewer', $lup);     
-        if($lup->regulatory_reviewer!=$request->regulatory_reviewer){
-            auditlups($lup,Auth::user()->username,'Edit Regulatory Reviewer',$lup->code,
-            'lup_parents','regulatory_reviewer',$lup->regulatory_reviewer,$request->regulatory_reviewer);      
-        }             
+        $old = getoldvalues('mysql','lup_parents',$lup);             
         $lup->regulatory_reviewer =$request->regulatory_reviewer;   
         $lup->datesubmit_regulatory_reviewer  =\Carbon\Carbon::now();             
         $lup->save();        
@@ -396,11 +363,12 @@ class LUPParentController extends Controller
             'name'=>$lup->regulatory_reviewers->name,
         ];         
     
-    $emailto = $lup->regulatory_reviewers->email;
-    Mail::to($emailto)        
-        ->send(new LUPNotifToQC($mailData,$lup));   
+        $emailto = $lup->regulatory_reviewers->email;
+        Mail::to(env('MAIL_TO_TESTING'))        
+            ->send(new LUPNotifToQC($mailData,$lup));   
 
-        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('notif')->log('Submit LUP to Regulatory : <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
+        //check audit change     
+        startaudit($lup,$old['fields'],$old['old'],$old['table'],'LUP','Update & Notif Regulatory','notif');  
         return back()->with('success','Success...LUP has been submitted to Regulatory Reviewer');
     }
 
@@ -435,7 +403,7 @@ class LUPParentController extends Controller
         ];         
     
     $emailto = $lup->regulatory_approvers->email;
-    Mail::to($emailto)        
+    Mail::to(env('MAIL_TO_TESTING'))        
         ->send(new LUPNotifToQC($mailData,$lup)); 
         
         activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign Regulatory LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
@@ -449,17 +417,14 @@ class LUPParentController extends Controller
         //get data lup
         $lup = LUPParent::find($decrypted); 
         $this->authorize('cancelsignregulatoryreviewer', $lup);   
-
-        $old_datesign_regulatory_reviewer= $lup->datesubmit_regulatory_approver .' | ' . $lup->note_regulatory_reviewer;                                       
-            
-            $lup->datesubmit_regulatory_approver =null;      
-            $lup->note_regulatory_reviewer =null;  
-            auditlups($lup,Auth::user()->username,'Cancel Sign Regulatory Reviewer',$lup->code,
-            'lup_parents','datesign_regulatory_reviewer',$old_datesign_regulatory_reviewer,null );                      
-            $lup->save();        
+        $old = getoldvalues('mysql','lup_parents',$lup);  
+        $lup->datesubmit_regulatory_approver =null;      
+        $lup->note_regulatory_reviewer =null;                             
+        $lup->save();        
         
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Cancel Sign Regulatory LUP  <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
-            return back()->with('success','Cancel Sign Regulatory Reviewer success...');
+        //check audit change     
+        startaudit($lup,$old['fields'],$old['old'],$old['table'],'LUP','Sign Regulatory Reviewer','rollback');  
+        return back()->with('success','Cancel Sign Regulatory Reviewer success...');
     }
 
     //edit regulatory_approver
@@ -470,14 +435,12 @@ class LUPParentController extends Controller
         //get data lup
         $lup = lupParent::find($decrypted );  
         $this->authorize('updateregulatoryapprover', $lup);   
-        if($lup->regulatory_approver!=$request->regulatory_approver){
-            auditlups($lup,Auth::user()->username,'Edit Regulatory Approver',$lup->code,
-            'lup_parents','regulatory_approver',$lup->regulatory_approver,$request->regulatory_approver);      
-        }             
+        $old = getoldvalues('mysql','lup_parents',$lup);             
         $lup->regulatory_approver =$request->regulatory_approver;             
         $lup->save();       
         
-        activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('Update Regulatory Approver LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
+        //check audit change     
+        startaudit($lup,$old['fields'],$old['old'],$old['table'],'LUP','Update Regulatory Approver','edited'); 
         return back();
     }
 
@@ -492,8 +455,7 @@ class LUPParentController extends Controller
         $this->authorize('signregulatoryapprover', $lup);       
         $lup->note_regulatory_approver =$request->note_regulatory_approver;                           
         $lup->datesign_regulatory_approver =\Carbon\Carbon::now();         
-        $lup->save();
-        
+        $lup->save();        
         
         activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign Regulatory LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
         return back()->with('success','Sign Regulatory success...');
@@ -506,17 +468,14 @@ class LUPParentController extends Controller
         //get data lup
         $lup = LUPParent::find($decrypted);             
         $this->authorize('cancelsignregulatoryapprover', $lup);  
-
-        $old_datesign_regulatory_approver= $lup->datesign_regulatory_approver .' | ' . $lup->note_regulatory_approver;                                       
-            
-            $lup->datesign_regulatory_approver =null;      
-            $lup->note_regulatory_approver =null;  
-            auditlups($lup,Auth::user()->username,'Cancel Sign Regulatory Approver',$lup->code,
-            'lup_parents','datesign_regulatory_approver',$old_datesign_regulatory_approver,null );                      
-            $lup->save();
-                  
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Cancel Sign Regulatory LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
-            return back()->with('success','Cancel Sign Regulatory Approver success...');
+        $old = getoldvalues('mysql','lup_parents',$lup);     
+        $lup->datesign_regulatory_approver =null;      
+        $lup->note_regulatory_approver =null;                     
+        $lup->save();
+                
+        //check audit change     
+        startaudit($lup,$old['fields'],$old['old'],$old['table'],'LUP','Cancel Sign Regulatory Approver','rollback'); 
+        return back()->with('success','Cancel Sign Regulatory Approver success...');
     }
 
     //update external party
@@ -525,32 +484,15 @@ class LUPParentController extends Controller
         $decrypted = Crypt::decryptString($id);
         //get data lup
         $lup = lupParent::find($decrypted);  
-        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_parents'),['updated_at']);  
-                //get old value 
-                foreach($fields as $field){
-                    $old[$field]= $lup->$field;
-                } 
-       
+        $old = getoldvalues('mysql','lup_parents',$lup);           
         $lup->external_party_name =$request->external_party_name; 
         $lup->note_external_party =$request->note_external_party;   
         $lup->save();
 
         //check audit change     
-        if($lup->wasChanged()==TRUE){
-            foreach($fields as $field){                
-                    if($old[$field]!=$lup->$field ){
-                        auditlups($lup,Auth::user()->username,'Change External Party',$lup->code,
-                        'lup_parents',$field,$old[$field],$lup->$field );
-                    }                
-            }            
-
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited external party LUP  <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
-            return back()->with('success','Data was Saved !');
-        }else{
-           
-
-            return back()->with('info','Nothing Changed!');            
-        }                
+        startaudit($lup,$old['fields'],$old['old'],$old['table'],'LUP','Edited External Party','edited');   
+        return back();
+            
     }    
 
     //sign Reviewer by QSE
@@ -586,7 +528,7 @@ class LUPParentController extends Controller
         ];         
     
     $emailto = $lup->reviewerqcjms->email;
-    Mail::to($emailto)        
+    Mail::to(env('MAIL_TO_TESTING'))        
         ->send(new LUPNotifToQC($mailData,$lup));             
         
         activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Sign Reviewer LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
@@ -623,9 +565,7 @@ class LUPParentController extends Controller
         
         //cek if new year
         if(!$lup->nolup){
-                if (date('y')==$lup->year){
-
-                }else{
+                if (date('y')!=$lup->year){                
                     $lup->year = date('y');                
                     $lup->save();
                 }
@@ -733,7 +673,7 @@ class LUPParentController extends Controller
             $emailcc[]=$recipient; 
         }               
         
-        Mail::to($emailto)     
+        Mail::to(env('MAIL_TO_TESTING'))     
             ->cc(env('MAIL_TO_TESTING'))
             ->send(new LUPNotifHasApproved($mailData,$lup));  
             
@@ -866,7 +806,7 @@ class LUPParentController extends Controller
         }
        
        
-        Mail::to($emailto)     
+        Mail::to(env('MAIL_TO_TESTING'))     
             ->cc(env('MAIL_TO_TESTING'))
             ->send(new LUPNotifHasConfirmed($mailData,$lup,$lupactions));    
 
@@ -912,84 +852,6 @@ class LUPParentController extends Controller
         }        
     }
 
-    public function updatenotif($id, LUPParent $lupparent, Request $request)
-    {
-        $decrypted = Crypt::decryptString($id);      
-        $lupparent = LUPParent::Find($decrypted);        
-        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_parents'),['updated_at']);        
-           
-        //get old value 
-        foreach($fields as $field){
-            $old[$field]= $lupparent->$field;
-        }
-        
-        //update data        
-        $data1 = $request->except(['_token','_method','code']);      
-        if($lupparent->action_notifier){
-            $newdata = $lupparent->action_notifier.', '.$request->action_notifier;
-            $data3 = array('action_notifier'=>$newdata); 
-        }else{
-            $data3 = array('action_notifier'=>$request->action_notifier);
-        }        
-        
-        $lupparent->update(array_merge($data1,$data3));        
-       
-        //check audit change     
-        if($lupparent->wasChanged()==TRUE){
-            foreach($fields as $field){
-                if($lupparent->wasChanged($field)){
-                    if($old[$field]!=$lupparent->$field ){
-                        auditlups($lupparent,Auth::user()->username,'Audit Change',$lupparent->code,
-                        'lup_parents',$field,$old[$field],$lupparent->$field );
-                    }
-                }
-            }            
-            return back()->with('success','Data was Saved !');
-        }else{
-            return back()->with('info','Nothing Changed!');            
-        }        
-    }    
-    public function deletenotif($id, LUPParent $lupparent, Request $request)
-    {
-        $decrypted = Crypt::decryptString($id);      
-        $lupparent = LUPParent::Find($decrypted);        
-        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_parents'),['updated_at']);        
-           
-        //get old value 
-        foreach($fields as $field){
-            $old[$field]= $lupparent->$field;
-        }
-        
-        //update data        
-        $data1 = $request->except(['_token','_method','code']);      
-        if($lupparent->action_notifier){            
-            $olddata=explode(',',str_replace(' ', '', $lupparent->action_notifier)) ;           
-            $remove=array($request->action_notifier);
-            $newdata =implode(', ',array_diff($olddata,$remove)); 
-            
-            $data3 = array('action_notifier'=>$newdata); 
-        }else{
-            $data3 = array('action_notifier'=>$request->action_notifier);
-        }        
-        
-        $lupparent->update(array_merge($data1,$data3));        
-       
-        //check audit change     
-        if($lupparent->wasChanged()==TRUE){
-            foreach($fields as $field){
-                if($lupparent->wasChanged($field)){
-                    if($old[$field]!=$lupparent->$field ){
-                        auditlups($lupparent,Auth::user()->username,'Audit Change',$lupparent->code,
-                        'lup_parents',$field,$old[$field],$lupparent->$field );
-                    }
-                }
-            }            
-            return back()->with('success','Data was Saved !');
-        }else{
-            return back()->with('info','Nothing Changed!');            
-        }        
-    }    
-
     //download Regulatory Cheat Sheet
     public function downloadregcheatsheet()
     {                
@@ -1017,7 +879,8 @@ class LUPParentController extends Controller
         $decrypted = Crypt::decryptString($id);
         //get data lup
         $lup = LUPParent::find($decrypted); 
-        $this->authorize('requestcancel', $lup);   
+        $this->authorize('requestcancel', $lup); 
+        $old = getoldvalues('mysql','lup_parents',$lup);   
         $lup->cancel_notes = $request->cancel_notes;
         $lup->cancel_requester = Auth::user()->username;
         $lup->datecancel_request = now();         
@@ -1059,11 +922,12 @@ class LUPParentController extends Controller
                 $emailcc = $lup->reviewers->email; 
             }        
             
-            Mail::to($emailto)    
+            Mail::to(env('MAIL_TO_TESTING'))    
                 ->cc(env('MAIL_TO_TESTING'))       
                 ->send(new LUPRequestCancel($mailData,$lup));               
 
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Request Cancel LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
+            //check audit change     
+            startaudit($lup,$old['fields'],$old['old'],$old['table'],'LUP','Request Cancel LUP','rollback');   
             return back()->with('success','Success...Request Cancellation has been submitted');           
         
     }
@@ -1100,7 +964,7 @@ class LUPParentController extends Controller
                     'note'=>$lup->cancel_notes,
                 ];        
             $emailto = $lup->cancel_approvers->email;         
-            Mail::to($emailto)           
+            Mail::to(env('MAIL_TO_TESTING'))           
                 ->send(new LUPRequestCancel($mailData,$lup)); 
             
             activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Review Cancel LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
@@ -1144,7 +1008,7 @@ class LUPParentController extends Controller
                     'note'=>$request->approvercancel_notes,
                 ];        
             $emailto = $lup->inisiators->email;         
-            Mail::to($emailto)           
+            Mail::to(env('MAIL_TO_TESTING'))           
                 ->send(new LUPHasCancel($mailData,$lup)); 
             
             activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Approved Cancel LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
@@ -1183,7 +1047,7 @@ class LUPParentController extends Controller
                     'note'=>$request->closing_notes,
                 ];        
             $emailto = $lup->closing_approvers->email;         
-            Mail::to($emailto)           
+            Mail::to(env('MAIL_TO_TESTING'))           
                 ->send(new LUPRequestClosing($mailData,$lup)); 
             
             activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('sign')->log('Request Closing LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
@@ -1212,13 +1076,7 @@ class LUPParentController extends Controller
         //get data lup
         $lup = LUPParent::find($decrypted); 
         $this->authorize('rollback', $lup);  
-        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_parents'),['updated_at']);        
-           
-        //get old value 
-        foreach($fields as $field){
-            $old[$field]= $lup->$field;
-        }
-        
+        $old = getoldvalues('mysql','lup_parents',$lup); 
         $lup->approver = Auth::user()->username;
         $lup->note_approver = $request->note_approver;       
         $lup->note_reviewer2 ='';
@@ -1229,16 +1087,9 @@ class LUPParentController extends Controller
         $lup->approved = null;
         $lup->confirmed = null;
         $lup->lupstatus = 'ON REVIEW';                
-        $lup->save();          
+        $lup->save(); 
         
-        foreach($fields as $field){
-            if($lup->wasChanged($field)){
-                if($old[$field]!=$lup->$field ){
-                    auditlups($lup,Auth::user()->username,'Roll Back LUP',$lup->code,
-                    'lup_parents',$field,$old[$field],$lup->$field );
-                }
-            }
-        }          
+        
 
              //Send Notif to Inisiator
                 $urllup = '<a href="'.env('APP_URL').'/lup/'.$id.'/edit"'.' style="
@@ -1254,11 +1105,13 @@ class LUPParentController extends Controller
                 ];        
             $emailto = $lup->inisiators->email;
             $emailcc = $lup->leaders->email;        
-            Mail::to($emailto)    
+            Mail::to(env('MAIL_TO_TESTING'))    
                 ->cc(env('MAIL_TO_TESTING'))       
                 ->send(new LUPHasRollback($mailData,$lup)); 
             
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('rollback')->log('Rollback LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
+           
+            //check audit change     
+            startaudit($lup,$old['fields'],$old['old'],$old['table'],'LUP','Rollback LUPr','rollback');   
             return back()->with('success','Success...LUP Has been Rollback to ON REVIEW');      
     }
 
@@ -1269,27 +1122,14 @@ class LUPParentController extends Controller
         //get data lup
         $lup = LUPParent::find($decrypted); 
         $this->authorize('signreviewerqcjm', $lup);  
-        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_parents'),['updated_at']);        
-           
-        //get old value 
-        foreach($fields as $field){
-            $old[$field]= $lup->$field;
-        }
-        
+        $old = getoldvalues('mysql','lup_parents',$lup);           
         $lup->reviewer2 = $request->reviewer2;                 
-        $lup->save();          
+        $lup->save();                 
         
-        foreach($fields as $field){
-            if($lup->wasChanged($field)){
-                if($old[$field]!=$lup->$field ){
-                    auditlups($lup,Auth::user()->username,'Audit Change',$lup->code,
-                    'lup_parents',$field,$old[$field],$lup->$field );
-                }
-            }
-        }                  
-        
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited Reviewer QCJM LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
-            return back();      
+        //check audit change     
+        startaudit($lup,$old['fields'],$old['old'],$old['table'],'LUP','Edited Reviewer QCJM LUP','edited');  
+       
+        return back();      
     }
 
     //Update Approver
@@ -1299,26 +1139,13 @@ class LUPParentController extends Controller
         //get data lup
         $lup = LUPParent::find($decrypted); 
         $this->authorize('signapprover', $lup);  
-        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_parents'),['updated_at']);        
-           
-        //get old value 
-        foreach($fields as $field){
-            $old[$field]= $lup->$field;
-        }
-        
+        $old = getoldvalues('mysql','lup_parents',$lup);  
         $lup->approver = $request->approver;                 
         $lup->save();          
-        
-        foreach($fields as $field){
-            if($lup->wasChanged($field)){
-                if($old[$field]!=$lup->$field ){
-                    auditlups($lup,Auth::user()->username,'Audit Change',$lup->code,
-                    'lup_parents',$field,$old[$field],$lup->$field );
-                }
-            }
-        }                   
-            activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited Approver LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>'); 
-            return back();      
+        //check audit change     
+        startaudit($lup,$old['fields'],$old['old'],$old['table'],'LUP','Edited Approver LUP','edited');                 
+            
+        return back();      
     }
 
     //Update Confirmer
@@ -1328,24 +1155,12 @@ class LUPParentController extends Controller
         //get data lup
         $lup = LUPParent::find($decrypted); 
         $this->authorize('confirmedlup', $lup);  
-        $fields = array_diff(Schema::Connection('mysql')->getColumnListing('lup_parents'),['updated_at']);        
-           
-        //get old value 
-        foreach($fields as $field){
-            $old[$field]= $lup->$field;
-        }
+        $old = getoldvalues('mysql','lup_parents',$lup);  
         
         $lup->confirmer = $request->confirmer;                 
         $lup->save();          
-        
-        foreach($fields as $field){
-            if($lup->wasChanged($field)){
-                if($old[$field]!=$lup->$field ){
-                    auditlups($lup,Auth::user()->username,'Audit Change',$lup->code,
-                    'lup_parents',$field,$old[$field],$lup->$field );
-                }
-            }
-        }    
+        //check audit change     
+        startaudit($lup,$old['fields'],$old['old'],$old['table'],'LUP','Edited Confirmer LUP','edited');      
             activity()->causedBy(Auth::user()->id)->performedOn($lup)->event('edited')->log('edited Confirmer LUP <a href='.env('APP_URL').'/lup/'.$id.'/edit'.$lup->code.'</a>');                
             return back();      
     }

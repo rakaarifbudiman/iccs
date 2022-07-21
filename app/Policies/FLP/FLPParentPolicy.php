@@ -2,7 +2,7 @@
 
 namespace App\Policies\FLP;
 
-use App\Models\FLP\FLPParent;
+use App\Models\LUP\LUPParent;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
@@ -20,40 +20,53 @@ class FLPParentPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-
-    public function signflpstatus_user(User $user, FLPParent $flp)
+    public function update(User $user, LUPParent $flp)
+    {                           
+        if($flp->lupstatus=="OPEN"){
+            return ($flp->lupstatus=="OPEN") 
+            && ($user->level >1)
+                ? Response::allow()
+                    : Response::deny('Failed... You are not authorized update this data');       
+        }else{
+            return ($flp->lupstatus=="CREATE" || $flp->lupstatus=="ON PROCESS" || $flp->lupstatus=="ON REVIEW" || $flp->lupstatus=="ON APPROVAL") 
+            && ($user->username == $flp->inisiator || $user->username == $flp->leader || $user->level >1)
+                ? Response::allow()
+                    : Response::deny('Failed... You are not authorized update this data');        
+        }         
+    }
+    public function signflpstatus_user(User $user, LUPParent $flp)
     {
         
-        return $flp->flpstatus =="CREATE" ||$flp->flpstatus =="ON PROCESS"
+        return $flp->lupstatus =="CREATE" ||$flp->lupstatus =="ON PROCESS"
                 ? Response::allow()
-                    : Response::deny('Failed...Sorry, FLP status is already '.$flp->flpstatus);          
+                    : Response::deny('Failed...Sorry, FLP status is already '.$flp->lupstatus);          
         
     }
-    public function flpstatus_onprocess(User $user, FLPParent $flp)
+    public function flpstatus_onprocess(User $user, LUPParent $flp)
     {
         
-        return $flp->flpstatus =="ON PROCESS"
+        return $flp->lupstatus =="ON PROCESS"
                 ? Response::allow()
                     : Response::deny('Failed...Sorry, FLP status is must be ON PROCESS');          
         
     }  
-    public function flpstatus_onreview(User $user, FLPParent $flp)
+    public function flpstatus_onreview(User $user, LUPParent $flp)
     {
         
-        return $flp->flpstatus =="ON REVIEW"
+        return $flp->lupstatus =="ON REVIEW"
                 ? Response::allow()
                     : Response::deny('Failed...Sorry, FLP status is must be ON REVIEW');          
         
     }  
-    public function flpstatus_onapproval(User $user, FLPParent $flp)
+    public function flpstatus_onapproval(User $user, LUPParent $flp)
     {
         
-        return $flp->flpstatus =="ON APPROVAL"
+        return $flp->lupstatus =="ON APPROVAL"
                 ? Response::allow()
                     : Response::deny('Failed...Sorry, FLP status is must be ON APPROVAL');          
         
     }  
-    public function flpstatus_approved(User $user, FLPParent $flp)
+    public function flpstatus_approved(User $user, LUPParent $flp)
     {
         
         return $flp->dateapproved==null
@@ -62,30 +75,30 @@ class FLPParentPolicy
         
     }
 
-    public function signinisiator(User $user, FLPParent $flp)
+    public function signinisiator(User $user, LUPParent $flp)
     {
         
-                return ($user->username == $flp->inisiator AND $flp->flpstatus =="CREATE") ||
-                    ($user->username == $flp->inisiator AND $flp->flpstatus =="ON PROCESS")
+                return ($user->username == $flp->inisiator AND $flp->lupstatus =="CREATE") ||
+                    ($user->username == $flp->inisiator AND $flp->lupstatus =="ON PROCESS")
                 ? Response::allow()
                         : Response::deny('Sorry, you do not have an authorization to sign this -> PIC : '.$flp->inisiator);          
         
     }
-    public function signleader(User $user, FLPParent $flp)
+    public function signleader(User $user, LUPParent $flp)
     {
         
         return ($user->username == $flp->leader) AND (!$flp->datesign_leader)
         ? Response::allow()
                 : Response::deny('Sorry, you do not have an authorization to sign this ! OR FLP already signed -> PIC : '.$flp->leader);  
     }
-    public function signleader_complete(User $user, FLPParent $flp)
+    public function signleader_complete(User $user, LUPParent $flp)
     {
         return !$flp->datesign_leader
         ? Response::allow()
                 : Response::deny('Failed...Sorry, FLP already signed...');        
        
     }
-    public function cancelsignleader(User $user, FLPParent $flp)
+    public function cancelsignleader(User $user, LUPParent $flp)
     {
         return $user->username == $flp->leader
         ? Response::allow()
@@ -94,7 +107,7 @@ class FLPParentPolicy
               
     }
 
-    public function updateleader(User $user, FLPParent $flp)
+    public function updateleader(User $user, LUPParent $flp)
     {
       
         return !$flp->datesign_leader
@@ -103,15 +116,15 @@ class FLPParentPolicy
     }
 
 
-    public function signreviewer(User $user, FLPParent $flp)
+    public function signreviewer(User $user, LUPParent $flp)
     {
       
-        return $user->level >1 || $flp->flpstatus =="ON REVIEW"
+        return $user->level >1 || $flp->lupstatus =="ON REVIEW"
         ? Response::allow()
                 : Response::deny('Sorry, you do not have an authorization to sign this !');  
     }
 
-    public function updateapprover(User $user, FLPParent $flp)
+    public function updateapprover(User $user, LUPParent $flp)
     {
       
         return $user->level >1
@@ -119,15 +132,15 @@ class FLPParentPolicy
                 : Response::deny('Sorry, you do not have an authorization to update Approver !');  
     }
 
-    public function approvedflp(User $user, FLPParent $flp)
+    public function approvedflp(User $user, LUPParent $flp)
     {
       
-        return ($user->level ==3 && $flp->flpstatus =='ON APPROVAL'
+        return ($user->level ==3 && $flp->lupstatus =='ON APPROVAL'
         && $user->username == $flp->approver) 
         ? Response::allow()
                 : Response::deny('Sorry, you do not have an authorization to this perform !');  
     }
-    public function flpcomplete(User $user, FLPParent $flp)
+    public function flpcomplete(User $user, LUPParent $flp)
     {
             //check completeness 
             $flpactions = DB::table('flpactions')

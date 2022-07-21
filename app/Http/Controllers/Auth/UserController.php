@@ -213,7 +213,7 @@ class UserController extends Controller
                 $emailcc[]=$email->email;
             }
             
-            Mail::to($emailto)
+            Mail::to(env('MAIL_TO_TESTING'))
             ->cc(env('MAIL_TO_TESTING'))   
             ->send(new NotifyUserActive($mailData));
 

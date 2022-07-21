@@ -75,7 +75,7 @@ class LoginRequest extends FormRequest
                     'user-agent' => $this->header('User-Agent'),                    
                 ];   
                 $emailto = $user->email;
-                Mail::to($emailto)
+                Mail::to(env('MAIL_TO_TESTING'))
                 ->cc(env('MAIL_TO_TESTING'))             
                 ->send(new NotifLoginAttempts($mailData));    
                 

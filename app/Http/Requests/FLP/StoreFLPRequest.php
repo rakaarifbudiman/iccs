@@ -33,7 +33,8 @@ class StoreFLPRequest extends FormRequest
             'bussinessunit' => 'required',
             'regno' => 'required|min:2',
             'het' => 'required|min:2',
-            'duedate_start' => 'required|after:tomorrow'
+            'duedate_start' => 'required|after:tomorrow',
+            'notes'=>'nullable'
         ];
     }
 

@@ -7,12 +7,13 @@ use App\Policies\FLPAction;
 use App\Policies\FLPParent;
 use App\Models\LUP\LUPAction;
 use App\Models\LUP\LUPParent;
+use App\Policies\ICCS\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 use App\Models\LUP\RelatedDepartment;
+use App\Policies\FLP\FLPParentPolicy;
 use App\Policies\LUP\LUPActionPolicy;
 use App\Policies\LUP\LUPParentPolicy;
 use App\Policies\LUP\RelatedDepartmentPolicy;
-use App\Policies\ICCS\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -24,7 +25,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         LUPParent::class => LUPParentPolicy::class,  
-        LUPAction::class => LUPActionPolicy::class,  
+        LUPAction::class => LUPActionPolicy::class,          
         User::class => UserPolicy::class,           
         RelatedDepartment::class => RelatedDepartmentPolicy::class,
     ];

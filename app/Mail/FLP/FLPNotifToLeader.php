@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\FLP\FLPParent;
+use App\Models\LUP\LUPParent;
 
 class FLPNotifToLeader extends Mailable implements ShouldQueue
 {
@@ -18,7 +18,7 @@ class FLPNotifToLeader extends Mailable implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($mailData, FLPParent $flp)
+    public function __construct($mailData, LUPParent $flp)
     {
         $this->mailData = $mailData;
         $this->flp = $flp;
